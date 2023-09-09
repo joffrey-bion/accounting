@@ -1,0 +1,7 @@
+[versions]
+
+bignum = "0.3.8"
+
+[libraries]
+
+bignum = { module = "com.ionspin.kotlin:bignum", version.ref = "bignum" }
