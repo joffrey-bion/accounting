@@ -1,4 +1,4 @@
-package org.hildan.accounting.mortgage
+package org.hildan.accounting.money
 
 /**
  * Represents a local date with month precision, so basically a month and a year.
@@ -6,7 +6,7 @@ package org.hildan.accounting.mortgage
 data class AbsoluteMonth(val year: Int, val month: Int) {
 
     /**
-     * Returns the absolute month, coming after this one.
+     * Returns the absolute month coming after this one.
      */
     fun next() = plusMonths(1)
 

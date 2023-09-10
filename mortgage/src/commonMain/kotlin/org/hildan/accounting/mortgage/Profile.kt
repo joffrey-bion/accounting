@@ -12,10 +12,3 @@ data class Profile(
      */
     val extraRedemptions: List<Payment>,
 )
-
-/**
- * A payment made at the end of a month.
- *
- * This could be a complete purchase, or construction bill (for new constructions), a voluntary redemption payback...
- */
-data class Payment(val date: AbsoluteMonth, val amount: Amount)
