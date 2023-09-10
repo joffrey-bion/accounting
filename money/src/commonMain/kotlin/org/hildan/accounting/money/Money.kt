@@ -14,7 +14,7 @@ value class Fraction internal constructor(internal val value: BigDecimal) : Comp
 }
 
 /**
- * An amount in an undefined (but assumed known) currency.
+ * An amount of money in euros (EUR, €).
  */
 @JvmInline
 value class Amount internal constructor(private val value: BigDecimal) : Comparable<Amount> {
@@ -25,20 +25,26 @@ value class Amount internal constructor(private val value: BigDecimal) : Compara
     operator fun times(fraction: Fraction) = Amount(value * fraction.value)
     operator fun div(quantity: Int) = Amount(value / quantity.toBigDecimalForCurrency())
     operator fun div(other: Amount) = Fraction(value / other.value)
+
     fun coerceAtLeast(min: Amount) = Amount(value.coerceAtLeast(min.value))
 
     override fun compareTo(other: Amount): Int = value.compareTo(other.value)
 
-    override fun toString(): String {
-        val rounded = value.roundToDigitPositionAfterDecimalPoint(2, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO)
+    override fun toString(): String = value.toStringExpanded() + " €"
+
+    fun format(nDigitsAfterDot: Int = 2): String {
+        val rounded = value.roundToDigitPositionAfterDecimalPoint(
+            digitPosition = nDigitsAfterDot.toLong(),
+            roundingMode = RoundingMode.ROUND_HALF_AWAY_FROM_ZERO,
+        )
         val formattedRaw = rounded.toStringExpanded()
         val nDigits = formattedRaw.substringAfter('.', missingDelimiterValue = "").length
         val formatted2Digits = when (nDigits) {
-            0 -> "$formattedRaw.00"
-            1 -> "${formattedRaw}0"
+            0 -> if (nDigitsAfterDot == 0) formattedRaw else "$formattedRaw." + "0".repeat(nDigitsAfterDot)
+            in 1 ..< nDigitsAfterDot -> formattedRaw + "0".repeat(nDigitsAfterDot - nDigits)
             else -> formattedRaw
         }
-        return "${formatted2Digits}€"
+        return "$formatted2Digits €"
     }
 
     companion object {
