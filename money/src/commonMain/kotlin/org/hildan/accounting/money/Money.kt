@@ -17,7 +17,7 @@ value class Fraction internal constructor(internal val value: BigDecimal) : Comp
  * An amount in an undefined (but assumed known) currency.
  */
 @JvmInline
-value class Amount internal constructor(internal val value: BigDecimal) {
+value class Amount internal constructor(internal val value: BigDecimal) : Comparable<Amount> {
     operator fun unaryMinus() = Amount(-value)
     operator fun plus(other: Amount) = Amount(value + other.value)
     operator fun minus(other: Amount) = Amount(value - other.value)
@@ -26,6 +26,8 @@ value class Amount internal constructor(internal val value: BigDecimal) {
     operator fun div(quantity: Int) = Amount(value / quantity.toBigDecimalForCurrency())
     operator fun div(other: Amount) = Fraction(value / other.value)
     fun coerceAtLeast(min: Amount) = Amount(value.coerceAtLeast(min.value))
+
+    override fun compareTo(other: Amount): Int = value.compareTo(other.value)
 
     override fun toString(): String {
         val rounded = value.roundToDigitPositionAfterDecimalPoint(2, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO)
