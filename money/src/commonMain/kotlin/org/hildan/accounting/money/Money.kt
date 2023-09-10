@@ -17,7 +17,7 @@ value class Fraction internal constructor(internal val value: BigDecimal) : Comp
  * An amount in an undefined (but assumed known) currency.
  */
 @JvmInline
-value class Amount internal constructor(internal val value: BigDecimal) : Comparable<Amount> {
+value class Amount internal constructor(private val value: BigDecimal) : Comparable<Amount> {
     operator fun unaryMinus() = Amount(-value)
     operator fun plus(other: Amount) = Amount(value + other.value)
     operator fun minus(other: Amount) = Amount(value - other.value)
@@ -46,10 +46,9 @@ value class Amount internal constructor(internal val value: BigDecimal) : Compar
     }
 }
 
-fun <T> Iterable<T>.sumOf(selector: (T) -> Amount): Amount =
-    Amount(fold(0.toBigDecimalForCurrency()) { sum, e -> sum + selector(e).value })
+fun <T> Iterable<T>.sumOf(selector: (T) -> Amount): Amount = fold(Amount.ZERO) { sum, e -> sum + selector(e) }
 
-fun Iterable<Amount>.sum(): Amount = sumOf { it }
+fun Iterable<Amount>.sum(): Amount = fold(Amount.ZERO, Amount::plus)
 
 fun Int.toAmount(): Amount = Amount(toBigDecimalForCurrency())
 fun Long.toAmount(): Amount = Amount(toBigDecimalForCurrency())
