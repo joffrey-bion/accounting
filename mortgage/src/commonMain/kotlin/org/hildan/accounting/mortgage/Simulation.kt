@@ -69,7 +69,7 @@ data class MortgageSimulation(
 
     fun annuitiesDistribution(): Distribution = monthlyPayments.map { it.total }.distribution()
 
-    fun summarizeYears(monthlyPayments: List<MortgagePayment>) = monthlyPayments
+    fun summarizeYears() = monthlyPayments
         .groupingBy { it.date.year }
         .aggregate { year, acc: MortgageYearSummary?, p, _ ->
             if (acc == null) {
