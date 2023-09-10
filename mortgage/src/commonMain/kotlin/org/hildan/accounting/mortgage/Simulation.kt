@@ -67,6 +67,8 @@ data class MortgageSimulation(
     val totalInterest: Amount = monthlyPayments.sumOf { it.interest }
     val totalPayments: Amount = monthlyPayments.sumOf { it.total }
 
+    fun annuitiesDistribution(): Distribution = monthlyPayments.map { it.total }.distribution()
+
     fun summarizeYears(monthlyPayments: List<MortgagePayment>) = monthlyPayments
         .groupingBy { it.date.year }
         .aggregate { year, acc: MortgageYearSummary?, p, _ ->

@@ -9,5 +9,10 @@ kotlin {
                 implementation(libs.bignum)
             }
         }
+        commonTest {
+            dependencies {
+                implementation(kotlin("test"))
+            }
+        }
     }
 }
