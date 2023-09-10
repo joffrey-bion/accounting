@@ -3,12 +3,12 @@ package org.hildan.accounting.mortgage
 import org.hildan.accounting.money.*
 
 /**
- * Simulates the reimbursement of this mortgage over its duration, according to the given [profile].
+ * Simulates the reimbursement of this mortgage over its duration, for the purchase of the given [property].
  */
-fun Mortgage.simulateLinear(simName: String, profile: Profile): MortgageSimulation {
-    val propertyValue = profile.property.wozValue
-    val billsPerMonth = profile.property.installments.groupBy({ it.date }, { it.amount })
-    val extraRedemptionsPerMonth = profile.extraRedemptions.groupBy({ it.date }, { it.amount })
+fun Mortgage.simulateLinear(simName: String, property: Property): MortgageSimulation {
+    val propertyValue = property.wozValue
+    val billsPerMonth = property.installments.groupBy({ it.date }, { it.amount })
+    val extraRedemptionsPerMonth = extraRedemptions.groupBy({ it.date }, { it.amount })
 
     val payments = mutableListOf<MortgagePayment>()
 
@@ -41,7 +41,7 @@ fun Mortgage.simulateLinear(simName: String, profile: Profile): MortgageSimulati
     return MortgageSimulation(
         name = simName,
         mortgage = this,
-        ownFunds = propertyValue - amount,
+        property = property,
         monthlyPayments = payments,
     )
 }
@@ -61,15 +61,21 @@ data class MortgageSimulation(
      */
     val mortgage: Mortgage,
     /**
-     * The personal money invested at the start.
+     * The property bought in this simulation.
      */
-    val ownFunds: Amount,
+    val property: Property,
     /**
      * The list of payments made to repay this mortgage.
      */
     val monthlyPayments: List<MortgagePayment>,
 ) {
+    /**
+     * The personal money invested at the start.
+     */
+    val ownFunds: Amount = property.wozValue - mortgage.amount
+
     val totalInterest: Amount = monthlyPayments.sumOf { it.interest }
+
     val totalPayments: Amount = monthlyPayments.sumOf { it.total }
 
     fun annuitiesDistribution(): Distribution = monthlyPayments.map { it.total }.distribution()

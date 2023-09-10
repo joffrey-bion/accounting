@@ -20,6 +20,10 @@ data class Mortgage(
      */
     val startMonth: AbsoluteMonth,
     /**
+     * The payments made voluntarily to pay back the loan, usually to reduce the interest and thus the monthly payments.
+     */
+    val extraRedemptions: List<Payment> = emptyList(),
+    /**
      * The total duration over which the mortgage will be repaid.
      */
     val nYears: Int = 30,

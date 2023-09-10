@@ -26,26 +26,23 @@ private val ObvionRate = InterestRate.LtvAdjusted(
     )
 )
 
-private val constructionBillsMilestones = listOf(3.pct, 10.pct, 15.pct, 10.pct, 5.pct, "23.5".pct, 10.pct, "13.5".pct)
+private val constructionBillsPayments = listOf(3.pct, 10.pct, 15.pct, 10.pct, 5.pct, "23.5".pct, 10.pct, "13.5".pct)
     .mapIndexed { i, f -> Payment(startDate.plusMonths(i + 1), constructionPrice * f) } +
         Payment(deliveryDate, constructionPrice * 10.pct)
 
-private val profile = Profile(
-    property = Property.newBuild(
-        installments = listOf(
-            Payment(startDate, landPrice),
-            Payment(startDate, parkingPrice),
-            Payment(startDate, optionsPrice),
-            *constructionBillsMilestones.toTypedArray(),
-        )
-    ),
-    extraRedemptions = listOf(Payment(AbsoluteMonth(2024, 9), 10000.eur)),
+private val elzenhagen36 = Property.newBuild(
+    installments = listOf(
+        Payment(startDate, landPrice),
+        Payment(startDate, parkingPrice),
+        Payment(startDate, optionsPrice),
+        *constructionBillsPayments.toTypedArray(),
+    )
 )
 
 fun main() {
-    val simulation80 = mortgage(totalPrice * 80.pct).simulateLinear("80% LTV", profile)
-    val simulation700k = mortgage(700_000.eur).simulateLinear("700k", profile)
-    val simulation90 = mortgage(totalPrice * 90.pct).simulateLinear("90% LTV", profile)
+    val simulation80 = simulateMortgage(simName = "80% LTV", amount = totalPrice * 80.pct)
+    val simulation700k = simulateMortgage(simName = "700k", amount = 700_000.eur)
+    val simulation90 = simulateMortgage(simName = "90% LTV", amount = totalPrice * 90.pct)
 
     println(SummaryTable.format(listOf(simulation80, simulation700k, simulation90)))
     println()
@@ -55,6 +52,8 @@ fun main() {
     println("=== SIMULATION 700k (monthly) ===")
     println(MonthTable.format(simulation700k.monthlyPayments))
 }
+
+private fun simulateMortgage(simName: String, amount: Amount) = mortgage(amount).simulateLinear(simName, elzenhagen36)
 
 private fun mortgage(amount: Amount) = Mortgage(
     amount = amount,
@@ -66,8 +65,9 @@ private fun mortgage(amount: Amount) = Mortgage(
 private val SummaryTable = table<MortgageSimulation> {
     column("Sim name") { name }
     column("Total loan") { mortgage.amount.format() }
-    column("Owns funds") { (profile.property.wozValue - mortgage.amount).format() }
+    column("Owns funds") { ownFunds.format() }
     column("Total interest") { totalInterest.format() }
+    column("Avg pay") { (monthlyPayments.sumOf { it.total } / monthlyPayments.size).format() }
     column("Max pay") { annuitiesDistribution().max.format() }
     column("99p pay") { annuitiesDistribution().p99.format() }
     column("95p pay") { annuitiesDistribution().p95.format() }
