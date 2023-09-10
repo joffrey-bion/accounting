@@ -6,7 +6,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation(project(":money"))
+                api(project(":money"))
             }
         }
     }
