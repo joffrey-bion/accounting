@@ -118,19 +118,19 @@ class MoneyTest {
 
     @Test
     fun format_defaultNumberOfDigits() {
-        assertEquals("42.00 €", 42.eur.format())
-        assertEquals("-42.00 €", (-42).eur.format())
-        assertEquals("1.23 €", "1.2345".eur.format())
-        assertEquals("1.24 €", "1.2356".eur.format())
+        assertEquals("42.00", 42.eur.format())
+        assertEquals("-42.00", (-42).eur.format())
+        assertEquals("1.23", "1.2345".eur.format())
+        assertEquals("1.24", "1.2356".eur.format())
     }
 
     @Test
     fun format_customNumberOfDigits() {
-        assertEquals("1 €", "1.2356".eur.format(nDigitsAfterDot = 0))
-        assertEquals("1.2 €", "1.2356".eur.format(nDigitsAfterDot = 1))
-        assertEquals("1.24 €", "1.2356".eur.format(nDigitsAfterDot = 2))
-        assertEquals("1.236 €", "1.2356".eur.format(nDigitsAfterDot = 3))
-        assertEquals("1.2356 €", "1.2356".eur.format(nDigitsAfterDot = 4))
+        assertEquals("1", "1.2356".eur.format(nDigitsAfterDot = 0))
+        assertEquals("1.2", "1.2356".eur.format(nDigitsAfterDot = 1))
+        assertEquals("1.24", "1.2356".eur.format(nDigitsAfterDot = 2))
+        assertEquals("1.236", "1.2356".eur.format(nDigitsAfterDot = 3))
+        assertEquals("1.2356", "1.2356".eur.format(nDigitsAfterDot = 4))
     }
 
     @Test
