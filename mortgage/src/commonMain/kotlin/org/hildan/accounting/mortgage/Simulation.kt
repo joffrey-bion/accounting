@@ -5,7 +5,7 @@ import org.hildan.accounting.money.*
 /**
  * Simulates the reimbursement of this mortgage over its duration, according to the given [profile].
  */
-fun Mortgage.simulateLinear(profile: Profile): MortgageSimulation {
+fun Mortgage.simulateLinear(simName: String, profile: Profile): MortgageSimulation {
     val propertyValue = profile.property.wozValue
     val billsPerMonth = profile.property.installments.groupBy({ it.date }, { it.amount })
     val extraRedemptionsPerMonth = profile.extraRedemptions.groupBy({ it.date }, { it.amount })
@@ -39,6 +39,7 @@ fun Mortgage.simulateLinear(profile: Profile): MortgageSimulation {
         payments.add(payment)
     }
     return MortgageSimulation(
+        name = simName,
         mortgage = this,
         ownFunds = propertyValue - amount,
         monthlyPayments = payments,
@@ -51,6 +52,10 @@ private fun Mortgage.monthsSequence(): Sequence<AbsoluteMonth> {
 }
 
 data class MortgageSimulation(
+    /**
+     * The name of this simulation, for easier visualization.
+     */
+    val name: String,
     /**
      * The mortgage that was simulated.
      */
