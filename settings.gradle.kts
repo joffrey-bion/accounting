@@ -8,3 +8,4 @@ rootProject.name = "accounting"
 
 include("money")
 include("mortgage")
+include("ui-web")
