@@ -13,7 +13,9 @@ kotlin {
     sourceSets {
         val jsMain by getting {
             dependencies {
-                // deps will go here
+                implementation(platform(libs.kotlin.wrappers.bom.get()))
+                implementation(libs.kotlin.wrappers.react.core)
+                implementation(libs.kotlin.wrappers.react.dom)
             }
         }
     }

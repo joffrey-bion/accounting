@@ -2,7 +2,12 @@
 
 bignum = "0.3.8"
 kotlin-plugin = "1.9.0"
+kotlin-wrappers = "1.0.0-pre.623"
 
 [libraries]
 
 bignum = { module = "com.ionspin.kotlin:bignum", version.ref = "bignum" }
+
+kotlin-wrappers-bom = { module = "org.jetbrains.kotlin-wrappers:kotlin-wrappers-bom", version.ref = "kotlin-wrappers" }
+kotlin-wrappers-react-core = { module = "org.jetbrains.kotlin-wrappers:kotlin-react" }
+kotlin-wrappers-react-dom = { module = "org.jetbrains.kotlin-wrappers:kotlin-react-dom" }
