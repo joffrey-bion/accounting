@@ -1,12 +1,17 @@
 [versions]
 
 bignum = "0.3.8"
-kotlin-plugin = "1.9.0"
+kotlin-plugin = "1.9.10"
 kotlin-wrappers = "1.0.0-pre.623"
+data2viz-core = "0.10.6"
+data2viz-charts = "1.0.12"
 
 [libraries]
 
 bignum = { module = "com.ionspin.kotlin:bignum", version.ref = "bignum" }
+
+data2viz-core = { module = "io.data2viz.d2v:d2v-core-js", version.ref = "data2viz-core" }
+data2viz-charts = { module = "io.data2viz.charts:core", version.ref = "data2viz-charts" }
 
 kotlin-wrappers-bom = { module = "org.jetbrains.kotlin-wrappers:kotlin-wrappers-bom", version.ref = "kotlin-wrappers" }
 kotlin-wrappers-react-core = { module = "org.jetbrains.kotlin-wrappers:kotlin-react" }
