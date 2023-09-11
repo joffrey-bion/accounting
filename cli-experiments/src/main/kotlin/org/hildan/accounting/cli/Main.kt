@@ -68,10 +68,10 @@ private val SummaryTable = table<MortgageSimulation> {
     column("Owns funds") { ownFunds.format() }
     column("Total interest") { totalInterest.format() }
     column("Avg pay") { (monthlyPayments.sumOf { it.total } / monthlyPayments.size).format() }
-    column("Max pay") { annuitiesDistribution().max.format() }
-    column("99p pay") { annuitiesDistribution().p99.format() }
-    column("95p pay") { annuitiesDistribution().p95.format() }
-    column("90p pay") { annuitiesDistribution().p90.format() }
+    column("Max pay") { annuitiesDistribution.max.format() }
+    column("99p pay") { annuitiesDistribution.p99.format() }
+    column("95p pay") { annuitiesDistribution.p95.format() }
+    column("90p pay") { annuitiesDistribution.p90.format() }
 }
 
 private val YearTable = table<MortgageYearSummary> {

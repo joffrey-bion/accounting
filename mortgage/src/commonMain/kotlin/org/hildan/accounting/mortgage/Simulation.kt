@@ -78,7 +78,7 @@ data class MortgageSimulation(
 
     val totalPayments: Amount = monthlyPayments.sumOf { it.total }
 
-    fun annuitiesDistribution(): Distribution = monthlyPayments.map { it.total }.distribution()
+    val annuitiesDistribution: Distribution = monthlyPayments.map { it.total }.distribution()
 
     fun summarizeYears() = monthlyPayments
         .groupingBy { it.date.year }
