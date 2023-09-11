@@ -101,18 +101,56 @@ class MoneyTest {
     }
 
     @Test
-    fun divide() {
+    fun divide_by_int() {
         assertEquals(0.eur, 0.eur / 3)
         assertEquals(5.eur, 15.eur / 3)
-        assertEquals("33.3333".eur, 100.eur / 3) // scale is 4, with ROUND_HALF_AWAY_FROM_ZERO
         assertEquals("0.15".eur, 15.eur / 100)
         assertEquals((-16).eur, (-128).eur / 8)
+        assertEquals((-16).eur, 128.eur / -8)
+        assertEquals(16.eur, (-128).eur / -8)
+    }
+
+    @Test
+    fun divide_by_int_infiniteDecimals() {
+        // 30 digits (regardless of before/after the decimal point) because our decimal format has a precision of 30
+        assertEquals("3.33333333333333333333333333333".eur, 10.eur / 3)
+        assertEquals("33.3333333333333333333333333333".eur, 100.eur / 3)
+        assertEquals("333.333333333333333333333333333".eur, 1000.eur / 3)
     }
 
     @Test
     fun divideByZero_shouldThrow() {
         assertFailsWith<ArithmeticException> {
            42.eur / 0
+        }
+    }
+
+    @Test
+    fun divide_by_bigger_amount() {
+        assertEquals(0.pct, 0.eur / 3.eur)
+        assertEquals(100.pct, 1.eur / 1.eur)
+        assertEquals(100.pct, 123.eur / 123.eur)
+        assertEquals(100.pct, "1.23".eur / "1.23".eur)
+        assertEquals(20.pct, 3.eur / 15.eur)
+        assertEquals(15.pct, 15.eur / 100.eur)
+        assertEquals("1.5".pct, "1.5".eur / 100.eur)
+        assertEquals("1.5".pct, 15.eur / 1000.eur)
+        assertEquals((-50).pct, (-128).eur / 256.eur)
+        assertEquals(50.pct, 128.eur / 256.eur)
+    }
+
+    @Test
+    fun divide_by_smaller_amount() {
+        assertEquals(200.pct, 2.eur / 1.eur)
+        assertEquals(12300.pct, 123.eur / 1.eur)
+        assertEquals(300.pct, "3.6".eur / "1.2".eur)
+        assertEquals("120.5".pct, "1205".eur / 1000.eur)
+    }
+
+    @Test
+    fun divideByZeroAmount_shouldThrow() {
+        assertFailsWith<ArithmeticException> {
+            42.eur / 0.eur
         }
     }
 
