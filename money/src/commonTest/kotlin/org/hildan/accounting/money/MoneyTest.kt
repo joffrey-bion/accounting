@@ -117,7 +117,7 @@ class MoneyTest {
     }
 
     @Test
-    fun format_defaultNumberOfDigits() {
+    fun format_defaultScale_gives2digits() {
         assertEquals("42.00", 42.eur.format())
         assertEquals("-42.00", (-42).eur.format())
         assertEquals("1.23", "1.2345".eur.format())
@@ -125,18 +125,18 @@ class MoneyTest {
     }
 
     @Test
-    fun format_customNumberOfDigits() {
-        assertEquals("1", "1.2356".eur.format(nDigitsAfterDot = 0))
-        assertEquals("1.2", "1.2356".eur.format(nDigitsAfterDot = 1))
-        assertEquals("1.24", "1.2356".eur.format(nDigitsAfterDot = 2))
-        assertEquals("1.236", "1.2356".eur.format(nDigitsAfterDot = 3))
-        assertEquals("1.2356", "1.2356".eur.format(nDigitsAfterDot = 4))
+    fun format_customScale() {
+        assertEquals("1", "1.2356".eur.format(scale = 0))
+        assertEquals("1.2", "1.2356".eur.format(scale = 1))
+        assertEquals("1.24", "1.2356".eur.format(scale = 2))
+        assertEquals("1.236", "1.2356".eur.format(scale = 3))
+        assertEquals("1.2356", "1.2356".eur.format(scale = 4))
     }
 
     @Test
     fun format_failsWithNegativeNumberOfDigits() {
         assertFailsWith<ArithmeticException> {
-            123.eur.format(nDigitsAfterDot = -1)
+            123.eur.format(scale = -1)
         }
     }
 }

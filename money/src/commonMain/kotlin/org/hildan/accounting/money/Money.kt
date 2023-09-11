@@ -32,15 +32,18 @@ value class Amount internal constructor(private val value: BigDecimal) : Compara
 
     override fun toString(): String = "Amount(${value.toStringExpanded()})"
 
-    fun format(nDigitsAfterDot: Int = 2): String {
+    /**
+     * Formats this amount with the given [scale] (number of digits after the decimal point).
+     */
+    fun format(scale: Int = 2): String {
         val rounded = value.roundToDigitPositionAfterDecimalPoint(
-            digitPosition = nDigitsAfterDot.toLong(),
+            digitPosition = scale.toLong(),
             roundingMode = RoundingMode.ROUND_HALF_AWAY_FROM_ZERO,
         )
         val formattedRaw = rounded.toStringExpanded()
         return when (val nDigits = formattedRaw.substringAfter('.', missingDelimiterValue = "").length) {
-            0 -> if (nDigitsAfterDot == 0) formattedRaw else "$formattedRaw." + "0".repeat(nDigitsAfterDot)
-            in 1..<nDigitsAfterDot -> formattedRaw + "0".repeat(nDigitsAfterDot - nDigits)
+            0 -> if (scale == 0) formattedRaw else "$formattedRaw." + "0".repeat(scale)
+            in 1..<scale -> formattedRaw + "0".repeat(scale - nDigits)
             else -> formattedRaw
         }
     }
