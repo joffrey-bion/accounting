@@ -14,6 +14,7 @@ kotlin {
         val jsMain by getting {
             dependencies {
                 implementation(project(":mortgage"))
+                implementation(project(":chartskt-react"))
                 implementation(platform(libs.kotlin.wrappers.bom.get()))
                 implementation(libs.kotlin.wrappers.react.core)
                 implementation(libs.kotlin.wrappers.react.dom)
