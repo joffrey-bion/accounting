@@ -29,6 +29,12 @@ value class Amount private constructor(private val value: BigDecimal) : Comparab
     override fun toString(): String = "Amount(${value.toStringExpanded()})"
 
     /**
+     * Exposes this amount as a double value, with a potential loss of precision.
+     */
+    // using exactRequired=false because amounts have too much precision and the conversion fails in exact mode
+    fun doubleValue() = value.doubleValue(exactRequired = false)
+
+    /**
      * Formats this amount with the given [scale] (number of digits after the decimal point).
      */
     fun format(scale: Int = 2): String {
