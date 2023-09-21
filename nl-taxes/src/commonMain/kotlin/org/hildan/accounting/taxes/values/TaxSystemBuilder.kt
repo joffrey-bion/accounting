@@ -25,7 +25,7 @@ internal fun NLTaxParameters.toTaxSystem() = TaxSystem(
             bracket(rate = arko1_1 ?: error("arko1_1 was not set"), upTo = arkg1 ?: error("arkg1 was not set"))
             bracket(rate = arko2_1 ?: error("arko2_1 was not set"), upTo = arkg2 ?: error("arkg2 was not set"))
             bracket(rate = arko3_1 ?: error("arko3_1 was not set"), upTo = arkg3 ?: error("arkg3 was not set"))
-            bracket(rate = arka4_1 ?: error("arka4_1 was not set"), upTo = arkg4 ?: error("arkg4 was not set"))
+            bracket(rate = -(arka4_1 ?: error("arka4_1 was not set")), upTo = arkg4 ?: error("arkg4 was not set"))
         }
     )
 )
