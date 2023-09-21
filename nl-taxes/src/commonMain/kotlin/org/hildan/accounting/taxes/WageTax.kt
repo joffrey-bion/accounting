@@ -11,10 +11,10 @@ import org.hildan.accounting.taxes.brackets.BracketSet
  */
 class WageTax(
     private val brackets: BracketSet,
-    private val specialTaxRate: Fraction,
+    private val specialRewardsTaxRate: Fraction,
 ) {
-    fun onSalary(grossAnnualTaxableIncome: Amount): TaxItem {
-        val subItems = applyBrackets(grossAnnualTaxableIncome)
+    fun onSalary(grossAnnualTaxableSalary: Amount): TaxItem {
+        val subItems = applyBrackets(grossAnnualTaxableSalary)
         return TaxItem(
             name = "Wage tax",
             description = "The tax on the annual wages, calculated by applying different tax rates on different " +
@@ -41,8 +41,9 @@ class WageTax(
     fun onBonus(grossTaxableBonus: Amount): TaxItem = TaxItem(
         name = "Wage tax on bonus",
         description = null,
-        totalAmount = grossTaxableBonus * specialTaxRate,
-        details = "This tax is applied with the $specialTaxRate special tax rate (Bijzonder Tarief - BT)",
+        totalAmount = grossTaxableBonus * specialRewardsTaxRate,
+        details = "This tax is applied with the $specialRewardsTaxRate special reward tax rate (Bijzondere beloningen," +
+            " or Bijzonder Tarief - BT)",
         breakdown = null,
         type = TaxItemType.TAX,
     )

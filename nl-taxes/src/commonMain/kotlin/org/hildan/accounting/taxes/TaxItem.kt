@@ -72,7 +72,7 @@ data class TaxSubItem(
      */
     val amount: Amount,
     /**
-     * Details about why or how we get this amount (possibly used as a tooltip on the amount).
+     * Details about why or how we get this [amount] (possibly used as a tooltip on the amount).
      *
      * For example, for a wage tax, this could include information about how much of the salary fell into the tax
      * bracket that this sub item represents, and what the tax rate is for this tax bracket.

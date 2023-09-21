@@ -24,7 +24,7 @@ internal object NLTaxValues {
             b1_1 = "37.10".pct
             b2_1 = "37.10".pct
             b3_1 = "49.50".pct
-            specialTaxRate = "55.50".pct
+            specialRewardsTaxRate = "55.50".pct
 
             ahkm1_1 = 2837.eur
             ahkg1 = 21043.eur
@@ -45,7 +45,7 @@ internal object NLTaxValues {
             b1_1 = "37.07".pct
             b2_1 = "37.07".pct
             b3_1 = "49.50".pct
-            specialTaxRate = "55.36".pct
+            specialRewardsTaxRate = "55.36".pct
 
             ahkm1_1 = 2888.eur
             ahkg1 = 21316.eur
@@ -66,7 +66,7 @@ internal object NLTaxValues {
             b1_1 = "36.93".pct
             b2_1 = "36.93".pct
             b3_1 = "49.50".pct
-            specialTaxRate = "56.01".pct
+            specialRewardsTaxRate = "56.01".pct
 
             ahkm1_1 = 3070.eur
             ahkg1 = 22660.eur

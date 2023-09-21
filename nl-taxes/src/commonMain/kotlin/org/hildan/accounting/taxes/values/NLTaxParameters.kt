@@ -44,5 +44,5 @@ internal class NLTaxParameters {
     var arkg4: Amount? = null
 
     /** Tax rate applied to bonuses. This value is taken from a separate table. */
-    var specialTaxRate: Fraction? = null
+    var specialRewardsTaxRate: Fraction? = null
 }

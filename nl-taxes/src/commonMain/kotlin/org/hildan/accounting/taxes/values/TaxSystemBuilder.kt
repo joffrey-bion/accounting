@@ -13,7 +13,7 @@ internal fun NLTaxParameters.toTaxSystem() = TaxSystem(
             bracket(rate = b2_1 ?: error("b2_1 was not set"), upTo = a3_1 ?: error("a3_1 was not set"))
             lastBracket(rate = b3_1 ?: error("b3_1 was not set"))
         },
-        specialTaxRate = specialTaxRate ?: error("specialTaxRate was not set"),
+        specialRewardsTaxRate = specialRewardsTaxRate ?: error("specialTaxRate was not set"),
     ),
     generalTaxCredit = GeneralTaxCredit(
         maxCredit = ahkm1_1 ?: error("specialTaxRate was not set"),

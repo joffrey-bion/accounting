@@ -1,9 +1,8 @@
 package org.hildan.accounting.taxes
 
 import org.hildan.accounting.money.Amount
+import org.hildan.accounting.money.pct
 import org.hildan.accounting.money.sumOf
-import org.hildan.accounting.taxes.deductions.TaxDeduction
-import org.hildan.accounting.taxes.deductions.applyTo
 
 data class Profile(
     /**
@@ -15,12 +14,16 @@ data class Profile(
      */
     val grossAnnualBonus: Amount = Amount.ZERO,
     /**
+     * Whether the person is eligible to the 30% rule.
+     */
+    val rule30p: Boolean,
+    /**
      * The tax deductions that the user is eligible to.
      */
-    val taxDeductions: List<TaxDeduction>,
+    val taxDeductions: List<TaxSubItem>,
 ) {
-    val appliedTaxDeductionsOnSalary = taxDeductions.applyTo(grossAnnualSalary)
-    val appliedTaxDeductionsOnBonus = taxDeductions.filterIsInstance<TaxDeduction.Multiplicative>().applyTo(grossAnnualBonus)
-    val grossAnnualTaxableSalary = grossAnnualSalary - appliedTaxDeductionsOnSalary.sumOf { it.effectiveDiscount }
-    val grossAnnualTaxableBonus = grossAnnualBonus - appliedTaxDeductionsOnBonus.sumOf { it.effectiveDiscount }
+    val grossAnnualTaxableSalary = grossAnnualSalary.reduce30p() - taxDeductions.sumOf { it.amount }
+    val grossAnnualTaxableBonus = grossAnnualBonus.reduce30p()
+
+    private fun Amount.reduce30p() = if (rule30p) this * 70.pct else this
 }

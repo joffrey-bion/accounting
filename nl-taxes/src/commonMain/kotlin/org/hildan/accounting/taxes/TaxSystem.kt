@@ -1,8 +1,8 @@
 package org.hildan.accounting.taxes
 
 import org.hildan.accounting.money.Amount
+import org.hildan.accounting.money.pct
 import org.hildan.accounting.money.sumOf
-import org.hildan.accounting.taxes.deductions.AppliedTaxDeduction
 import org.hildan.accounting.taxes.values.NLTaxValues
 import org.hildan.accounting.taxes.values.toTaxSystem
 
@@ -12,11 +12,12 @@ class TaxSystem(
     val laborTaxCredit: LaborTaxCredit,
 ) {
     fun computeTaxes(profile: Profile): List<TaxItem> {
-        val salaryTaxItem = wageTax.onSalary(profile.grossAnnualTaxableSalary)
+        val grossAnnualTaxableSalary = profile.grossAnnualTaxableSalary
+        val salaryTaxItem = wageTax.onSalary(grossAnnualTaxableSalary)
         val bonusTaxItem = wageTax.onBonus(profile.grossAnnualTaxableBonus)
 
-        val generalTaxCreditItem = generalTaxCredit.computeFor(profile.grossAnnualTaxableSalary)
-        val laborTaxCreditItem = laborTaxCredit.computeFor(profile.grossAnnualTaxableSalary)
+        val generalTaxCreditItem = generalTaxCredit.computeFor(grossAnnualTaxableSalary)
+        val laborTaxCreditItem = laborTaxCredit.computeFor(grossAnnualTaxableSalary)
         val totalTaxCreditsItem = TaxItem(
             name = "Total tax credits",
             totalAmount = generalTaxCreditItem.totalAmount + laborTaxCreditItem.totalAmount,
@@ -30,11 +31,18 @@ class TaxSystem(
                 totalAmount = profile.grossAnnualSalary,
                 type = TaxItemType.INCOME,
             ))
-            add(taxDeductionsOnSalary(profile))
+            add(TaxItem(
+                name = "Tax deductions on salary",
+                description = "Amounts of money subtracted from the gross salary to get the taxable salary",
+                totalAmount = profile.taxDeductions.sumOf { it.amount },
+                details = null,
+                breakdown = profile.taxDeductions,
+                type = TaxItemType.TAX_DEDUCTION,
+            ))
             add(TaxItem(
                 name = "Taxable gross annual salary",
                 description = "The part of the gross salary to which taxes are applied (after tax deductions)",
-                totalAmount = profile.grossAnnualTaxableSalary,
+                totalAmount = grossAnnualTaxableSalary,
                 type = TaxItemType.INCOME,
             ))
             add(salaryTaxItem)
@@ -75,24 +83,26 @@ class TaxSystem(
                     type = TaxItemType.INCOME,
                 )
             )
-            add(
-                TaxItem(
-                    name = "Tax deductions on bonus",
-                    description = "Amounts of money subtracted from the gross bonus to get the taxable bonus",
-                    totalAmount = profile.appliedTaxDeductionsOnBonus.sumOf { it.effectiveDiscount },
-                    details = null,
-                    breakdown = profile.appliedTaxDeductionsOnBonus.map { it.toTaxSubItem() },
-                    type = TaxItemType.TAX_DEDUCTION,
+            if (profile.rule30p) {
+                add(
+                    TaxItem(
+                        name = "30% ruling deduction on bonus",
+                        description = "Makes the taxable bonus 30% smaller due to the 30% rule eligibility",
+                        totalAmount = profile.grossAnnualBonus * 30.pct,
+                        details = "30% of the gross bonus of ${profile.grossAnnualBonus}",
+                        breakdown = null,
+                        type = TaxItemType.TAX_DEDUCTION,
+                    )
                 )
-            )
-            add(
-                TaxItem(
-                    name = "Taxable gross bonus",
-                    description = "The part of the gross bonus to which taxes are applied (after tax deductions)",
-                    totalAmount = profile.grossAnnualTaxableBonus,
-                    type = TaxItemType.INCOME,
+                add(
+                    TaxItem(
+                        name = "Taxable gross bonus",
+                        description = "The part of the gross bonus to which taxes are applied (after tax deductions)",
+                        totalAmount = profile.grossAnnualBonus * 70.pct,
+                        type = TaxItemType.INCOME,
+                    )
                 )
-            )
+            }
             add(bonusTaxItem)
             add(
                 TaxItem(
@@ -105,23 +115,7 @@ class TaxSystem(
         }
     }
 
-    private fun taxDeductionsOnSalary(profile: Profile): TaxItem = TaxItem(
-        name = "Tax deductions on salary",
-        description = "Amounts of money subtracted from the gross salary to get the taxable salary",
-        totalAmount = profile.appliedTaxDeductionsOnSalary.sumOf { it.effectiveDiscount },
-        details = null,
-        breakdown = profile.appliedTaxDeductionsOnSalary.map { it.toTaxSubItem() },
-        type = TaxItemType.TAX_DEDUCTION,
-    )
-
     companion object {
         fun forYear(year: Int) = NLTaxValues.forYear(year).toTaxSystem()
     }
 }
-
-private fun AppliedTaxDeduction.toTaxSubItem() = TaxSubItem(
-    name = deduction.name,
-    description = deduction.explanation,
-    amount = effectiveDiscount,
-    details = null,
-)
