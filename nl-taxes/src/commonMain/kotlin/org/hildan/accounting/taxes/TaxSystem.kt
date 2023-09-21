@@ -14,15 +14,12 @@ class TaxSystem(
     fun computeTaxes(profile: Profile): List<TaxItem> {
         val grossAnnualTaxableSalary = profile.grossAnnualTaxableSalary
         val salaryTaxItem = wageTax.onSalary(grossAnnualTaxableSalary)
-        val bonusTaxItem = wageTax.onBonus(profile.grossAnnualTaxableBonus)
 
         val generalTaxCreditItem = generalTaxCredit.computeFor(grossAnnualTaxableSalary)
         val laborTaxCreditItem = laborTaxCredit.computeFor(grossAnnualTaxableSalary)
-        val totalTaxCreditsItem = TaxItem(
-            name = "Total tax credits",
-            totalAmount = generalTaxCreditItem.totalAmount + laborTaxCreditItem.totalAmount,
-            type = TaxItemType.TAX_CREDIT,
-        )
+        val totalTaxCredits = generalTaxCreditItem.totalAmount + laborTaxCreditItem.totalAmount
+        val effectiveSalaryTax = salaryTaxItem.totalAmount - totalTaxCredits
+        val netAnnualSalary = profile.grossAnnualSalary - salaryTaxItem.totalAmount + totalTaxCredits
 
         return buildList {
             add(TaxItem(
@@ -60,34 +57,41 @@ class TaxSystem(
                 type = TaxItemType.INCOME,
             ))
             add(salaryTaxItem)
-
-            val bonusItems = getBonusItems(profile, bonusTaxItem)
-            if (bonusItems != null) {
-                addAll(bonusItems)
-                add(
-                    TaxItem(
-                        name = "Total income tax",
-                        totalAmount = salaryTaxItem.totalAmount + bonusTaxItem.totalAmount,
-                        type = TaxItemType.TAX,
-                    )
-                )
-            }
             add(generalTaxCreditItem)
             add(laborTaxCreditItem)
-            add(totalTaxCreditsItem)
             add(TaxItem(
-                name = "Net annual salary",
-                description = "The salary after tax and tax credits",
-                totalAmount = profile.grossAnnualSalary - salaryTaxItem.totalAmount + totalTaxCreditsItem.totalAmount,
+                name = "Total tax credits",
+                totalAmount = totalTaxCredits,
+                type = TaxItemType.TAX_CREDIT,
+            ))
+            add(TaxItem(
+                name = "Effective annual tax on salary",
+                description = "The total tax on salary minus all tax credits",
+                totalAmount = effectiveSalaryTax,
                 type = TaxItemType.INCOME,
             ))
+            add(TaxItem(
+                name = "Net annual salary",
+                description = "The annual salary after tax and tax credits",
+                totalAmount = netAnnualSalary,
+                type = TaxItemType.INCOME,
+            ))
+            add(TaxItem(
+                name = "Net monthly salary (base)",
+                description = "The monthly salary after tax and tax credits, but without benefits",
+                totalAmount = netAnnualSalary / 12,
+                type = TaxItemType.INCOME,
+            ))
+
+            addAll(getBonusItems(profile))
         }
     }
 
-    private fun getBonusItems(profile: Profile, bonusTaxItem: TaxItem): List<TaxItem>? {
+    private fun getBonusItems(profile: Profile): List<TaxItem> {
         if (profile.grossAnnualBonus == Amount.ZERO) {
-            return null
+            return emptyList()
         }
+        val bonusTaxItem = wageTax.onBonus(profile.grossAnnualTaxableBonus)
         return buildList {
             add(
                 TaxItem(

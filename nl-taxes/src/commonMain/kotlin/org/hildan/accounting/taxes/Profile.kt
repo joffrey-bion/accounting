@@ -20,7 +20,7 @@ data class Profile(
     /**
      * The tax deductions that the user is eligible to.
      */
-    val taxDeductions: List<TaxSubItem>,
+    val taxDeductions: List<TaxSubItem> = emptyList(),
 ) {
     val grossAnnualTaxableSalary = grossAnnualSalary.reduce30p() - taxDeductions.sumOf { it.amount }
     val grossAnnualTaxableBonus = grossAnnualBonus.reduce30p()
