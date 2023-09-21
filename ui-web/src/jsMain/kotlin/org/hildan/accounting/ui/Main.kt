@@ -1,11 +1,13 @@
 package org.hildan.accounting.ui
 
-import org.hildan.accounting.ui.components.*
-import react.*
-import react.dom.client.*
-import web.dom.*
-import web.html.*
-import web.window.*
+import org.hildan.accounting.ui.components.Application
+import org.hildan.accounting.ui.global.ThemeModule
+import react.StrictMode
+import react.create
+import react.dom.client.createRoot
+import web.dom.document
+import web.html.HTMLElement
+import web.window.window
 
 fun main() {
     window.onload = {
@@ -24,7 +26,9 @@ private fun init() {
 
 private fun renderRoot(rootElement: HTMLElement) {
     val strictApp = StrictMode.create {
-        Application()
+        ThemeModule {
+            Application()
+        }
     }
     createRoot(rootElement).render(strictApp)
 }
