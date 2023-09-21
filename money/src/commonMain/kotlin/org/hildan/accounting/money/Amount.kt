@@ -22,7 +22,18 @@ value class Amount private constructor(private val value: BigDecimal) : Comparab
     operator fun div(quantity: Int) = Amount(value / quantity.toBigDecimalForCurrencyOps())
     operator fun div(other: Amount) = Fraction(value / other.value)
 
-    fun coerceAtLeast(min: Amount) = Amount(value.coerceAtLeast(min.value))
+    /**
+     * Rounds this amount to the nearest integer, rounding ties away from zero.
+     */
+    fun round() = roundToScale(scale = 0)
+
+    /**
+     * Rounds this amount to the [scale] digits after the decimal point, rounding ties away from zero.
+     */
+    fun roundToScale(scale: Int) = Amount(value.roundToDigitPositionAfterDecimalPoint(
+        digitPosition = scale.toLong(),
+        roundingMode = RoundingMode.ROUND_HALF_AWAY_FROM_ZERO,
+    ))
 
     override fun compareTo(other: Amount): Int = value.compareTo(other.value)
 
