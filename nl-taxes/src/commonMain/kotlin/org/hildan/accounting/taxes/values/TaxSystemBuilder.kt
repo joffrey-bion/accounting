@@ -6,7 +6,8 @@ import org.hildan.accounting.taxes.TaxSystem
 import org.hildan.accounting.taxes.WageTax
 import org.hildan.accounting.taxes.brackets.buildBrackets
 
-internal fun NLTaxParameters.toTaxSystem() = TaxSystem(
+internal fun NLTaxParameters.toTaxSystem(year: Int) = TaxSystem(
+    year = year,
     wageTax = WageTax(
         brackets = buildBrackets {
             bracket(rate = b1_1 ?: error("b1_1 was not set"), upTo = a2_1 ?: error("a2_1 was not set"))

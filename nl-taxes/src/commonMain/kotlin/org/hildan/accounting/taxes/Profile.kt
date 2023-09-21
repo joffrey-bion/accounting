@@ -10,10 +10,6 @@ data class Profile(
      */
     val grossAnnualSalary: Amount,
     /**
-     * The gross annual bonus.
-     */
-    val grossAnnualBonus: Amount = Amount.ZERO,
-    /**
      * Whether the person is eligible to the 30% rule.
      */
     val rule30p: Boolean,
@@ -23,7 +19,6 @@ data class Profile(
     val taxDeductions: List<TaxSubItem> = emptyList(),
 ) {
     val grossAnnualTaxableSalary = grossAnnualSalary.reduce30p() - taxDeductions.sumOf { it.amount }
-    val grossAnnualTaxableBonus = grossAnnualBonus.reduce30p()
 
     private fun Amount.reduce30p() = if (rule30p) this * 70.pct else this
 }

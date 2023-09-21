@@ -7,11 +7,12 @@ import org.hildan.accounting.taxes.values.NLTaxValues
 import org.hildan.accounting.taxes.values.toTaxSystem
 
 class TaxSystem(
+    val year: Int,
     val wageTax: WageTax,
     val generalTaxCredit: GeneralTaxCredit,
     val laborTaxCredit: LaborTaxCredit,
 ) {
-    fun computeTaxes(profile: Profile): List<TaxItem> {
+    fun computeAnnualIncomeTax(profile: Profile): List<TaxItem> {
         val grossAnnualTaxableSalary = profile.grossAnnualTaxableSalary
         val salaryTaxItem = wageTax.onSalary(grossAnnualTaxableSalary)
 
@@ -82,22 +83,18 @@ class TaxSystem(
                 totalAmount = netAnnualSalary / 12,
                 type = TaxItemType.INCOME,
             ))
-
-            addAll(getBonusItems(profile))
         }
     }
 
-    private fun getBonusItems(profile: Profile): List<TaxItem> {
-        if (profile.grossAnnualBonus == Amount.ZERO) {
-            return emptyList()
-        }
-        val bonusTaxItem = wageTax.onBonus(profile.grossAnnualTaxableBonus)
+    fun computeBonusTax(profile: Profile, grossAnnualBonus: Amount): List<TaxItem> {
+        val grossAnnualTaxableBonus = if (profile.rule30p) grossAnnualBonus * 70.pct else grossAnnualBonus
+        val bonusTaxItem = wageTax.onBonus(grossAnnualTaxableBonus)
         return buildList {
             add(
                 TaxItem(
                     name = "Gross annual bonus",
                     description = "An annual bonus received from the employer",
-                    totalAmount = profile.grossAnnualBonus,
+                    totalAmount = grossAnnualBonus,
                     type = TaxItemType.INCOME,
                 )
             )
@@ -106,8 +103,8 @@ class TaxSystem(
                     TaxItem(
                         name = "30% ruling deduction on bonus",
                         description = "Makes the taxable bonus 30% smaller due to the 30% rule eligibility",
-                        totalAmount = profile.grossAnnualBonus * 30.pct,
-                        details = "30% of the gross bonus of ${profile.grossAnnualBonus.format(scale = 0)}",
+                        totalAmount = grossAnnualBonus * 30.pct,
+                        details = "30% of the gross bonus of ${grossAnnualBonus.format(scale = 0)}",
                         breakdown = null,
                         type = TaxItemType.TAX_DEDUCTION,
                     )
@@ -116,7 +113,7 @@ class TaxSystem(
                     TaxItem(
                         name = "Taxable gross bonus",
                         description = "The part of the gross bonus to which taxes are applied (after tax deductions)",
-                        totalAmount = profile.grossAnnualBonus * 70.pct,
+                        totalAmount = grossAnnualTaxableBonus,
                         type = TaxItemType.INCOME,
                     )
                 )
@@ -126,7 +123,7 @@ class TaxSystem(
                 TaxItem(
                     name = "Net bonus",
                     description = "The bonus after tax",
-                    totalAmount = profile.grossAnnualBonus - bonusTaxItem.totalAmount,
+                    totalAmount = grossAnnualBonus - bonusTaxItem.totalAmount,
                     type = TaxItemType.INCOME,
                 )
             )
@@ -134,6 +131,6 @@ class TaxSystem(
     }
 
     companion object {
-        fun forYear(year: Int) = NLTaxValues.forYear(year).toTaxSystem()
+        fun forYear(year: Int) = NLTaxValues.forYear(year).toTaxSystem(year)
     }
 }
