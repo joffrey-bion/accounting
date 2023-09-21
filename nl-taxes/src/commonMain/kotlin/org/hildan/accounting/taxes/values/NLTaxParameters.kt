@@ -43,6 +43,10 @@ internal class NLTaxParameters {
     /** Labor tax credit (ARK) bracket 4 upper bound (inclusive) */
     var arkg4: Amount? = null
 
+    /*
+     FIXME: this is flawed: we're only taking the rate for a specific range of salary but the tool should support
+      every possible salary. We should instead get all rates for all salary ranges.
+     */
     /** Tax rate applied to bonuses. This value is taken from a separate table. */
     var specialRewardsTaxRate: Fraction? = null
 }

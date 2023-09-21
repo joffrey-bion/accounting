@@ -4,17 +4,9 @@ import org.hildan.accounting.money.eur
 import org.hildan.accounting.money.pct
 
 /**
- * NL tax rates taken from the government's website:
- * https://www.belastingdienst.nl/wps/wcm/connect/bldcontenten/belastingdienst/business/payroll_taxes/you_are_not_established_in_the_netherlands_are_you_required_to_withhold_payroll_taxes/when_you_are_going_to_withhold_payroll_taxes/calculating_payroll_taxes/rates/
- *
  * These values are defined by the Dutch government and change every year.
- * They can be found in a PDF document "Calculation rules for the automated payroll administration".
- * The PDF documents can be found by following these instructions:
  *
- *  1. Go to https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/themaoverstijgend/brochures_en_publicaties/brochures_en_publicaties_werkgever
- *  2. Select "werkgever" (employer, because it's for employers to compute the wage to give to employees)
- *  3. Select "Loonbelastingtabellen" (wage tax tables)
- *  4. Click the link for the desired year
+ * Check out the README of the project for how to update them.
  */
 internal object NLTaxValues {
     fun forYear(year: Int) = when(year) {
