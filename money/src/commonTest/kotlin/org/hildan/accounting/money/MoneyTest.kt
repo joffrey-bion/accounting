@@ -156,10 +156,10 @@ class MoneyTest {
 
     @Test
     fun format_defaultScale_gives2digits() {
-        assertEquals("42.00", 42.eur.format())
-        assertEquals("-42.00", (-42).eur.format())
-        assertEquals("1.23", "1.2345".eur.format())
-        assertEquals("1.24", "1.2356".eur.format())
+        assertEquals("42.00", 42.eur.format(2))
+        assertEquals("-42.00", (-42).eur.format(2))
+        assertEquals("1.23", "1.2345".eur.format(2))
+        assertEquals("1.24", "1.2356".eur.format(2))
     }
 
     @Test

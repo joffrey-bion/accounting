@@ -20,7 +20,10 @@ value class Fraction internal constructor(internal val value: BigDecimal) : Comp
 
     override fun compareTo(other: Fraction): Int = value.compareTo(other.value)
 
-    override fun toString(): String = (value * 100).toStringExpanded() + "%"
+    fun formatRate(): String = value.toStringExpanded()
+    fun formatPercent(): String = (value * 100).toStringExpanded()
+
+    override fun toString(): String = formatPercent() + "%"
 
     companion object {
         val ZERO = Fraction("0")

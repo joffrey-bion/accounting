@@ -46,9 +46,14 @@ value class Amount private constructor(private val value: BigDecimal) : Comparab
     fun doubleValue() = value.doubleValue(exactRequired = false)
 
     /**
-     * Formats this amount with the given [scale] (number of digits after the decimal point).
+     * Formats this amount as a string without any rounding.
      */
-    fun format(scale: Int = 2): String {
+    fun format(): String = value.toStringExpanded()
+
+    /**
+     * Formats this amount rounded to the given [scale] (number of digits after the decimal point).
+     */
+    fun format(scale: Int): String {
         val rounded = value.roundToDigitPositionAfterDecimalPoint(
             digitPosition = scale.toLong(),
             roundingMode = RoundingMode.ROUND_HALF_AWAY_FROM_ZERO,

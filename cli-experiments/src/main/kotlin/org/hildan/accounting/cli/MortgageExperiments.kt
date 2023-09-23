@@ -80,29 +80,29 @@ private fun mortgage(amount: Amount) = Mortgage(
 
 private val SummaryTable = table<MortgageSimulation> {
     column("Sim name", dataAlign = Align.LEFT) { name }
-    column("Total loan") { mortgage.amount.format() }
-    column("Own funds") { ownFunds.format() }
-    column("Total interest") { totalInterest.format() }
-    column("Avg pay") { (monthlyPayments.sumOf { it.total } / monthlyPayments.size).format() }
-    column("Max pay") { annuitiesDistribution.max.format() }
-    column("99p pay") { annuitiesDistribution.p99.format() }
-    column("95p pay") { annuitiesDistribution.p95.format() }
-    column("90p pay") { annuitiesDistribution.p90.format() }
+    column("Total loan") { mortgage.amount.format(2) }
+    column("Own funds") { ownFunds.format(2) }
+    column("Total interest") { totalInterest.format(2) }
+    column("Avg pay") { (monthlyPayments.sumOf { it.total } / monthlyPayments.size).format(2) }
+    column("Max pay") { annuitiesDistribution.max.format(2) }
+    column("99p pay") { annuitiesDistribution.p99.format(2) }
+    column("95p pay") { annuitiesDistribution.p95.format(2) }
+    column("90p pay") { annuitiesDistribution.p90.format(2) }
 }
 
 private val YearTable = table<MortgageYearSummary> {
     column("Date") { year }
     column("N") { nMonths }
-    column("Balance") { balanceBefore.format() }
-    column("Avg Red.") { avgMonthlyRedemption.format() }
-    column("Avg Int.") { avgMonthlyInterest.format() }
-    column("Avg Pay.") { avgMonthlyPayment.format() }
+    column("Balance") { balanceBefore.format(2) }
+    column("Avg Red.") { avgMonthlyRedemption.format(2) }
+    column("Avg Int.") { avgMonthlyInterest.format(2) }
+    column("Avg Pay.") { avgMonthlyPayment.format(2) }
 }
 
 private val MonthTable = table<MortgagePayment> {
     column("Date") { date }
-    column("Balance") { balanceBefore.format() }
-    column("Redemption") { redemption.format() }
-    column("Interest") { interest.format() }
-    column("Total") { total.format() }
+    column("Balance") { balanceBefore.format(2) }
+    column("Redemption") { redemption.format(2) }
+    column("Interest") { interest.format(2) }
+    column("Total") { total.format(2) }
 }
