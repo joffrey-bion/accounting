@@ -13,8 +13,8 @@ data class Property(
      * The value of an existing house/apartment is independent of its price. The house is evaluated to determine the
      * WOZ value.
      *
-     * For a new build purchase, there is no valuation of the property, and the WOZ value is set to the purchase price,
-     * including options/extra work (and subtracting the discarded work).
+     * For a new build purchase, there is no valuation of the property, and the WOZ value is usually set to the
+     * purchase price, including options/extra work (and subtracting the discarded work).
      */
     val wozValue: Amount,
     /**
@@ -24,6 +24,11 @@ data class Property(
      */
     val installments: List<Payment>,
 ) {
+    /**
+     * The total purchase price of this property, which is the sum of all installments.
+     */
+    val price: Amount = installments.sumOf { it.amount }
+
     companion object {
         /**
          * An existing house or apartment, bought with the given [purchase] payment, and with a given [wozValue].

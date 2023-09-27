@@ -24,20 +24,20 @@ data class SimulationSettings(
  * Runs this simulation assuming a linear mortgage type.
  */
 fun SimulationSettings.simulateLinear(): SimulationResult {
-    val propertyValue = property.wozValue
     val billsPerMonth = property.installments.groupBy({ it.date }, { it.amount })
     val extraRedemptionsPerMonth = mortgage.extraRedemptions.groupBy({ it.date }, { it.amount })
     val payments = mutableListOf<MortgagePayment>()
 
     // we subtract the value because it will be added gradually through bills
-    var mortgageBalance = mortgage.amount - propertyValue
+    var mortgageBalance = mortgage.amount - property.price
     mortgage.monthsSequence().forEach { month ->
         val billsThisMonth = billsPerMonth[month] ?: emptyList()
         mortgageBalance += billsThisMonth.sum()
 
         val balanceBefore = mortgageBalance
 
-        val effectiveAnnualRate = mortgage.annualInterestRate.at(currentLtvRatio = mortgageBalance / propertyValue)
+        val currentLtvRatio = mortgageBalance / property.wozValue
+        val effectiveAnnualRate = mortgage.annualInterestRate.at(currentLtvRatio = currentLtvRatio)
         val interest = mortgageBalance.coerceAtLeast(Amount.ZERO) * effectiveAnnualRate / 12
 
         val extraRedemptionsThisMonth = extraRedemptionsPerMonth[month] ?: emptyList()
