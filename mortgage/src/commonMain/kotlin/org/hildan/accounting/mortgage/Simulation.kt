@@ -3,47 +3,58 @@ package org.hildan.accounting.mortgage
 import org.hildan.accounting.money.*
 
 /**
- * Simulates the reimbursement of this mortgage over its duration, for the purchase of the given [property].
+ * Settings for a simulation.
  */
-fun Mortgage.simulateLinear(simName: String, property: Property): MortgageSimulation {
+data class SimulationSettings(
+    /**
+     * A convenient name to refer to this simulation.
+     */
+    val simulationName: String,
+    /**
+     * The mortgage settings for this simulation.
+     */
+    val mortgage: Mortgage,
+    /**
+     * Information about the property being bought.
+     */
+    val property: Property,
+)
+
+/**
+ * Runs this simulation assuming a linear mortgage type.
+ */
+fun SimulationSettings.simulateLinear(): SimulationResult {
     val propertyValue = property.wozValue
     val billsPerMonth = property.installments.groupBy({ it.date }, { it.amount })
-    val extraRedemptionsPerMonth = extraRedemptions.groupBy({ it.date }, { it.amount })
-
+    val extraRedemptionsPerMonth = mortgage.extraRedemptions.groupBy({ it.date }, { it.amount })
     val payments = mutableListOf<MortgagePayment>()
 
     // we subtract the value because it will be added gradually through bills
-    var mortgageBalance = amount - propertyValue
-
-    monthsSequence().forEach { month ->
+    var mortgageBalance = mortgage.amount - propertyValue
+    mortgage.monthsSequence().forEach { month ->
         val billsThisMonth = billsPerMonth[month] ?: emptyList()
         mortgageBalance += billsThisMonth.sum()
 
         val balanceBefore = mortgageBalance
 
-        val effectiveAnnualRate = annualInterestRate.at(currentLtvRatio = mortgageBalance / propertyValue)
+        val effectiveAnnualRate = mortgage.annualInterestRate.at(currentLtvRatio = mortgageBalance / propertyValue)
         val interest = mortgageBalance.coerceAtLeast(Amount.ZERO) * effectiveAnnualRate / 12
 
         val extraRedemptionsThisMonth = extraRedemptionsPerMonth[month] ?: emptyList()
         val extraRedemption = extraRedemptionsThisMonth.sum()
         mortgageBalance -= extraRedemption
-        mortgageBalance -= linearMonthlyRedemption
+        mortgageBalance -= mortgage.linearMonthlyRedemption
 
         val payment = MortgagePayment(
             date = month,
-            redemption = linearMonthlyRedemption,
+            redemption = mortgage.linearMonthlyRedemption,
             extraRedemption = extraRedemption,
             interest = interest,
             balanceBefore = balanceBefore,
         )
         payments.add(payment)
     }
-    return MortgageSimulation(
-        name = simName,
-        mortgage = this,
-        property = property,
-        monthlyPayments = payments,
-    )
+    return SimulationResult(settings = this, monthlyPayments = payments)
 }
 
 private fun Mortgage.monthsSequence(): Sequence<AbsoluteMonth> {
@@ -51,28 +62,28 @@ private fun Mortgage.monthsSequence(): Sequence<AbsoluteMonth> {
     return generateSequence(startMonth) { it.next() }.takeWhile { it != redemptionDay }
 }
 
-data class MortgageSimulation(
+data class SimulationResult(
     /**
-     * The name of this simulation, for easier visualization.
+     * The settings of this simulation.
      */
-    val name: String,
+    val settings: SimulationSettings,
     /**
-     * The mortgage that was simulated.
-     */
-    val mortgage: Mortgage,
-    /**
-     * The property bought in this simulation.
-     */
-    val property: Property,
-    /**
-     * The list of payments made to repay this mortgage.
+     * The list of payments made to repay the mortgage.
      */
     val monthlyPayments: List<MortgagePayment>,
 ) {
     /**
+     * The name of this simulation, for easier visualization.
+     */
+    val name: String get() = settings.simulationName
+    /**
+     * The amount borrowed from the bank.
+     */
+    val mortgageAmount: Amount get() = settings.mortgage.amount
+    /**
      * The personal money invested at the start.
      */
-    val ownFunds: Amount = property.wozValue - mortgage.amount
+    val ownFunds: Amount = settings.property.wozValue - mortgageAmount
 
     val totalInterest: Amount = monthlyPayments.sumOf { it.interest }
 

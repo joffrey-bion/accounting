@@ -23,6 +23,13 @@ private val ObvionRate = InterestRate.LtvAdjusted(
     )
 )
 
+private val mortgage700k = Mortgage(
+    amount = 700_000.eur,
+    annualInterestRate = ObvionRate,
+    startMonth = startDate,
+    nYears = 30,
+)
+
 private val constructionBillsPayments = listOf(3.pct, 10.pct, 15.pct, 10.pct, 5.pct, "23.5".pct, 10.pct, "13.5".pct)
     .mapIndexed { i, f -> Payment(startDate.plusMonths(i + 1), constructionPrice * f) } +
     Payment(deliveryDate, constructionPrice * 10.pct)
@@ -53,17 +60,19 @@ private val elzenhagen36BulkNoParking = Property.newBuild(
 )
 
 fun simulateMortgages() {
-    val mortgage700k = mortgage(amount = 700_000.eur)
-    val sim700kIncremental = mortgage700k.simulateLinear("700k incremental", elzenhagen36Incremental)
-    val sim700kIncrNoParking = mortgage700k.simulateLinear("700k incr. no park", elzenhagen36IncrNoPark)
-    val sim700kBulkNoParking = mortgage700k.simulateLinear("700k bulk no park", elzenhagen36BulkNoParking)
+    val sim700kIncremental =
+        SimulationSettings(simulationName = "700k incremental", mortgage700k, elzenhagen36Incremental).simulateLinear()
+    val sim700kIncrNoParking =
+        SimulationSettings(simulationName = "700k incr. no park", mortgage700k, elzenhagen36IncrNoPark).simulateLinear()
+    val sim700kBulkNoParking =
+        SimulationSettings(simulationName = "700k bulk no park", mortgage700k, elzenhagen36BulkNoParking).simulateLinear()
 
     println(SummaryTable.format(listOf(sim700kIncremental, sim700kIncrNoParking, sim700kBulkNoParking)))
     println()
     printTables(sim700kBulkNoParking)
 }
 
-private fun printTables(simulation: MortgageSimulation) {
+private fun printTables(simulation: SimulationResult) {
     println("=== Annual simulation (${simulation.name}) ===")
     println(YearTable.format(simulation.summarizeYears()))
     println()
@@ -71,16 +80,9 @@ private fun printTables(simulation: MortgageSimulation) {
     println(MonthTable.format(simulation.monthlyPayments))
 }
 
-private fun mortgage(amount: Amount) = Mortgage(
-    amount = amount,
-    annualInterestRate = ObvionRate,
-    startMonth = startDate,
-    nYears = 30,
-)
-
-private val SummaryTable = table<MortgageSimulation> {
+private val SummaryTable = table<SimulationResult> {
     column("Sim name", dataAlign = Align.LEFT) { name }
-    column("Total loan") { mortgage.amount.format(2) }
+    column("Total loan") { mortgageAmount.format(2) }
     column("Own funds") { ownFunds.format(2) }
     column("Total interest") { totalInterest.format(2) }
     column("Avg pay") { (monthlyPayments.sumOf { it.total } / monthlyPayments.size).format(2) }
