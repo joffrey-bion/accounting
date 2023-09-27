@@ -13,7 +13,7 @@ private val deliveryDate = AbsoluteMonth(2025, 6)
 
 // From: https://www.obvion.nl/Hypotheek-rente/Actuele-hypotheekrente-Obvion?duurzaamheidskorting=Ja
 // The following rates were locked in on 2023-09-11
-private val ObvionRateSept2023 = InterestRate.LtvAdjusted(
+private val ObvionRateSept2023 = InterestRate.DynamicLtv(
     mapOf(
         60.pct to "3.58".pct,
         70.pct to "3.62".pct,

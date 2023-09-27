@@ -37,7 +37,7 @@ fun SimulationSettings.simulateLinear(): SimulationResult {
         val balanceBefore = mortgageBalance
 
         val currentLtvRatio = mortgageBalance / property.wozValue
-        val effectiveAnnualRate = mortgage.annualInterestRate.at(currentLtvRatio = currentLtvRatio)
+        val effectiveAnnualRate = mortgage.annualInterestRate.at(month, currentLtvRatio = currentLtvRatio)
         val interest = mortgageBalance.coerceAtLeast(Amount.ZERO) * effectiveAnnualRate / 12
 
         val extraRedemptionsThisMonth = extraRedemptionsPerMonth[month] ?: emptyList()
