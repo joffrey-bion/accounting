@@ -1,23 +1,61 @@
 package org.hildan.accounting.ui.components
 
-import mui.material.Card
-import mui.material.CardContent
-import mui.material.CardHeader
-import react.FC
-import react.ReactNode
+import js.core.*
+import mui.icons.material.*
+import mui.material.*
+import mui.system.*
+import org.hildan.accounting.mortgage.*
+import org.hildan.accounting.ui.components.mortgage.*
+import org.hildan.accounting.ui.global.*
+import react.*
+import web.cssom.pct
 
 val Application = FC("Application") {
+
+    var newSimFormOpen by useState(false)
+    var allSims by useState<List<SimulationResult>>(emptyList())
+    var newSimToSimulate by useState<SimulationSettings?>(null)
+
+    useEffect(newSimToSimulate) {
+        newSimToSimulate?.simulateLinear()?.also { allSims += it }
+        newSimToSimulate = null
+    }
+
     Header()
 
-    // some long content to test scroll
-    repeat(20) {
-        Card {
-            CardHeader {
-                title = ReactNode("Balance")
+    SimulationSettingsDialog {
+        dialogProps = jso {
+            open = newSimFormOpen
+        }
+        prefilledData = myMortgage // TODO remove this in the future
+        onCreate = {
+            newSimFormOpen = false
+            newSimToSimulate = it
+        }
+        onCancel = { newSimFormOpen = false }
+    }
+
+    if (allSims.isNotEmpty()) {
+        SimulationsTable {
+            simulations = allSims
+        }
+    }
+
+    Tooltip {
+        title = ReactNode("Add a new simulation")
+        Fab {
+            sx {
+                top = 50.pct
+                left = 50.pct
             }
-            CardContent {
-                +"Hello, your balance is 42€"
-            }
+            onClick = { newSimFormOpen = true }
+            Add()
+        }
+    }
+
+    if (allSims.isNotEmpty()) {
+        AnnualTable {
+            simulation = allSims.first()
         }
     }
 }
