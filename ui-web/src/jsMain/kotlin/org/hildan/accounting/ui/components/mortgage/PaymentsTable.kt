@@ -1,5 +1,6 @@
 package org.hildan.accounting.ui.components.mortgage
 
+import emotion.react.*
 import js.core.*
 import mui.icons.material.*
 import mui.material.*
@@ -23,6 +24,7 @@ external interface PaymentsTableProps : TableProps {
 val PaymentsTable = FC<PaymentsTableProps>("PaymentsTable") { props ->
     val payments = props.payments ?: emptyList()
 
+    var editingIndex by useState<Int?>(null)
     var addingNewItem by useState(false)
 
     TableContainer {
@@ -30,26 +32,35 @@ val PaymentsTable = FC<PaymentsTableProps>("PaymentsTable") { props ->
 
         Table {
             padding = TablePadding.normal
+            size = Size.small
 
             TableBody {
-                payments.sortedBy { it.date }.forEach { p ->
-                    PaymentRow {
-                        payment = p
-                        onDelete = { props.onChange?.invoke(payments - p) }
+                payments.sortedBy { it.date }.forEachIndexed { i, p ->
+                    if (editingIndex == i) {
+                        EditablePaymentRow {
+                            initialPayment = p
+                            onSubmit = { editedPayment ->
+                                editingIndex = null
+                                props.onChange?.invoke(payments - p + editedPayment)
+                            }
+                            onCancel = { addingNewItem = false }
+                        }
+                    } else {
+                        PaymentRow {
+                            payment = p
+                            onEdit = { editingIndex = i }
+                            onDelete = { props.onChange?.invoke(payments - p) }
+                        }
                     }
                 }
                 if (addingNewItem) {
-                    NewPaymentRow {
-                        initialMonth = payments.lastOrNull()?.date?.plusMonths(1)
-                        initialAmount = payments.lastOrNull()?.amount
+                    EditablePaymentRow {
+                        initialPayment = payments.lastOrNull()?.let { it.copy(date = it.date.plusMonths(1)) }
                         onSubmit = { p ->
                             addingNewItem = false
-                            println("About to add element p")
-                            val paymentsPlusP = payments + p
-                            println("Added p")
-                            props.onChange?.invoke(paymentsPlusP)
+                            props.onChange?.invoke(payments + p)
                         }
-                        onClose = { addingNewItem = false }
+                        onCancel = { addingNewItem = false }
                     }
                 } else {
                     TableRow {
@@ -73,6 +84,7 @@ val PaymentsTable = FC<PaymentsTableProps>("PaymentsTable") { props ->
 
 private external interface PaymentRowProps : Props {
     var payment: Payment?
+    var onEdit: (() -> Unit)?
     var onDelete: (() -> Unit)?
 }
 
@@ -80,39 +92,47 @@ private val PaymentRow = FC<PaymentRowProps>("PaymentRow") { props ->
     val payment = props.payment ?: error("missing payment prop")
     TableRow {
         TableCell {
-            sx {
+            css {
                 width = 10.rem
             }
             +payment.date.toString()
         }
         TableCell {
             align = TdAlign.right
-            sx {
+            css {
                 width = 10.rem
             }
             +"${payment.amount.format(2)}€"
         }
         TableCell {
-            IconButton {
-                title = "Remove"
-                onClick = { props.onDelete?.invoke() }
-                Delete()
+            Box {
+                css {
+                    display = Display.flex
+                }
+                IconButton {
+                    title = "Edit"
+                    onClick = { props.onEdit?.invoke() }
+                    Edit { fontSize = SvgIconSize.small }
+                }
+                IconButton {
+                    title = "Remove"
+                    onClick = { props.onDelete?.invoke() }
+                    Close { fontSize = SvgIconSize.small }
+                }
             }
         }
     }
 }
 
-@Suppress("INLINE_CLASS_IN_EXTERNAL_DECLARATION_WARNING")
-private external interface NewPaymentRowProps : Props {
-    var initialMonth: AbsoluteMonth?
-    var initialAmount: Amount?
+private external interface EditablePaymentRowProps : Props {
+    var initialPayment: Payment?
     var onSubmit: ((Payment) -> Unit)?
-    var onClose: (() -> Unit)?
+    var onCancel: (() -> Unit)?
 }
 
-private val NewPaymentRow = FC<NewPaymentRowProps>("NewPaymentRow") { props ->
-    var newItemMonth by useState(absoluteMonthStateOf(props.initialMonth ?: AbsoluteMonth(2024, 1)))
-    var newItemAmount by useState(amountStateOf(props.initialAmount ?: 1000.eur))
+private val EditablePaymentRow = FC<EditablePaymentRowProps>("EditablePaymentRow") { props ->
+    var newItemMonth by useState(absoluteMonthStateOf(props.initialPayment?.date ?: AbsoluteMonth(2024, 1)))
+    var newItemAmount by useState(amountStateOf(props.initialPayment?.amount ?: 1000.eur))
 
     fun submit() {
         val month = newItemMonth as? TextFieldState.Valid ?: return
@@ -121,7 +141,7 @@ private val NewPaymentRow = FC<NewPaymentRowProps>("NewPaymentRow") { props ->
     }
 
     fun cancel() {
-        props.onClose?.invoke()
+        props.onCancel?.invoke()
     }
 
     fun handleKeyPress(event: KeyboardEvent<HTMLDivElement>) {
@@ -167,12 +187,12 @@ private val NewPaymentRow = FC<NewPaymentRowProps>("NewPaymentRow") { props ->
                     title = "Add"
                     disabled = newItemMonth is TextFieldState.Invalid || newItemAmount is TextFieldState.Invalid
                     onClick = { submit() }
-                    Check()
+                    Check { fontSize = SvgIconSize.small }
                 }
                 IconButton {
                     title = "Cancel"
                     onClick = { cancel() }
-                    Close()
+                    Close { fontSize = SvgIconSize.small }
                 }
             }
         }
