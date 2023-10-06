@@ -27,7 +27,7 @@ val Application = FC("Application") {
         dialogProps = jso {
             open = newSimFormOpen
         }
-        prefilledData = myMortgage // TODO remove this in the future
+        prefilledData = myMortgageOfferSimulation // TODO remove this in the future
         onCreate = {
             newSimFormOpen = false
             newSimToSimulate = it

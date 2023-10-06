@@ -36,7 +36,7 @@ private val elzenhagen36Incremental = Property.newBuild(
     )
 )
 
-private val elzenhagen36IncrNoPark = Property.newBuild(
+private val elzenhagen36IncrNoParking = Property.newBuild(
     installments = listOf(
         Payment(startDate, landPrice),
         Payment(startDate, optionsPrice),
@@ -60,5 +60,16 @@ val myMortgage = SimulationSettings(
         startMonth = startDate,
         nYears = 30,
     ),
-    property = elzenhagen36IncrNoPark,
+    property = elzenhagen36IncrNoParking,
+)
+
+val myMortgageOfferSimulation = SimulationSettings(
+    simulationName = "700k Bulk No park",
+    mortgage = Mortgage(
+        amount = 700_000.eur,
+        annualInterestRate = ObvionRateSept2023,
+        startMonth = startDate,
+        nYears = 30,
+    ),
+    property = elzenhagen36BulkNoParking,
 )

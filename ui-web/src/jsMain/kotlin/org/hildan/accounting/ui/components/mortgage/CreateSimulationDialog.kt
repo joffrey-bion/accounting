@@ -12,6 +12,7 @@ import org.hildan.accounting.ui.global.*
 import react.*
 import react.dom.*
 import react.dom.events.*
+import react.dom.html.*
 import web.cssom.*
 import web.html.*
 
@@ -39,6 +40,7 @@ val SimulationSettingsDialog = FC<SimulationSettingsDialogProps> { props ->
 
     var simName by useState(initialSettings.simulationName)
     var mortgageAmount by useState(amountStateOf(initialSettings.mortgage.amount))
+    var mortgageInterestRate by useState(initialSettings.mortgage.annualInterestRate)
     var mortgageYears by useState(intTextFieldStateOf(initialSettings.mortgage.nYears))
     var mortgageStartMonth by useState(absoluteMonthStateOf(initialSettings.mortgage.startMonth))
     var extraRedemptions by useState(initialSettings.mortgage.extraRedemptions)
@@ -94,17 +96,33 @@ val SimulationSettingsDialog = FC<SimulationSettingsDialogProps> { props ->
                     onChange = { mortgageStartMonth = it }
                 }
             }
-            Typography {
-                +"Planned voluntary repayments"
+            Box {
+                sx {
+                    marginTop = 1.rem
+                }
+
+                InterestRatePicker {
+                    value = mortgageInterestRate
+                    onChange = { mortgageInterestRate = it }
+                }
             }
-            PaymentsTable {
-                tableContainerProps = jso {
-                    sx {
-                        maxWidth = 30.rem
+            Box {
+                sx {
+                    marginTop = 1.rem
+                }
+
+                FormControl {
+                    FormLabel { +"Planned voluntary repayments" }
+                    PaymentsTable {
+                        tableContainerProps = jso {
+                            sx {
+                                maxWidth = 30.rem
+                            }
+                        }
+                        payments = extraRedemptions
+                        onChange = { extraRedemptions = it }
                     }
                 }
-                payments = extraRedemptions
-                onChange = { extraRedemptions = it }
             }
         }
         DialogActions {

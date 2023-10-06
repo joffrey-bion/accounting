@@ -32,16 +32,25 @@ sealed interface InterestRate {
     /**
      * An interest rate that changes based on the loan-to-value (LTV) ratio.
      */
-    data class DynamicLtv(val sortedRates: List<LtvRate>) : TimeIndependent {
+    data class DynamicLtv(val sortedRates: List<RateGroup>) : TimeIndependent {
 
-        constructor(ratesPerLtvRatio: Map<Fraction, Fraction>) : this(ratesPerLtvRatio.map { LtvRate(it.key, it.value) }
-            .sortedBy { it.loanToValueRatio })
+        constructor(ratesPerLtvRatio: Map<Fraction, Fraction>) : this(ratesPerLtvRatio.map { RateGroup(it.key, it.value) }
+            .sortedBy { it.maxLtvRatio })
 
         override fun at(currentLtvRatio: Fraction) =
-            sortedRates.firstOrNull { it.loanToValueRatio >= currentLtvRatio }?.rate
-                ?: error("No interest rate found for LTV ratio $currentLtvRatio, max LTV is ${sortedRates.maxOf { it.loanToValueRatio }}")
+            sortedRates.firstOrNull { it.maxLtvRatio >= currentLtvRatio }?.rate
+                ?: error("No interest rate found for LTV ratio $currentLtvRatio, max LTV is ${sortedRates.maxOf { it.maxLtvRatio }}")
 
-        data class LtvRate(val loanToValueRatio: Fraction, val rate: Fraction)
+        data class RateGroup(
+            /**
+             * The upper bound for the loan-to-value ratio of this group.
+             */
+            val maxLtvRatio: Fraction,
+            /**
+             * THe interest rate that applies for this group (below [maxLtvRatio]).
+             */
+            val rate: Fraction,
+        )
     }
 
     /**
