@@ -17,6 +17,7 @@ data class JetBrainsCompanyBonus(
         fun forYear(year: Int) = when (year) {
             2021 -> JetBrainsCompanyBonus(perfMultiplier = Fraction(3), flatMultiplier = Fraction("0.4"))
             2022 -> JetBrainsCompanyBonus(perfMultiplier = Fraction(2), flatMultiplier = Fraction("0.3"))
+            2023 -> JetBrainsCompanyBonus(perfMultiplier = Fraction("1.7"), flatMultiplier = Fraction.ZERO)
             else -> error("Unknown JetBrains company bonus multipliers")
         }
     }
