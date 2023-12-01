@@ -28,8 +28,16 @@ data class JetBrainsProfile(
 
 data class Performance(
     /**
-     * Performance coefficient given by the manager for the year
-     * (1.2 = median, 1.3 = great performance, 1.5 = outstanding ~ max).
+     * Performance coefficient given by the manager for the year.
+     *
+     * The scale is unclear but could be described as follows:
+     * * 1.0 = low performance
+     * * 1.2 = good performance
+     * * 1.3 = great performance beyond the regular scope of the role
+     * * 1.5 = outstanding
+     * * 1.7 = extremely rare case
+     *
+     * To award >=1.3, the manager needs to justify that the employee performed beyond their assigned scope.
      */
     val perfCoeff: Fraction,
     /**
