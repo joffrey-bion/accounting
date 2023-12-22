@@ -11,7 +11,7 @@ kotlin {
     }
 
     sourceSets {
-        val jsMain by getting {
+        jsMain {
             dependencies {
                 implementation(project(":mortgage"))
                 implementation(platform(libs.kotlin.wrappers.bom.get()))

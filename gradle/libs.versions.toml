@@ -1,7 +1,7 @@
 [versions]
 
 bignum = "0.3.8"
-kotlin-plugin = "1.9.10"
+kotlin-plugin = "1.9.21"
 kotlin-wrappers = "1.0.0-pre.627"
 
 [libraries]
