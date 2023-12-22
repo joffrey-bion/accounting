@@ -16,8 +16,8 @@ kotlin {
                 implementation(project(":mortgage"))
                 implementation(platform(libs.kotlin.wrappers.bom.get()))
                 implementation(libs.kotlin.wrappers.emotion)
-                implementation(libs.kotlin.wrappers.mui.core)
-                implementation(libs.kotlin.wrappers.mui.icons)
+                implementation(libs.kotlin.wrappers.mui.base)
+                implementation(libs.kotlin.wrappers.mui.icons.material)
                 implementation(libs.kotlin.wrappers.react.core)
                 implementation(libs.kotlin.wrappers.react.dom)
             }

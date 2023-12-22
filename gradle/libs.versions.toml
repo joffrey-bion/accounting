@@ -2,7 +2,7 @@
 
 bignum = "0.3.8"
 kotlin-plugin = "1.9.21"
-kotlin-wrappers = "1.0.0-pre.627"
+kotlin-wrappers = "1.0.0-pre.668"
 
 [libraries]
 
@@ -10,7 +10,7 @@ bignum = { module = "com.ionspin.kotlin:bignum", version.ref = "bignum" }
 
 kotlin-wrappers-bom = { module = "org.jetbrains.kotlin-wrappers:kotlin-wrappers-bom", version.ref = "kotlin-wrappers" }
 kotlin-wrappers-emotion = { module = "org.jetbrains.kotlin-wrappers:kotlin-emotion" } # typed CSS styles
-kotlin-wrappers-mui-core = { module = "org.jetbrains.kotlin-wrappers:kotlin-mui" }
-kotlin-wrappers-mui-icons = { module = "org.jetbrains.kotlin-wrappers:kotlin-mui-icons" }
+kotlin-wrappers-mui-base = { module = "org.jetbrains.kotlin-wrappers:kotlin-mui-base" }
+kotlin-wrappers-mui-icons-material = { module = "org.jetbrains.kotlin-wrappers:kotlin-mui-icons-material" }
 kotlin-wrappers-react-core = { module = "org.jetbrains.kotlin-wrappers:kotlin-react" }
 kotlin-wrappers-react-dom = { module = "org.jetbrains.kotlin-wrappers:kotlin-react-dom" }
