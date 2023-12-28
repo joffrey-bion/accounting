@@ -28,8 +28,9 @@ fun SimulationSettings.simulateLinear(): SimulationResult {
     val extraRedemptionsPerMonth = mortgage.extraRedemptions.groupBy({ it.date }, { it.amount })
     val payments = mutableListOf<MortgagePayment>()
 
+    val totalPrice = property.installments.sumOf { it.amount }
     // we subtract the value because it will be added gradually through bills
-    var mortgageBalance = mortgage.amount - property.price
+    var mortgageBalance = mortgage.amount - totalPrice
     mortgage.monthsSequence().forEach { month ->
         val billsThisMonth = billsPerMonth[month] ?: emptyList()
         mortgageBalance += billsThisMonth.sum()

@@ -2,6 +2,7 @@ package org.hildan.accounting.cli
 
 import org.hildan.accounting.money.*
 import org.hildan.accounting.mortgage.*
+import org.hildan.accounting.mortgage.Property.*
 
 private val landPrice = "165894.98".eur
 private val constructionPrice = "586461.79".eur
@@ -34,30 +35,33 @@ private val constructionBillsPayments = listOf(3.pct, 10.pct, 15.pct, 10.pct, 5.
     .mapIndexed { i, f -> Payment(startDate.plusMonths(i + 1), constructionPrice * f) } +
     Payment(deliveryDate, constructionPrice * 10.pct)
 
-private val elzenhagen36Incremental = Property.newBuild(
-    installments = listOf(
+private val elzenhagen36Incremental = run {
+    val installments1 = listOf(
         Payment(startDate, landPrice),
         Payment(startDate, parkingPrice),
         Payment(startDate, optionsPrice),
         *constructionBillsPayments.toTypedArray(),
     )
-)
+    NewConstruction(installments = installments1)
+}
 
-private val elzenhagen36IncrNoPark = Property.newBuild(
-    installments = listOf(
+private val elzenhagen36IncrNoPark = run {
+    val installments1 = listOf(
         Payment(startDate, landPrice),
         Payment(startDate, optionsPrice),
         *constructionBillsPayments.toTypedArray(),
     )
-)
+    NewConstruction(installments = installments1)
+}
 
-private val elzenhagen36BulkNoParking = Property.newBuild(
-    installments = listOf(
+private val elzenhagen36BulkNoParking = run {
+    val installments1 = listOf(
         Payment(startDate, landPrice),
         Payment(startDate, constructionPrice),
         Payment(startDate, optionsPrice),
     )
-)
+    NewConstruction(installments = installments1)
+}
 
 fun simulateMortgages() {
     val sim700kIncremental =

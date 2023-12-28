@@ -32,7 +32,7 @@ private val defaultConfig = SimulationSettings(
         startMonth = defaultStartDate,
         nYears = 30,
     ),
-    property = Property.existing(Payment(defaultStartDate, 420_000.eur), 400_000.eur),
+    property = Property.Existing(purchase = Payment(defaultStartDate, 420_000.eur), wozValue = 400_000.eur),
 )
 
 val SimulationSettingsDialog = FC<SimulationSettingsDialogProps> { props ->

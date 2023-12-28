@@ -2,6 +2,7 @@ package org.hildan.accounting.ui.global
 
 import org.hildan.accounting.money.*
 import org.hildan.accounting.mortgage.*
+import org.hildan.accounting.mortgage.Property
 
 private val landPrice = "165894.98".eur
 private val constructionPrice = "586461.79".eur
@@ -27,7 +28,7 @@ private val constructionBillsPayments = listOf(3.pct, 10.pct, 15.pct, 10.pct, 5.
     .mapIndexed { i, f -> Payment(startDate.plusMonths(i + 1), constructionPrice * f) } +
         Payment(deliveryDate, constructionPrice * 10.pct)
 
-private val elzenhagen36Incremental = Property.newBuild(
+private val elzenhagen36Incremental = Property.NewConstruction(
     installments = listOf(
         Payment(startDate, landPrice),
         Payment(startDate, parkingPrice),
@@ -36,7 +37,7 @@ private val elzenhagen36Incremental = Property.newBuild(
     )
 )
 
-private val elzenhagen36IncrNoParking = Property.newBuild(
+private val elzenhagen36IncrNoParking = Property.NewConstruction(
     installments = listOf(
         Payment(startDate, landPrice),
         Payment(startDate, optionsPrice),
@@ -44,7 +45,7 @@ private val elzenhagen36IncrNoParking = Property.newBuild(
     )
 )
 
-private val elzenhagen36BulkNoParking = Property.newBuild(
+private val elzenhagen36BulkNoParking = Property.NewConstruction(
     installments = listOf(
         Payment(startDate, landPrice),
         Payment(startDate, constructionPrice),
