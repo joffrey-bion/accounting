@@ -155,20 +155,34 @@ class MoneyTest {
     }
 
     @Test
-    fun format_defaultScale_gives2digits() {
-        assertEquals("42.00", 42.eur.format(2))
-        assertEquals("-42.00", (-42).eur.format(2))
-        assertEquals("1.23", "1.2345".eur.format(2))
-        assertEquals("1.24", "1.2356".eur.format(2))
+    fun format_defaultScale_keepsNumberOfDigits() {
+        assertEquals("42", 42.eur.format())
+        assertEquals("-42", (-42).eur.format())
+        assertEquals("1.23", "1.23".eur.format())
+        assertEquals("1.2345", "1.2345".eur.format())
     }
 
     @Test
     fun format_customScale() {
+        assertEquals("42.00", 42.eur.format(scale = 2))
+        assertEquals("-42.00", (-42).eur.format(scale = 2))
         assertEquals("1", "1.2356".eur.format(scale = 0))
         assertEquals("1.2", "1.2356".eur.format(scale = 1))
         assertEquals("1.24", "1.2356".eur.format(scale = 2))
         assertEquals("1.236", "1.2356".eur.format(scale = 3))
         assertEquals("1.2356", "1.2356".eur.format(scale = 4))
+    }
+
+    @Test
+    fun formatWithMinScale() {
+        assertEquals("42", 42.eur.formatWithMinScale(minScale = 0))
+        assertEquals("42.0", 42.eur.formatWithMinScale(minScale = 1))
+        assertEquals("-42.00", (-42).eur.formatWithMinScale(minScale = 2))
+        assertEquals("1.23", "1.23".eur.formatWithMinScale(minScale = 0))
+        assertEquals("1.23", "1.23".eur.formatWithMinScale(minScale = 1))
+        assertEquals("1.23", "1.23".eur.formatWithMinScale(minScale = 2))
+        assertEquals("1.230", "1.23".eur.formatWithMinScale(minScale = 3))
+        assertEquals("1.2300", "1.23".eur.formatWithMinScale(minScale = 4))
     }
 
     @Test

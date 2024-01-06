@@ -53,15 +53,17 @@ value class Amount private constructor(private val value: BigDecimal) : Comparab
     /**
      * Formats this amount rounded to the given [scale] (number of digits after the decimal point).
      */
-    fun format(scale: Int): String {
-        val rounded = value.roundToDigitPositionAfterDecimalPoint(
-            digitPosition = scale.toLong(),
-            roundingMode = RoundingMode.ROUND_HALF_AWAY_FROM_ZERO,
-        )
-        val formattedRaw = rounded.toStringExpanded()
+    fun format(scale: Int): String = roundToScale(scale).formatWithMinScale(scale)
+
+    /**
+     * Formats this amount as a string without any rounding, but ensuring a [minScale] number of digits after the
+     * decimal point (padding with 0s as needed).
+     */
+    fun formatWithMinScale(minScale: Int): String {
+        val formattedRaw = format()
         return when (val nDigits = formattedRaw.substringAfter('.', missingDelimiterValue = "").length) {
-            0 -> if (scale == 0) formattedRaw else "$formattedRaw." + "0".repeat(scale)
-            in 1..<scale -> formattedRaw + "0".repeat(scale - nDigits)
+            0 -> if (minScale == 0) formattedRaw else "$formattedRaw." + "0".repeat(minScale)
+            in 1..<minScale -> formattedRaw + "0".repeat(minScale - nDigits)
             else -> formattedRaw
         }
     }
