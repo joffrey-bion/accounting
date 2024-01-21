@@ -59,7 +59,7 @@ val myMortgage = SimulationSettings(
         amount = 700_000.eur,
         annualInterestRate = ObvionRateSept2023,
         startMonth = startDate,
-        nYears = 30,
+        termInYears = 30,
     ),
     property = elzenhagen36IncrNoParking,
 )
@@ -70,7 +70,7 @@ val myMortgageOfferSimulation = SimulationSettings(
         amount = 700_000.eur,
         annualInterestRate = ObvionRateSept2023,
         startMonth = startDate,
-        nYears = 30,
+        termInYears = 30,
     ),
     property = elzenhagen36BulkNoParking,
 )

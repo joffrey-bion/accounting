@@ -12,7 +12,6 @@ import org.hildan.accounting.ui.global.*
 import react.*
 import react.dom.*
 import react.dom.events.*
-import react.dom.html.*
 import web.cssom.*
 import web.html.*
 
@@ -30,7 +29,7 @@ private val defaultConfig = SimulationSettings(
         amount = 400_000.eur,
         annualInterestRate = InterestRate.Fixed(Fraction("0.04")),
         startMonth = defaultStartDate,
-        nYears = 30,
+        termInYears = 30,
     ),
     property = Property.Existing(purchase = Payment(defaultStartDate, 420_000.eur), wozValue = 400_000.eur),
 )
@@ -41,13 +40,13 @@ val SimulationSettingsDialog = FC<SimulationSettingsDialogProps> { props ->
     var simName by useState(initialSettings.simulationName)
     var mortgageAmount by useState(amountStateOf(initialSettings.mortgage.amount))
     var mortgageInterestRate by useState(initialSettings.mortgage.annualInterestRate)
-    var mortgageYears by useState(intTextFieldStateOf(initialSettings.mortgage.nYears))
+    var mortgageTerm by useState(intTextFieldStateOf(initialSettings.mortgage.termInYears))
     var mortgageStartMonth by useState(absoluteMonthStateOf(initialSettings.mortgage.startMonth))
     var extraRedemptions by useState(initialSettings.mortgage.extraRedemptions)
 
     val isValid = simName.isNotEmpty() || //
         mortgageAmount is TextFieldState.Valid || //
-        mortgageYears is TextFieldState.Valid || //
+        mortgageTerm is TextFieldState.Valid || //
         mortgageStartMonth is TextFieldState.Valid
 
     Dialog {
@@ -83,8 +82,8 @@ val SimulationSettingsDialog = FC<SimulationSettingsDialogProps> { props ->
                             }
                         }
                     }
-                    value = mortgageYears
-                    onChange = { mortgageYears = it }
+                    value = mortgageTerm
+                    onChange = { mortgageTerm = it }
                 }
                 // maybe use a date picker when props are correct
                 AbsoluteMonthTextField {
@@ -138,7 +137,7 @@ val SimulationSettingsDialog = FC<SimulationSettingsDialogProps> { props ->
                         simulationName = simName,
                         mortgage = initialSettings.mortgage.copy(
                             amount = mortgageAmount.valueOrThrow(),
-                            nYears = mortgageYears.valueOrThrow(),
+                            termInYears = mortgageTerm.valueOrThrow(),
                             startMonth = mortgageStartMonth.valueOrThrow(),
                             extraRedemptions = extraRedemptions,
                         )

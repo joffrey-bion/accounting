@@ -24,12 +24,12 @@ data class Mortgage(
      */
     val extraRedemptions: List<Payment> = emptyList(),
     /**
-     * The total duration over which the mortgage will be repaid.
+     * The total duration (in years) over which the mortgage will be repaid.
      */
-    val nYears: Int = 30,
+    val termInYears: Int = 30,
 ) {
     /**
      * In case of linear mode, the monthly redemption is the same every month for the duration of the mortgage.
      */
-    val linearMonthlyRedemption: Amount = amount / nYears / 12
+    val linearMonthlyRedemption: Amount = amount / termInYears / 12
 }

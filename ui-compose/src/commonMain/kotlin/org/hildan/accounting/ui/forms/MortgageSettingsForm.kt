@@ -17,10 +17,10 @@ fun MortgageSettingsForm(value: Mortgage, onValueChange: (Mortgage) -> Unit) {
             label = { Text("Loan amount") },
         )
         IntTextField(
-            value = value.nYears,
+            value = value.termInYears,
             onValueChange = {
                 if (it != null && it > 0) {
-                    onValueChange(value.copy(nYears = it))
+                    onValueChange(value.copy(termInYears = it))
                 }
             },
             label = { Text("Duration") },

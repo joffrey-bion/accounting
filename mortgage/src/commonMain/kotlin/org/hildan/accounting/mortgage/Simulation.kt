@@ -59,7 +59,7 @@ fun SimulationSettings.simulateLinear(): SimulationResult {
 }
 
 private fun Mortgage.monthsSequence(): Sequence<AbsoluteMonth> {
-    val redemptionDay = startMonth.copy(year = startMonth.year + nYears)
+    val redemptionDay = startMonth.copy(year = startMonth.year + termInYears)
     return generateSequence(startMonth) { it.next() }.takeWhile { it != redemptionDay }
 }
 

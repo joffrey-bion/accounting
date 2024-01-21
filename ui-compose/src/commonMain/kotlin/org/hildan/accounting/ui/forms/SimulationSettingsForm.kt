@@ -11,7 +11,7 @@ private val defaultMortgage = Mortgage(
     amount = 400_000.eur,
     annualInterestRate = InterestRate.Fixed(4.pct),
     startMonth = defaultStartDate,
-    nYears = 30,
+    termInYears = 30,
 )
 private val defaultProperty = Property.Existing(
     wozValue = 400_000.eur,

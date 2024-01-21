@@ -28,7 +28,7 @@ private val mortgage700k = Mortgage(
     amount = 700_000.eur,
     annualInterestRate = ObvionRate,
     startMonth = startDate,
-    nYears = 30,
+    termInYears = 30,
 )
 
 private val constructionBillsPayments = listOf(3.pct, 10.pct, 15.pct, 10.pct, 5.pct, "23.5".pct, 10.pct, "13.5".pct)
