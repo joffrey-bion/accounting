@@ -100,7 +100,7 @@ private val YearTable = table<MortgageYearSummary> {
     column("Date") { year }
     column("N") { nMonths }
     column("Balance") { balanceBefore.format(2) }
-    column("Avg Red.") { avgMonthlyRedemption.format(2) }
+    column("Avg P.Red.") { avgMonthlyPrincipalReduction.format(2) }
     column("Avg Int.") { avgMonthlyInterest.format(2) }
     column("Avg Pay.") { avgMonthlyPayment.format(2) }
 }
@@ -108,7 +108,7 @@ private val YearTable = table<MortgageYearSummary> {
 private val MonthTable = table<MortgagePayment> {
     column("Date") { date }
     column("Balance") { balanceBefore.format(2) }
-    column("Redemption") { redemption.format(2) }
+    column("P. Reduction") { principalReduction.format(2) }
     column("Interest") { interest.format(2) }
     column("Total") { total.format(2) }
 }

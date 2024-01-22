@@ -25,7 +25,7 @@ data class SimulationSettings(
  */
 fun SimulationSettings.simulateLinear(): SimulationResult {
     val billsPerMonth = property.installments.groupBy({ it.date }, { it.amount })
-    val extraRedemptionsPerMonth = mortgage.extraRedemptions.groupBy({ it.date }, { it.amount })
+    val extraPaymentsPerMonth = mortgage.extraPayments.groupBy({ it.date }, { it.amount })
     val payments = mutableListOf<MortgagePayment>()
 
     val totalPrice = property.installments.sumOf { it.amount }
@@ -41,15 +41,15 @@ fun SimulationSettings.simulateLinear(): SimulationResult {
         val effectiveAnnualRate = mortgage.annualInterestRate.at(month, currentLtvRatio = currentLtvRatio)
         val interest = mortgageBalance.coerceAtLeast(Amount.ZERO) * effectiveAnnualRate / 12
 
-        val extraRedemptionsThisMonth = extraRedemptionsPerMonth[month] ?: emptyList()
+        val extraRedemptionsThisMonth = extraPaymentsPerMonth[month] ?: emptyList()
         val extraRedemption = extraRedemptionsThisMonth.sum()
         mortgageBalance -= extraRedemption
-        mortgageBalance -= mortgage.linearMonthlyRedemption
+        mortgageBalance -= mortgage.linearMonthlyPrincipalReduction
 
         val payment = MortgagePayment(
             date = month,
-            redemption = mortgage.linearMonthlyRedemption,
-            extraRedemption = extraRedemption,
+            principalReduction = mortgage.linearMonthlyPrincipalReduction,
+            extraPrincipalReduction = extraRedemption,
             interest = interest,
             balanceBefore = balanceBefore,
         )
@@ -99,8 +99,8 @@ data class SimulationResult(
                 MortgageYearSummary(
                     year = year,
                     nMonths = 1,
-                    redemption = p.redemption,
-                    extraRedemption = p.extraRedemption,
+                    principalReduction = p.principalReduction,
+                    extraPrincipalReduction = p.extraPrincipalReduction,
                     interest = p.interest,
                     balanceBefore = p.balanceBefore,
                 )
@@ -108,8 +108,8 @@ data class SimulationResult(
                 MortgageYearSummary(
                     year = year,
                     nMonths = acc.nMonths + 1,
-                    redemption = acc.redemption + p.redemption,
-                    extraRedemption = acc.extraRedemption + p.extraRedemption,
+                    principalReduction = acc.principalReduction + p.principalReduction,
+                    extraPrincipalReduction = acc.extraPrincipalReduction + p.extraPrincipalReduction,
                     interest = acc.interest + p.interest,
                     balanceBefore = acc.balanceBefore,
                 )
@@ -129,12 +129,12 @@ data class MortgagePayment(
     /**
      * The amount used to pay back the mortgage, which is subtracted from the current mortgage balance as a result.
      */
-    val redemption: Amount,
+    val principalReduction: Amount,
     /**
-     * The amount invested spontaneously to repay a part of the mortgage this month on top of the usual redemption.
-     * Like [redemption], it is subtracted from the current mortgage balance as a result.
+     * The amount invested voluntarily to repay a part of the mortgage this month on top of the mandatory payment.
+     * Like [principalReduction], it is subtracted from the current mortgage balance (principal) as a result.
      */
-    val extraRedemption: Amount,
+    val extraPrincipalReduction: Amount,
     /**
      * The interest paid to the bank for borrowing the money.
      */
@@ -147,7 +147,7 @@ data class MortgagePayment(
     /**
      * The total amount paid to the bank.
      */
-    val total: Amount = redemption + extraRedemption + interest
+    val total: Amount = principalReduction + extraPrincipalReduction + interest
 }
 
 /**
@@ -167,24 +167,24 @@ data class MortgageYearSummary(
      * The amount used to pay back the mortgage, which is subtracted from the mortgage balance during this year.
      * This is the redemption that was planned as part of the mortgage contract.
      */
-    val redemption: Amount,
+    val principalReduction: Amount,
     /**
-     * The amount invested spontaneously to repay a part of the mortgage this month on top of the usual redemption.
-     * Like [redemption], it is subtracted from the mortgage balance during this year.
+     * The amount invested voluntarily to repay a part of the mortgage this month on top of the usual redemption.
+     * Like [principalReduction], it is subtracted from the mortgage balance (principal) during this year.
      */
-    val extraRedemption: Amount,
+    val extraPrincipalReduction: Amount,
     /**
      * The interest paid to the bank for borrowing the money.
      */
     val interest: Amount,
     /**
-     * The balance of the mortgage at the beginning of the year.
+     * The balance of the mortgage (principal) at the beginning of the year.
      */
     val balanceBefore: Amount,
 ) {
-    val totalPayments: Amount = redemption + extraRedemption + interest
+    val totalPayments: Amount = principalReduction + extraPrincipalReduction + interest
 
-    val avgMonthlyRedemption: Amount = redemption / nMonths
+    val avgMonthlyPrincipalReduction: Amount = principalReduction / nMonths
     val avgMonthlyInterest: Amount = interest / nMonths
-    val avgMonthlyPayment: Amount = avgMonthlyRedemption + avgMonthlyInterest
+    val avgMonthlyPayment: Amount = avgMonthlyPrincipalReduction + avgMonthlyInterest
 }

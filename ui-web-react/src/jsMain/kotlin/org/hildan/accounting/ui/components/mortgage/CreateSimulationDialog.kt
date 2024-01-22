@@ -42,7 +42,7 @@ val SimulationSettingsDialog = FC<SimulationSettingsDialogProps> { props ->
     var mortgageInterestRate by useState(initialSettings.mortgage.annualInterestRate)
     var mortgageTerm by useState(intTextFieldStateOf(initialSettings.mortgage.termInYears))
     var mortgageStartMonth by useState(absoluteMonthStateOf(initialSettings.mortgage.startMonth))
-    var extraRedemptions by useState(initialSettings.mortgage.extraRedemptions)
+    var extraRedemptions by useState(initialSettings.mortgage.extraPayments)
 
     val isValid = simName.isNotEmpty() || //
         mortgageAmount is TextFieldState.Valid || //
@@ -139,7 +139,7 @@ val SimulationSettingsDialog = FC<SimulationSettingsDialogProps> { props ->
                             amount = mortgageAmount.valueOrThrow(),
                             termInYears = mortgageTerm.valueOrThrow(),
                             startMonth = mortgageStartMonth.valueOrThrow(),
-                            extraRedemptions = extraRedemptions,
+                            extraPayments = extraRedemptions,
                         )
                     )
                     props.onCreate?.invoke(settings)

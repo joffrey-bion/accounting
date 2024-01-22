@@ -92,7 +92,7 @@ val AnnualTable = FC<AnnualTableProps> { props ->
                             scale = 0
                         }
                         AmountTableCell {
-                            amount = p.redemption
+                            amount = p.principalReduction
                             scale = 2
                         }
                         AmountTableCell {
@@ -104,7 +104,7 @@ val AnnualTable = FC<AnnualTableProps> { props ->
                             scale = 2
                         }
                         AmountTableCell {
-                            amount = p.avgMonthlyRedemption
+                            amount = p.avgMonthlyPrincipalReduction
                             scale = 2
                         }
                         AmountTableCell {

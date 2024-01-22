@@ -7,7 +7,7 @@ import org.hildan.accounting.money.*
  */
 data class Mortgage(
     /**
-     * The amount borrowed.
+     * The total amount borrowed.
      */
     val amount: Amount,
     /**
@@ -22,14 +22,14 @@ data class Mortgage(
     /**
      * The payments made voluntarily to pay back the loan, usually to reduce the interest and thus the monthly payments.
      */
-    val extraRedemptions: List<Payment> = emptyList(),
+    val extraPayments: List<Payment> = emptyList(),
     /**
      * The total duration (in years) over which the mortgage will be repaid.
      */
     val termInYears: Int = 30,
 ) {
     /**
-     * In case of linear mode, the monthly redemption is the same every month for the duration of the mortgage.
+     * In case of linear mode, the monthly principal payment is the same every month for the duration of the mortgage.
      */
-    val linearMonthlyRedemption: Amount = amount / termInYears / 12
+    val linearMonthlyPrincipalReduction: Amount = amount / termInYears / 12
 }

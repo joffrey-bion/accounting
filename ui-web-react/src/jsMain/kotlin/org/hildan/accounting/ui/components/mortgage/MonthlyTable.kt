@@ -59,7 +59,7 @@ val MonthlyTable = FC<MonthlyTableProps> { props ->
                             scale = 0
                         }
                         AmountTableCell {
-                            amount = p.redemption
+                            amount = p.principalReduction
                             scale = 2
                         }
                         AmountTableCell {

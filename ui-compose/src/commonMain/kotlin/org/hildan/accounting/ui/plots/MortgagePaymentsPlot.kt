@@ -3,7 +3,6 @@ package org.hildan.accounting.ui.plots
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.unit.*
-import io.github.koalaplot.core.bar.*
 import io.github.koalaplot.core.line.*
 import io.github.koalaplot.core.style.*
 import io.github.koalaplot.core.util.*
@@ -23,7 +22,7 @@ fun MortgagePaymentsPlot(simulationResult: SimulationResult) {
         amountAxisModel(max = payments.maxOf { it.total + 100.eur })
     }
 
-    val entries = remember(payments) { payments.map { stackedAreaPlotEntry(it.date, arrayOf(it.total, it.redemption)) } }
+    val entries = remember(payments) { payments.map { stackedAreaPlotEntry(it.date, arrayOf(it.total, it.principalReduction)) } }
     val styles = List(2) {
         StackedAreaStyle(
             LineStyle(brush = SolidColor(Color.Blue), strokeWidth = 1.dp),
