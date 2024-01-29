@@ -2,7 +2,7 @@ package org.hildan.accounting.taxes.jetbrains
 
 import org.hildan.accounting.money.Amount
 import org.hildan.accounting.money.Fraction
-import org.hildan.accounting.taxes.Profile
+import org.hildan.accounting.taxes.TaxProfile
 import org.hildan.accounting.taxes.TaxItem
 import org.hildan.accounting.taxes.TaxSystem
 
@@ -13,7 +13,7 @@ data class JetBrainsProfile(
     /**
      * Regular, common profile.
      */
-    val profile: Profile,
+    val profile: TaxProfile,
     /**
      * Performance indicators set by the manager for the year.
      */

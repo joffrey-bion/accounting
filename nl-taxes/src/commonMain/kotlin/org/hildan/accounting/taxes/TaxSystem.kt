@@ -12,7 +12,7 @@ class TaxSystem(
     val generalTaxCredit: GeneralTaxCredit,
     val laborTaxCredit: LaborTaxCredit,
 ) {
-    fun computeAnnualIncomeTax(profile: Profile): List<TaxItem> {
+    fun computeAnnualIncomeTax(profile: TaxProfile): List<TaxItem> {
         val grossAnnualTaxableSalary = profile.grossAnnualTaxableSalary
         val salaryTaxItem = wageTax.onSalary(grossAnnualTaxableSalary)
 
@@ -86,7 +86,7 @@ class TaxSystem(
         }
     }
 
-    fun computeBonusTax(profile: Profile, grossAnnualBonus: Amount): List<TaxItem> {
+    fun computeBonusTax(profile: TaxProfile, grossAnnualBonus: Amount): List<TaxItem> {
         val grossAnnualTaxableBonus = if (profile.rule30p) grossAnnualBonus * 70.pct else grossAnnualBonus
         val bonusTaxItem = wageTax.onBonus(grossAnnualTaxableBonus)
         return buildList {
