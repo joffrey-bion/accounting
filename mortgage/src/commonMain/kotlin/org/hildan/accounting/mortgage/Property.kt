@@ -7,11 +7,13 @@ import org.hildan.accounting.money.*
  */
 sealed class Property {
     /**
-     * The property value (also known as the [WOZ value](https://www.amsterdam.nl/en/municipal-taxes/property-valuation-woz))
-     * is used to calculate how much tax you owe, and also determines the maximum that the banks can lend.
+     * The property value (known as the [Waardering Onroerende Zaken value](https://www.amsterdam.nl/en/municipal-taxes/property-valuation-woz),
+     * or WOZ value in short) is used to calculate how much tax you owe, and also determines the maximum that
+     * the banks can lend.
      *
      * The value of an existing house/apartment is independent of its price. The house is evaluated to determine the
-     * WOZ value.
+     * WOZ value. The WOZ value of a house is public and can be found on
+     * [wozwaardeloket.nl](https://www.wozwaardeloket.nl/).
      *
      * For a new build purchase, there is no valuation of the property, and the WOZ value is usually set to the
      * purchase price, including options/extra work (and subtracting the discarded work).
