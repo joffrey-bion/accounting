@@ -3,6 +3,7 @@ package org.hildan.accounting.ui.components
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import org.hildan.accounting.money.*
+import org.hildan.accounting.mortgage.*
 
 @Composable
 fun AmountText(amount: Amount, scale: Int? = null, currencySymbol: String = "€") {

@@ -9,5 +9,10 @@ kotlin {
                 api(project(":money"))
             }
         }
+        commonTest {
+            dependencies {
+                api(kotlin("test"))
+            }
+        }
     }
 }

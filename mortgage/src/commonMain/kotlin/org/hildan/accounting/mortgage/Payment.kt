@@ -1,4 +1,6 @@
-package org.hildan.accounting.money
+package org.hildan.accounting.mortgage
+
+import org.hildan.accounting.money.*
 
 /**
  * A dated payment.

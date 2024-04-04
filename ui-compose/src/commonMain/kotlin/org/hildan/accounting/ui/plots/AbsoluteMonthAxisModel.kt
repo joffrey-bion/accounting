@@ -1,7 +1,7 @@
 package org.hildan.accounting.ui.plots
 
 import androidx.compose.ui.unit.*
-import org.hildan.accounting.money.*
+import org.hildan.accounting.mortgage.*
 
 fun absoluteMonthAxisModel(
     min: AbsoluteMonth,

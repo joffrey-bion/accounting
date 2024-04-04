@@ -9,7 +9,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.text.input.*
 import androidx.compose.ui.unit.*
-import org.hildan.accounting.money.*
+import org.hildan.accounting.mortgage.*
 
 @Composable
 fun AbsoluteMonthField(

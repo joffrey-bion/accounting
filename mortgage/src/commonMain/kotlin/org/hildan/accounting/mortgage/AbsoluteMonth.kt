@@ -1,4 +1,4 @@
-package org.hildan.accounting.money
+package org.hildan.accounting.mortgage
 
 /**
  * Represents a local date with month precision, so basically a month and a year.

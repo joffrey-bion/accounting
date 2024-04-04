@@ -1,4 +1,4 @@
-package org.hildan.accounting.money
+package org.hildan.accounting.mortgage
 
 import kotlin.test.*
 
