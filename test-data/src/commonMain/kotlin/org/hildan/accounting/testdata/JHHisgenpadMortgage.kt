@@ -1,4 +1,4 @@
-package org.hildan.accounting.ui.global
+package org.hildan.accounting.testdata
 
 import org.hildan.accounting.money.*
 import org.hildan.accounting.mortgage.*
@@ -24,36 +24,11 @@ private val ObvionRateSept2023 = InterestRate.DynamicLtv(
     )
 )
 
+private val deliveryPayment = Payment(date = deliveryDate, amount = constructionPrice * 10.pct)
 private val constructionBillsPayments = listOf(3.pct, 10.pct, 15.pct, 10.pct, 5.pct, "23.5".pct, 10.pct, "13.5".pct)
-    .mapIndexed { i, f -> Payment(startDate.plusMonths(i + 1), constructionPrice * f) } +
-        Payment(deliveryDate, constructionPrice * 10.pct)
+        .mapIndexed { i, f -> Payment(startDate.plusMonths(i + 1), constructionPrice * f) } + deliveryPayment
 
-private val elzenhagen36Incremental = Property.NewConstruction(
-    installments = listOf(
-        Payment(startDate, landPrice),
-        Payment(startDate, parkingPrice),
-        Payment(startDate, optionsPrice),
-        *constructionBillsPayments.toTypedArray(),
-    )
-)
-
-private val elzenhagen36IncrNoParking = Property.NewConstruction(
-    installments = listOf(
-        Payment(startDate, landPrice),
-        Payment(startDate, optionsPrice),
-        *constructionBillsPayments.toTypedArray(),
-    )
-)
-
-private val elzenhagen36BulkNoParking = Property.NewConstruction(
-    installments = listOf(
-        Payment(startDate, landPrice),
-        Payment(startDate, constructionPrice),
-        Payment(startDate, optionsPrice),
-    )
-)
-
-val myMortgage = SimulationSettings(
+val jhHisgenpadSimulationIncremental = SimulationSettings(
     simulationName = "700k Incr. No park",
     mortgage = Mortgage(
         amount = 700_000.eur,
@@ -61,10 +36,17 @@ val myMortgage = SimulationSettings(
         startMonth = startDate,
         termInYears = 30,
     ),
-    property = elzenhagen36IncrNoParking,
+    property = Property.NewConstruction(
+        installments = listOf(
+            Payment(startDate, landPrice),
+            Payment(startDate, parkingPrice),
+            Payment(startDate, optionsPrice),
+            *constructionBillsPayments.toTypedArray<Payment>(),
+        )
+    ),
 )
 
-val myMortgageOfferSimulation = SimulationSettings(
+val jhHisgenpadSimulationBulk = SimulationSettings(
     simulationName = "700k Bulk No park",
     mortgage = Mortgage(
         amount = 700_000.eur,
@@ -72,5 +54,12 @@ val myMortgageOfferSimulation = SimulationSettings(
         startMonth = startDate,
         termInYears = 30,
     ),
-    property = elzenhagen36BulkNoParking,
+    property = Property.NewConstruction(
+        installments = listOf(
+            Payment(startDate, landPrice),
+            Payment(startDate, parkingPrice),
+            Payment(startDate, optionsPrice),
+            Payment(startDate, constructionPrice),
+        )
+    ),
 )

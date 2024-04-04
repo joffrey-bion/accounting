@@ -9,4 +9,5 @@ application {
 
 dependencies {
     implementation(project(":mortgage"))
+    implementation(project(":test-data"))
 }

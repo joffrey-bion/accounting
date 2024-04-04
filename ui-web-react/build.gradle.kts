@@ -14,6 +14,7 @@ kotlin {
         jsMain {
             dependencies {
                 implementation(project(":mortgage"))
+                implementation(project(":test-data"))
                 implementation(platform(libs.kotlin.wrappers.bom.get()))
                 implementation(libs.kotlin.wrappers.emotion)
                 implementation(libs.kotlin.wrappers.mui.base)

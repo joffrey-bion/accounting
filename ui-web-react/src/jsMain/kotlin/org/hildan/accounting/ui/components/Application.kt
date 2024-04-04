@@ -5,6 +5,7 @@ import mui.icons.material.*
 import mui.material.*
 import mui.system.*
 import org.hildan.accounting.mortgage.*
+import org.hildan.accounting.testdata.*
 import org.hildan.accounting.ui.components.mortgage.*
 import org.hildan.accounting.ui.global.*
 import react.*
@@ -27,7 +28,7 @@ val Application = FC("Application") {
         dialogProps = jso {
             open = newSimFormOpen
         }
-        prefilledData = myMortgageOfferSimulation // TODO remove this in the future
+        prefilledData = jhHisgenpadSimulationIncremental // TODO remove this in the future
         onCreate = {
             newSimFormOpen = false
             newSimToSimulate = it
