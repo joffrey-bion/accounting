@@ -3,7 +3,7 @@ package org.hildan.accounting.ui.components
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.*
 import androidx.compose.material.icons.*
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.automirrored.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
@@ -11,23 +11,31 @@ import androidx.compose.ui.graphics.vector.*
 import androidx.compose.ui.input.pointer.*
 import kotlinx.coroutines.*
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun InfotipBubble(
     tooltipText: String,
     modifier: Modifier = Modifier,
-    icon: ImageVector = Icons.Default.HelpOutline,
+    icon: ImageVector = Icons.AutoMirrored.Filled.HelpOutline,
 ) {
     val scope = rememberCoroutineScope()
-    val tooltipState = remember { PlainTooltipState() }
+    val tooltipState = rememberBasicTooltipState()
+    val tooltipPositionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider()
 
     fun showTooltip() = scope.launch { tooltipState.show() }
-    fun hideTooltip() = scope.launch { tooltipState.dismiss() }
+    fun hideTooltip() = tooltipState.dismiss()
 
-    PlainTooltipBox(
-        tooltip = { Text(tooltipText) },
-        tooltipState = tooltipState,
+    BasicTooltipBox(
+        positionProvider = tooltipPositionProvider,
+        tooltip = {
+            RichTooltip {
+                Text(tooltipText)
+            }
+        },
+        state = tooltipState,
         modifier = modifier,
+        focusable = true,
+        enableUserInput = true,
     ) {
         Icon(
             imageVector = icon,
