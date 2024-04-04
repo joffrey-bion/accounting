@@ -2,6 +2,8 @@ package org.hildan.accounting.mortgage
 
 /**
  * Represents a local date with month precision, so basically a month and a year.
+ * 
+ * The [month] is the 1-based month number in the year: 1 for January, 2 for February, etc.
  */
 data class AbsoluteMonth(val year: Int, val month: Int) : Comparable<AbsoluteMonth> {
 
