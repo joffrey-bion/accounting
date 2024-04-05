@@ -7,7 +7,7 @@ import org.hildan.accounting.mortgage.Property
 private val landPrice = "165894.98".eur
 private val constructionPrice = "586461.79".eur
 private val parkingPrice = 35_000.eur
-private val optionsPrice = 38_633.eur
+private val optionsPrice = 56_913.eur
 
 private val startDate = AbsoluteMonth(2024, 2)
 private val deliveryDate = AbsoluteMonth(2025, 6)
