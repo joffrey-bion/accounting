@@ -1,5 +1,6 @@
 package org.hildan.accounting.mortgage
 
+import kotlinx.datetime.*
 import org.hildan.accounting.money.*
 
 /**
@@ -16,9 +17,10 @@ data class Mortgage(
      */
     val annualInterestRate: InterestRate,
     /**
-     * The year and month of the first payment.
+     * The start date of the loan (when signed at the notary's office).
+     * This is the moment when the funds are released and interest starts being due.
      */
-    val startMonth: AbsoluteMonth,
+    val startDate: LocalDate,
     /**
      * The payments made voluntarily to pay back the loan, usually to reduce the interest and thus the monthly payments.
      */
@@ -27,9 +29,20 @@ data class Mortgage(
      * The total duration (in years) over which the mortgage will be repaid.
      */
     val termInYears: Int = 30,
-) {
     /**
-     * In case of linear mode, the monthly principal payment is the same every month for the duration of the mortgage.
+     * The dates of the monthly payments for the duration of the mortgage.
      */
-    val linearMonthlyPrincipalReduction: Amount = amount / termInYears / 12
+    val monthlyPaymentDates: List<LocalDate> = monthlyPaymentDates(startDate, termInYears, dayOfMonth = 28),
+)
+
+/**
+ * Returns the monthly payment dates based on the [startDate] of the loan and the [termInYears], assuming a fixed day
+ * [dayOfMonth] each month.
+ */
+fun monthlyPaymentDates(startDate: LocalDate, termInYears: Int, dayOfMonth: Int): List<LocalDate> {
+    val firstPayment = LocalDate(startDate.year, startDate.month, dayOfMonth)
+    val redemptionDay = startDate.plus(termInYears, DateTimeUnit.YEAR)
+    return generateSequence(firstPayment) { it.plus(1, DateTimeUnit.MONTH) }
+        .takeWhile { it <= redemptionDay }
+        .toList()
 }

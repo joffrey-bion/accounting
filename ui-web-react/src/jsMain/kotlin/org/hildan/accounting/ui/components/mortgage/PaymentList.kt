@@ -1,6 +1,7 @@
 package org.hildan.accounting.ui.components.mortgage
 
 import js.core.*
+import kotlinx.datetime.*
 import mui.icons.material.*
 import mui.material.*
 import mui.material.Box
@@ -44,7 +45,7 @@ val PaymentList = FC<PaymentListProps> { props ->
         }
         if (addingNewItem) {
             NewPaymentItem {
-                initialMonth = payments.lastOrNull()?.date?.plusMonths(1)
+                initialDate = payments.lastOrNull()?.date?.plus(1, DateTimeUnit.MONTH)
                 initialAmount = payments.lastOrNull()?.amount
                 onSubmit = { p ->
                     addingNewItem = false
@@ -68,19 +69,19 @@ val PaymentList = FC<PaymentListProps> { props ->
 
 @Suppress("INLINE_CLASS_IN_EXTERNAL_DECLARATION_WARNING")
 private external interface NewPaymentItemProps : Props {
-    var initialMonth: AbsoluteMonth?
+    var initialDate: LocalDate?
     var initialAmount: Amount?
     var onSubmit: ((Payment) -> Unit)?
     var onClose: (() -> Unit)?
 }
 
 private val NewPaymentItem = FC<NewPaymentItemProps> { props ->
-    var newItemMonth by useState(absoluteMonthStateOf(props.initialMonth ?: AbsoluteMonth(2024, 1)))
+    var newItemMonth by useState(localDateStateOf(props.initialDate ?: LocalDate(2024, 1, 1)))
     var newItemAmount by useState(amountStateOf(props.initialAmount ?: 1000.eur))
 
     ListItem {
         Box {
-            AbsoluteMonthTextField {
+            LocalDateTextField {
                 value = newItemMonth
                 onChange = { newItemMonth = it }
                 textFieldProps = jso {

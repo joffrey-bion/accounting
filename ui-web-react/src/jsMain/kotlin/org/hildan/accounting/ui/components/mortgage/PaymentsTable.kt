@@ -2,6 +2,7 @@ package org.hildan.accounting.ui.components.mortgage
 
 import emotion.react.*
 import js.core.*
+import kotlinx.datetime.*
 import mui.icons.material.*
 import mui.material.*
 import mui.material.Box
@@ -56,7 +57,7 @@ val PaymentsTable = FC<PaymentsTableProps>("PaymentsTable") { props ->
                 }
                 if (addingNewItem) {
                     EditablePaymentRow {
-                        initialPayment = payments.lastOrNull()?.let { it.copy(date = it.date.plusMonths(1)) }
+                        initialPayment = payments.lastOrNull()?.let { it.copy(date = it.date.plus(1, DateTimeUnit.MONTH)) }
                         onSubmit = { p ->
                             addingNewItem = false
                             props.onChange?.invoke(payments + p)
@@ -132,13 +133,13 @@ private external interface EditablePaymentRowProps : Props {
 }
 
 private val EditablePaymentRow = FC<EditablePaymentRowProps>("EditablePaymentRow") { props ->
-    var newItemMonth by useState(absoluteMonthStateOf(props.initialPayment?.date ?: AbsoluteMonth(2024, 1)))
+    var newItemDate by useState(localDateStateOf(props.initialPayment?.date ?: Clock.System.todayIn(TimeZone.currentSystemDefault())))
     var newItemAmount by useState(amountStateOf(props.initialPayment?.amount ?: 1000.eur))
 
     fun submit() {
-        val month = newItemMonth as? TextFieldState.Valid ?: return
+        val date = newItemDate as? TextFieldState.Valid ?: return
         val amount = newItemAmount as? TextFieldState.Valid ?: return
-        props.onSubmit?.invoke(Payment(month.value, amount.value))
+        props.onSubmit?.invoke(Payment(date.value, amount.value))
     }
 
     fun cancel() {
@@ -157,9 +158,9 @@ private val EditablePaymentRow = FC<EditablePaymentRowProps>("EditablePaymentRow
             sx {
                 width = 10.rem
             }
-            AbsoluteMonthTextField {
-                value = newItemMonth
-                onChange = { newItemMonth = it }
+            LocalDateTextField {
+                value = newItemDate
+                onChange = { newItemDate = it }
                 textFieldProps = jso {
                     size = Size.small
                     onKeyDown = { handleKeyPress(it) }
@@ -186,7 +187,7 @@ private val EditablePaymentRow = FC<EditablePaymentRowProps>("EditablePaymentRow
                 }
                 IconButton {
                     title = "Add"
-                    disabled = newItemMonth is TextFieldState.Invalid || newItemAmount is TextFieldState.Invalid
+                    disabled = newItemDate is TextFieldState.Invalid || newItemAmount is TextFieldState.Invalid
                     onClick = { submit() }
                     Check { fontSize = SvgIconSize.small }
                 }

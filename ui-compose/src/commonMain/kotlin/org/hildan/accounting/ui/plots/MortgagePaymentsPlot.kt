@@ -7,6 +7,8 @@ import io.github.koalaplot.core.line.*
 import io.github.koalaplot.core.style.*
 import io.github.koalaplot.core.util.*
 import io.github.koalaplot.core.xygraph.*
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.format
 import org.hildan.accounting.money.*
 import org.hildan.accounting.mortgage.*
 
@@ -16,7 +18,7 @@ fun MortgagePaymentsPlot(simulationResult: SimulationResult) {
     val payments = simulationResult.monthlyPayments
     val xAxisModel = remember(payments) {
         val months = payments.map { it.date }
-        absoluteMonthAxisModel(min = months.min(), max = months.max())
+        localDateAxisModel(min = months.min(), max = months.max())
     }
     val yAxisModel = remember(payments) {
         amountAxisModel(max = payments.maxOf { it.total + 100.eur })
@@ -34,14 +36,14 @@ fun MortgagePaymentsPlot(simulationResult: SimulationResult) {
         yAxisModel = yAxisModel,
         xAxisTitle = "Month",
         yAxisTitle = "Mortgage Payments",
-        xAxisLabels = AbsoluteMonth::toString,
+        xAxisLabels = { it.format(LocalDate.Formats.ISO) },
         yAxisLabels = { "${it.format()} €" },
     ) {
         StackedAreaPlot(
             data = entries,
             styles = styles,
             firstBaseline = AreaBaseline.ConstantLine(Amount.ZERO),
-        )
+            )
     }
 }
 

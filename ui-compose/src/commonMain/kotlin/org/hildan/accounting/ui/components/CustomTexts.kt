@@ -2,8 +2,9 @@ package org.hildan.accounting.ui.components
 
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.format
 import org.hildan.accounting.money.*
-import org.hildan.accounting.mortgage.*
 
 @Composable
 fun AmountText(amount: Amount, scale: Int? = null, currencySymbol: String = "€") {
@@ -15,7 +16,7 @@ fun AmountText(amount: Amount, scale: Int? = null, currencySymbol: String = "€
 }
 
 @Composable
-fun AbsoluteMonthText(date: AbsoluteMonth) {
-    val formattedDate = remember(date) { date.toString() }
+fun LocalDateText(date: LocalDate) {
+    val formattedDate = remember(date) { date.format(LocalDate.Formats.ISO) }
     Text(formattedDate)
 }

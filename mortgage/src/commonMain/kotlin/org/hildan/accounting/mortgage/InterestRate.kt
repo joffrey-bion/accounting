@@ -1,5 +1,6 @@
 package org.hildan.accounting.mortgage
 
+import kotlinx.datetime.LocalDate
 import org.hildan.accounting.money.*
 
 /**
@@ -8,16 +9,16 @@ import org.hildan.accounting.money.*
 sealed interface InterestRate {
 
     /**
-     * Gives the effective rate for the given [month] and [currentLtvRatio].
+     * Gives the effective rate for the given [date] and [currentLtvRatio].
      */
-    fun at(month: AbsoluteMonth, currentLtvRatio: Fraction): Fraction
+    fun at(date: LocalDate, currentLtvRatio: Fraction): Fraction
 
     /**
      * An interest rate that doesn't depend on the moment in time.
      * It can depend on other things, like the current loan-to-value (LTV) ratio.
      */
     sealed interface TimeIndependent : InterestRate {
-        override fun at(month: AbsoluteMonth, currentLtvRatio: Fraction): Fraction = at(currentLtvRatio)
+        override fun at(date: LocalDate, currentLtvRatio: Fraction): Fraction = at(currentLtvRatio)
 
         fun at(currentLtvRatio: Fraction): Fraction
     }
@@ -58,9 +59,9 @@ sealed interface InterestRate {
      */
     data class Predicted(
         /**
-         * The month from which the [futureRate] applies.
+         * The date from which the [futureRate] applies.
          */
-        val changeDate: AbsoluteMonth,
+        val changeDate: LocalDate,
         /**
          * The initial interest rate up to and excluding [changeDate].
          */
@@ -70,10 +71,10 @@ sealed interface InterestRate {
          */
         val futureRate: TimeIndependent,
     ): InterestRate {
-        override fun at(month: AbsoluteMonth, currentLtvRatio: Fraction): Fraction = if (month < changeDate) {
-            initialRate.at(month, currentLtvRatio)
+        override fun at(date: LocalDate, currentLtvRatio: Fraction): Fraction = if (date < changeDate) {
+            initialRate.at(date, currentLtvRatio)
         } else {
-            futureRate.at(month, currentLtvRatio)
+            futureRate.at(date, currentLtvRatio)
         }
     }
 }

@@ -7,6 +7,7 @@ kotlin {
         commonMain {
             dependencies {
                 api(project(":money"))
+                api(libs.kotlinx.datetime)
             }
         }
         commonTest {

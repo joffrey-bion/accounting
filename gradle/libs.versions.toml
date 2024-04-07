@@ -5,6 +5,7 @@ compose = "1.6.1"
 koalaplot = "0.5.4"
 kotlin-plugin = "1.9.23"
 kotlin-wrappers = "1.0.0-pre.668"
+kotlinx-datetime = "0.6.0-RC.2" # 0.6 for date formatting
 
 [libraries]
 
@@ -18,3 +19,4 @@ kotlin-wrappers-mui-icons-material = { module = "org.jetbrains.kotlin-wrappers:k
 kotlin-wrappers-react-core = { module = "org.jetbrains.kotlin-wrappers:kotlin-react" }
 kotlin-wrappers-react-dom = { module = "org.jetbrains.kotlin-wrappers:kotlin-react-dom" }
 
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }

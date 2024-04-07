@@ -3,24 +3,22 @@ package org.hildan.accounting.ui.forms
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import kotlinx.datetime.*
 import org.hildan.accounting.money.*
 import org.hildan.accounting.mortgage.*
 
-private val defaultStartDate = AbsoluteMonth(2025, 1)
+private val defaultStartDate = Clock.System.todayIn(TimeZone.currentSystemDefault())
+
 private val defaultMortgage = Mortgage(
     amount = 400_000.eur,
     annualInterestRate = InterestRate.Fixed(4.pct),
-    startMonth = defaultStartDate,
+    startDate = defaultStartDate,
     termInYears = 30,
 )
+
 private val defaultProperty = Property.Existing(
     wozValue = 400_000.eur,
     purchase = Payment(defaultStartDate, 420_000.eur),
-)
-private val defaultSimulation = SimulationSettings(
-    simulationName = "My Simulation",
-    mortgage = defaultMortgage,
-    property = defaultProperty,
 )
 
 @Composable

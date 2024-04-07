@@ -9,6 +9,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.unit.*
 import org.hildan.accounting.mortgage.*
+import org.hildan.accounting.ui.components.datepicker.*
 import org.hildan.accounting.ui.components.textinput.*
 
 @Composable
@@ -43,7 +44,7 @@ private fun EditablePaymentListItem(value: Payment, onValueChange: (Payment) -> 
                         onEditCancel = { isEditing = false },
                     )
                 } else {
-                    AbsoluteMonthText(value.date)
+                    LocalDateText(value.date)
                     Spacer(Modifier.width(5.dp))
                     AmountText(value.amount)
                     Spacer(Modifier.width(3.dp))
@@ -64,9 +65,9 @@ private fun PaymentListItemFields(
 ) {
     var date by remember(initialValue) { mutableStateOf(initialValue.date) }
     var amount by remember(initialValue) { mutableStateOf(initialValue.amount) }
-    AbsoluteMonthField(
+    DatePickerButton(
         value = date,
-        onValueChange = { date = it },
+        onValueChange = { date = it ?: error("selected date should not be null") },
         modifier = Modifier.width(150.dp),
     )
     AmountTextField(
