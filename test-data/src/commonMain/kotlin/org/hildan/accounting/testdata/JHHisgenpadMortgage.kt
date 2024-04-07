@@ -30,7 +30,7 @@ private val constructionBillsPayments = listOf(3.pct, 10.pct, 15.pct, 10.pct, 5.
         .mapIndexed { i, f -> Payment(startDate.plus(i + 1, DateTimeUnit.MONTH), constructionPrice * f) } + deliveryPayment
 
 val jhHisgenpadSimulationIncremental = SimulationSettings(
-    simulationName = "700k Incr. No park",
+    simulationName = "700k Incremental",
     mortgage = Mortgage(
         amount = 700_000.eur,
         annualInterestRate = ObvionRateSept2023,
@@ -48,7 +48,7 @@ val jhHisgenpadSimulationIncremental = SimulationSettings(
 )
 
 val jhHisgenpadSimulationBulk = SimulationSettings(
-    simulationName = "700k Bulk No park",
+    simulationName = "700k Bulk",
     mortgage = Mortgage(
         amount = 700_000.eur,
         annualInterestRate = ObvionRateSept2023,
