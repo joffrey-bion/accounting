@@ -10,8 +10,10 @@ private val constructionPrice = "586461.79".eur
 private val parkingPrice = 35_000.eur
 private val optionsPrice = 56_913.eur
 
-private val startDate = LocalDate(year = 2024, monthNumber = 11, dayOfMonth = 20)
-private val deliveryDate = LocalDate(year = 2025, monthNumber = 7, dayOfMonth = 1)
+// Based on initial options price estimate, and now recorded as such by Obvion
+private val estimatedWozValue = landPrice + constructionPrice + parkingPrice + 38_633.eur
+
+private val startDate = LocalDate(year = 2024, monthNumber = 11, dayOfMonth = 17)
 
 // From: https://www.obvion.nl/Hypotheek-rente/Actuele-hypotheekrente-Obvion?duurzaamheidskorting=Ja
 // The following rates were locked in on 2023-09-11
@@ -25,9 +27,17 @@ private val ObvionRateSept2023 = InterestRate.DynamicLtv(
     )
 )
 
-private val deliveryPayment = Payment(date = deliveryDate, amount = constructionPrice * 10.pct)
-private val constructionBillsPayments = listOf(3.pct, 10.pct, 15.pct, 10.pct, 5.pct, "23.5".pct, 10.pct, "13.5".pct)
-        .mapIndexed { i, f -> Payment(startDate.plus(i + 1, DateTimeUnit.MONTH), constructionPrice * f) } + deliveryPayment
+private val constructionBillsPayments = listOf(
+    Payment(date = LocalDate.parse("2024-01-16"), amount = constructionPrice * 3.pct),
+    Payment(date = LocalDate.parse("2024-05-01"), amount = constructionPrice * 10.pct),     // TODO add real date
+    Payment(date = LocalDate.parse("2024-06-01"), amount = constructionPrice * 15.pct),     // TODO add real date
+    Payment(date = LocalDate.parse("2024-07-01"), amount = constructionPrice * 10.pct),     // TODO add real date
+    Payment(date = LocalDate.parse("2024-08-01"), amount = constructionPrice * 5.pct),      // TODO add real date
+    Payment(date = LocalDate.parse("2024-09-01"), amount = constructionPrice * "23.5".pct), // TODO add real date
+    Payment(date = LocalDate.parse("2024-10-01"), amount = constructionPrice * 10.pct),     // TODO add real date
+    Payment(date = LocalDate.parse("2024-11-01"), amount = constructionPrice * "13.5".pct), // TODO add real date
+    Payment(date = LocalDate.parse("2025-07-01"), amount = constructionPrice * 10.pct), // on delivery date
+)
 
 val jhHisgenpadSimulationIncremental = SimulationSettings(
     simulationName = "700k Incremental",
@@ -43,7 +53,8 @@ val jhHisgenpadSimulationIncremental = SimulationSettings(
             Payment(startDate, parkingPrice),
             Payment(startDate, optionsPrice),
             *constructionBillsPayments.toTypedArray<Payment>(),
-        )
+        ),
+        wozValue = estimatedWozValue,
     ),
 )
 
@@ -61,6 +72,7 @@ val jhHisgenpadSimulationBulk = SimulationSettings(
             Payment(startDate, parkingPrice),
             Payment(startDate, optionsPrice),
             Payment(startDate, constructionPrice),
-        )
+        ),
+        wozValue = estimatedWozValue,
     ),
 )
