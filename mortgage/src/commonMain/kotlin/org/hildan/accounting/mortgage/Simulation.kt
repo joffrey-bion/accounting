@@ -44,7 +44,15 @@ fun SimulationSettings.simulateLinear(): SimulationResult {
 
         val currentLtvRatio = mortgageBalance / property.wozValue
         val effectiveAnnualRate = mortgage.annualInterestRate.at(interestPeriodStart, currentLtvRatio = currentLtvRatio)
-        val interest = mortgageBalance.coerceAtLeast(Amount.ZERO) * effectiveAnnualRate / 12
+        
+        val fullMonthInterest = mortgageBalance.coerceAtLeast(Amount.ZERO) * effectiveAnnualRate / 12
+        val effectiveInterest = if (paymentIndex == 0 && firstMonthIsPartial) {
+            val interestPeriodDays = interestPeriodStart.daysUntil(paymentDate.nextMonthFirstDay())
+            val totalDaysInMonth = paymentDate.nDaysInMonth()
+            fullMonthInterest * interestPeriodDays / totalDaysInMonth
+        } else {
+            fullMonthInterest
+        }
 
         // We only start paying back the principal on the first full month.
         // If the first month is partial, we just pay interest.
@@ -55,7 +63,7 @@ fun SimulationSettings.simulateLinear(): SimulationResult {
             date = paymentDate,
             principalReduction = principalReduction,
             extraPrincipalReduction = extraRedemption,
-            interest = interest,
+            interest = effectiveInterest,
             balanceBefore = mortgageBalance,
         )
         payments.add(payment)
@@ -70,6 +78,8 @@ fun SimulationSettings.simulateLinear(): SimulationResult {
     }
     return SimulationResult(settings = this, monthlyPayments = payments)
 }
+
+private fun LocalDate.nDaysInMonth(): Int = nextMonthFirstDay().minus(1, DateTimeUnit.DAY).dayOfMonth
 
 private fun LocalDate.nextMonthFirstDay(): LocalDate {
     val sameDayNextMonth = plus(1, DateTimeUnit.MONTH)
