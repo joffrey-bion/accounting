@@ -17,18 +17,19 @@ import org.hildan.accounting.mortgage.*
 fun MortgagePaymentsPlot(simulationResult: SimulationResult) {
     val payments = simulationResult.monthlyPayments
     val xAxisModel = remember(payments) {
-        val months = payments.map { it.date }
-        localDateAxisModel(min = months.min(), max = months.max())
+        val dates = payments.map { it.date }
+        localDateAxisModel(min = dates.min(), max = dates.max())
     }
     val yAxisModel = remember(payments) {
         amountAxisModel(max = payments.maxOf { it.total + 100.eur })
     }
-
-    val entries = remember(payments) { payments.map { stackedAreaPlotEntry(it.date, arrayOf(it.total, it.principalReduction)) } }
+    val entries = remember(payments) {
+        payments.map { stackedAreaPlotEntry(it.date, arrayOf(it.total, it.principalReduction)) }
+    }
     val styles = List(2) {
         StackedAreaStyle(
             LineStyle(brush = SolidColor(Color.Blue), strokeWidth = 1.dp),
-            AreaStyle(brush = SolidColor(Color.Blue.copy(alpha = 0.20f * (it + 1))))
+            AreaStyle(brush = SolidColor(Color.Blue.copy(alpha = 0.20f * (it + 1)))),
         )
     }
     XYGraph(
@@ -43,7 +44,7 @@ fun MortgagePaymentsPlot(simulationResult: SimulationResult) {
             data = entries,
             styles = styles,
             firstBaseline = AreaBaseline.ConstantLine(Amount.ZERO),
-            )
+        )
     }
 }
 
