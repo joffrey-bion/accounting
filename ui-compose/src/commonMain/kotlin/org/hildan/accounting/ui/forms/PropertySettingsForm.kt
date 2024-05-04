@@ -28,7 +28,7 @@ fun PropertySettingsForm(value: Property, onValueChange: (Property) -> Unit) {
             Spacer(Modifier.width(10.dp))
             Text("New construction")
             Spacer(Modifier.width(4.dp))
-            InfotipBubble("Blabla bla bla blal balbl afafe")
+            InfotipBubble("Check this if the house/apartment is not built yet")
         }
         when (value) {
             is Property.NewConstruction -> {
