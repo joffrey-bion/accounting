@@ -25,25 +25,27 @@ To find the PDF for a given year, follow the instructions below:
 
 The tax rates for bonuses or special rewards ("bijzondere beloningen") are in a separate table. To get it:
 
- 1. Go to the [table search page][2] on the government's website
- 2. Select the year
- 3. Select "Nederland" ("The Netherlands")
- 4. Select "Tabel voor bijzondere beloningen" ("Table for special rewards")
- 5. Select "Standaardsituatie" ("Standard situation")
- 6. Select "Wit" ("White" table because this is the standard one, for wages from the present employment; the green ones are for past employment)
- 7. Select PDF or Excel format as you prefer
+1. Go to the [table search page][2] on the government's website
+2. Select the year
+3. Select `Nederland` (The Netherlands)
+4. Select `Tabel voor bijzondere beloningen` (table for special rewards)
+5. Select `Standaardsituatie` (standard situation)
+6. Select `Wit` (White) table. This is because this is the standard one, for wages from the present employment;
+   the green ones are for past employment.
+7. Select PDF or Excel format as you prefer
 
-FIXME: the instructions below are flawed: we're only taking the rate for a specific range of salary but the tool should
+> **FIXME:** the instructions below are flawed: we're only taking the rate for a specific range of salary but the tool should
 support every possible salary. We should instead get all rates for all salary ranges.
 
 How to read the table:
-	* The tool only uses values for people younger than the state pension age (AOW-leeftijd) which is ~66 years old,
-      so only consider the columns under "Jonger dan AOW-leeftijd"
-	* Look at the line corresponding to the biggest threshold exceeded by the gross annual salary for the year (only
-	  the taxable part, so -30% if applicable)
-	* Look at the 2 columns under "met loonheffingskorting"
-	* Add the discount column ("verrekeningspercentage loonheffingskorting") to the standard rate column ("standaardtarief")
-	* This gives the total percentage, for example 49.5% + 6% = 55.5% in 2021
+    
+* The tool only uses values for people younger than the state pension age (AOW-leeftijd) which is ~66 years old,
+  so only consider the columns under `Jonger dan AOW-leeftijd`
+* Look at the line corresponding to the biggest threshold exceeded by the gross annual salary for the year (only
+  the taxable part, so -30% if applicable)
+* Look at the 2 columns under `met loonheffingskorting`
+* Add the discount column (`verrekeningspercentage loonheffingskorting`) to the standard rate column (`standaardtarief`)
+* This gives the total percentage, for example 49.5% + 6% = 55.5% in 2021
 
 [1]: https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/themaoverstijgend/brochures_en_publicaties/brochures_en_publicaties_werkgever
 [2]: https://www.belastingdienst.nl/wps/wcm/connect/nl/personeel-en-loon/content/hulpmiddel-loonbelastingtabellen
