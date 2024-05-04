@@ -9,7 +9,6 @@ import androidx.compose.ui.*
 import kotlinx.coroutines.*
 import org.hildan.accounting.mortgage.*
 import org.hildan.accounting.ui.components.*
-import org.hildan.accounting.ui.components.datepicker.*
 import org.hildan.accounting.ui.forms.*
 import org.hildan.accounting.ui.plots.*
 
@@ -30,29 +29,36 @@ fun MortgageSimulationScreen() {
         editedSimulation = null
     }
 
-    if (simulationFormIsOpen) {
-        SimulationSettingsForm(initialValue = editedSimulation, onSave = { sim ->
-            val oldSim = editedSimulation
-            if (oldSim == null) {
-                scope.launch {
-                    simulations += sim.simulateLinear()
+    Box(modifier = Modifier.fillMaxWidth()) {
+        if (simulationFormIsOpen) {
+            SimulationSettingsForm(
+                initialValue = editedSimulation,
+                modifier = Modifier.align(Alignment.Center),
+                onSave = { sim ->
+                    val oldSim = editedSimulation
+                    if (oldSim == null) {
+                        scope.launch {
+                            simulations += sim.simulateLinear()
+                        }
+                    } else {
+                        val index = simulations.indexOfFirst { it.settings == oldSim }
+                        scope.launch {
+                            simulations = simulations.toMutableList().apply { set(index, sim.simulateLinear()) }
+                        }
+                    }
+                    closeSimulationForm()
+                },
+                onCancel = { closeSimulationForm() },
+            )
+        } else {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                SimulationList(simulations = simulations, onEdit = { sim -> openSimulationForm(sim.settings) })
+                IconButton(onClick = { openSimulationForm(simulation = null) }) {
+                    Icon(Icons.Default.Add, contentDescription = "Add simulation")
                 }
-            } else {
-                val index = simulations.indexOfFirst { it.settings == oldSim }
-                scope.launch {
-                    simulations = simulations.toMutableList().apply { set(index, sim.simulateLinear()) }
+                if (simulations.isNotEmpty()) {
+                    MortgagePaymentsPlot(simulationResult = simulations.first())
                 }
-            }
-            closeSimulationForm()
-        }, onCancel = { closeSimulationForm() })
-    } else {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            SimulationList(simulations = simulations, onEdit = { sim -> openSimulationForm(sim.settings) })
-            IconButton(onClick = { openSimulationForm(simulation = null) }) {
-                Icon(Icons.Default.Add, contentDescription = "Add simulation")
-            }
-            if (simulations.isNotEmpty()) {
-                MortgagePaymentsPlot(simulationResult = simulations.first())
             }
         }
     }

@@ -3,6 +3,7 @@ package org.hildan.accounting.ui.forms
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.*
 import kotlinx.datetime.*
 import org.hildan.accounting.money.*
 import org.hildan.accounting.mortgage.*
@@ -24,6 +25,7 @@ private val defaultProperty = Property.Existing(
 @Composable
 fun SimulationSettingsForm(
     initialValue: SimulationSettings? = null,
+    modifier: Modifier = Modifier,
     onSave: (SimulationSettings) -> Unit,
     onCancel: () -> Unit,
 ) {
@@ -37,7 +39,7 @@ fun SimulationSettingsForm(
         nameError = name.isNullOrBlank()
     }
 
-    Column {
+    Column(modifier) {
         OutlinedTextField(
             value = name ?: "",
             onValueChange = { name = it.trim(); validate() },
