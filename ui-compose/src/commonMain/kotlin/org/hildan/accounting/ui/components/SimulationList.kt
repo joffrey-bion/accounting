@@ -1,7 +1,6 @@
 package org.hildan.accounting.ui.components
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.*
 import androidx.compose.material.icons.*
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -17,8 +16,8 @@ fun SimulationList(
     onEdit: (SimulationResult) -> Unit,
 ) {
     // TODO handle zero-state bette
-    LazyColumn(modifier = modifier) {
-        itemsIndexed(simulations) { index, simulation ->
+    Column(modifier = modifier) {
+        simulations.forEach { simulation ->
             SimulationListItem(
                 simulation = simulation,
                 onEdit = { onEdit(simulation) },
