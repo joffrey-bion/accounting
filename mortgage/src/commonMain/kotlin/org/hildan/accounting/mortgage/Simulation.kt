@@ -127,7 +127,7 @@ data class SimulationResult(
 
     val annuitiesDistribution: Distribution = monthlyPayments.map { it.total }.distribution()
 
-    fun summarizeYears() = monthlyPayments
+    val summarizedYears: List<MortgageYearSummary> = monthlyPayments
         .groupingBy { it.date.year }
         .aggregate { year, acc: MortgageYearSummary?, p, _ ->
             if (acc == null) {
@@ -151,6 +151,7 @@ data class SimulationResult(
             }
         }
         .values
+        .sortedBy { it.year }
 }
 
 /**

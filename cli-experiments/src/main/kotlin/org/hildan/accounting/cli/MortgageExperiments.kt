@@ -15,7 +15,7 @@ fun simulateMortgages() {
 
 private fun printTables(simulation: SimulationResult) {
     println("=== Annual simulation (${simulation.name}) ===")
-    println(YearTable.format(simulation.summarizeYears()))
+    println(YearTable.format(simulation.summarizedYears))
     println()
     println("=== Monthly simulation (${simulation.name}) ===")
     println(MonthTable.format(simulation.monthlyPayments))
