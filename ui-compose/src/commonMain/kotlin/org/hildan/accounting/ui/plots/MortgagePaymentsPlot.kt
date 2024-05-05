@@ -1,6 +1,7 @@
 package org.hildan.accounting.ui.plots
 
 import androidx.compose.runtime.*
+import androidx.compose.ui.*
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.unit.*
 import io.github.koalaplot.core.line.*
@@ -14,7 +15,7 @@ import org.hildan.accounting.mortgage.*
 
 @OptIn(ExperimentalKoalaPlotApi::class)
 @Composable
-fun MortgagePaymentsPlot(simulationResult: SimulationResult) {
+fun MortgagePaymentsPlot(simulationResult: SimulationResult, modifier: Modifier) {
     val payments = simulationResult.monthlyPayments
     val xAxisModel = remember(payments) {
         val dates = payments.map { it.date }
@@ -35,6 +36,7 @@ fun MortgagePaymentsPlot(simulationResult: SimulationResult) {
     XYGraph(
         xAxisModel = xAxisModel,
         yAxisModel = yAxisModel,
+        modifier = modifier,
         xAxisTitle = "Month",
         yAxisTitle = "Mortgage Payments",
         xAxisLabels = { it.format(LocalDate.Formats.ISO) },
