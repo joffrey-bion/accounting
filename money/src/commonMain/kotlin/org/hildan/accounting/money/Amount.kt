@@ -46,6 +46,12 @@ value class Amount private constructor(private val value: BigDecimal) : Comparab
     fun doubleValue() = value.doubleValue(exactRequired = false)
 
     /**
+     * Exposes this amount as a float value, with a potential loss of precision.
+     */
+    // using exactRequired=false because amounts have too much precision and the conversion fails in exact mode
+    fun floatValue() = value.floatValue(exactRequired = false)
+
+    /**
      * Formats this amount as a string without any rounding.
      */
     fun format(): String = value.toStringExpanded()

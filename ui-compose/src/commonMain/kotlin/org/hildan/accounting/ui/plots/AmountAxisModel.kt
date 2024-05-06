@@ -26,5 +26,5 @@ fun amountAxisModel(
 
 private object AmountFloatConverter : FloatConverter<Amount> {
     override fun convertTo(value: Float): Amount = Amount(value.toString())
-    override fun convertFrom(value: Amount): Float = value.doubleValue().toFloat()
+    override fun convertFrom(value: Amount): Float = value.floatValue()
 }
