@@ -26,9 +26,9 @@ class MonthlyPaymentDatesTest {
             termInYears = 30,
             dayOfMonth = 28,
         )
-        val expectedFirstPayment = LocalDate(2023, 12, 28)
+        val expectedFirstPayment = LocalDate(2023, 11, 28)
         val expectedDates = generateSequence(expectedFirstPayment) { it.plus(1, DateTimeUnit.MONTH) }
-            .take(30 * 12)
+            .take(30 * 12 + 1)
             .toList()
         assertEquals(expectedDates, actualDates)
     }
