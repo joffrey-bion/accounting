@@ -1,11 +1,16 @@
 package org.hildan.accounting.ui.screens
 
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.*
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
+import androidx.compose.ui.text.font.*
+import androidx.compose.ui.unit.*
+import io.github.koalaplot.core.pie.*
+import io.github.koalaplot.core.util.*
 import kotlinx.coroutines.*
 import org.hildan.accounting.mortgage.*
 import org.hildan.accounting.ui.components.*
@@ -51,15 +56,45 @@ fun MortgageSimulationScreen() {
                 onCancel = { closeSimulationForm() },
             )
         } else {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(
+                modifier = Modifier.align(Alignment.TopCenter).verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
                 SimulationList(simulations = simulations, onEdit = { sim -> openSimulationForm(sim.settings) })
                 IconButton(onClick = { openSimulationForm(simulation = null) }) {
                     Icon(Icons.Default.Add, contentDescription = "Add simulation")
                 }
                 if (simulations.isNotEmpty()) {
-                    MortgagePaymentsPlot(simulationResult = simulations.first())
+                    SimulationDetails(
+                        simulation = simulations.first(),
+                        modifier = Modifier.widthIn(max = 900.dp),
+                    )
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun SimulationDetails(simulation: SimulationResult, modifier: Modifier = Modifier) {
+    Column(modifier = modifier) {
+        Row(Modifier.fillMaxWidth().heightIn(max = 400.dp).padding(bottom = 20.dp)) {
+            SimulationSummaryCard(
+                simulation = simulation,
+                modifier = Modifier.weight(1f).fillMaxHeight().padding(end = 20.dp),
+            )
+            MortgagePaymentsPlot(
+                simulationResult = simulation,
+                modifier = Modifier.weight(2f).fillMaxHeight(),
+            )
+        }
+        MortgageYearSummaryTable(
+            yearlySummaries = simulation.summarizedYears,
+            modifier = Modifier.fillMaxWidth(),
+        )
+        MortgagePaymentsTable(
+            monthlyPayments = simulation.monthlyPayments,
+            modifier = Modifier.fillMaxWidth().heightIn(max = 700.dp),
+        )
     }
 }
