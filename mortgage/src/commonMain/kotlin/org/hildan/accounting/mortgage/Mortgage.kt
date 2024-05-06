@@ -41,7 +41,12 @@ data class Mortgage(
  */
 fun monthlyPaymentDates(startDate: LocalDate, termInYears: Int, dayOfMonth: Int): List<LocalDate> {
     val firstPayment = LocalDate(startDate.year, startDate.month, dayOfMonth)
-    val redemptionDay = startDate.plus(termInYears, DateTimeUnit.YEAR)
+    val firstMonthIsPartial = startDate.dayOfMonth > 1
+    val redemptionDay = startDate.plus(termInYears, DateTimeUnit.YEAR).let {
+        // We only start paying back the principal on the first full month.
+        // If the first month is partial, we just pay interest.
+        if (firstMonthIsPartial) it.plus(1, DateTimeUnit.MONTH) else it
+    }
     return generateSequence(firstPayment) { it.plus(1, DateTimeUnit.MONTH) }
         .takeWhile { it <= redemptionDay }
         .toList()
