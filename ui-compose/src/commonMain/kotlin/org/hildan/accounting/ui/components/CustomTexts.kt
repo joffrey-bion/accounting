@@ -34,7 +34,7 @@ fun AmountText(
 ) {
     val formattedAmount = remember(amount, scale, currencySymbol) {
         val n = if (scale == null) amount.format() else amount.format(scale)
-        "$n $currencySymbol"
+        "$n\u202f$currencySymbol"
     }
     Text(
         text = formattedAmount,
