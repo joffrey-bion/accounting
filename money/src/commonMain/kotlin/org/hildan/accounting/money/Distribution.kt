@@ -20,6 +20,10 @@ data class Distribution internal constructor(
      * The 90th percentile. 90% of the amounts in this distribution are less than or equal to this amount.
      */
     val p90: Amount,
+    /**
+     * The average amount.
+     */
+    val average: Amount,
 )
 
 /**
@@ -32,6 +36,7 @@ fun Iterable<Amount>.distribution(): Distribution {
         p99 = sorted[nthPercentile(99, sorted.size)],
         p95 = sorted[nthPercentile(95, sorted.size)],
         p90 = sorted[nthPercentile(90, sorted.size)],
+        average = sum() / sorted.size,
     )
 }
 
