@@ -44,7 +44,7 @@ fun DatePickerButton(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun FullDatePickerDialog(
+internal fun FullDatePickerDialog(
     initialValue: LocalDate?,
     onConfirm: (LocalDate?) -> Unit,
     onDismiss: () -> Unit,
