@@ -117,8 +117,11 @@ fun <T : Any> TypedTextField(
 ) {
     var textValue by remember(value) { mutableStateOf(value?.let { adapter.toText(it) } ?: "") }
 
-    // we don't validate initially, because we don't want red everywhere when showing the textfield for the first time
-    var errorMessage by remember { mutableStateOf<String?>(null) }
+    // the value can be changed externally, and in that case we should reset the error state
+    var errorMessage by remember(value) {
+        // we don't validate initially, because we don't want red everywhere in a fresh empty form
+        mutableStateOf<String?>(null)
+    }
 
     OutlinedTextField(
         value = textValue,
