@@ -29,9 +29,9 @@ private val ObvionRateSept2023 = InterestRate.DynamicLtv(
 
 private val constructionBillsPayments = listOf(
     Payment(date = LocalDate.parse("2024-01-16"), amount = constructionPrice * 3.pct),
-    Payment(date = LocalDate.parse("2024-05-01"), amount = constructionPrice * 10.pct),     // TODO add real date
-    Payment(date = LocalDate.parse("2024-06-01"), amount = constructionPrice * 15.pct),     // TODO add real date
-    Payment(date = LocalDate.parse("2024-07-01"), amount = constructionPrice * 10.pct),     // TODO add real date
+    Payment(date = LocalDate.parse("2024-04-18"), amount = constructionPrice * 10.pct),
+    Payment(date = LocalDate.parse("2024-06-11"), amount = constructionPrice * 15.pct),
+    Payment(date = LocalDate.parse("2024-06-16"), amount = constructionPrice * 10.pct),
     Payment(date = LocalDate.parse("2024-08-01"), amount = constructionPrice * 5.pct),      // TODO add real date
     Payment(date = LocalDate.parse("2024-09-01"), amount = constructionPrice * "23.5".pct), // TODO add real date
     Payment(date = LocalDate.parse("2024-10-01"), amount = constructionPrice * 10.pct),     // TODO add real date
