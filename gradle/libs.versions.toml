@@ -2,7 +2,7 @@
 
 bignum = "0.3.10"
 compose = "1.6.1"
-koalaplot = "0.5.4"
+koalaplot = "0.6.2"
 kotlin-plugin = "1.9.23"
 kotlin-wrappers = "1.0.0-pre.668"
 kotlinx-datetime = "0.6.0" # 0.6 for date formatting
