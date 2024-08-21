@@ -5,7 +5,7 @@ compose = "1.6.1"
 koalaplot = "0.6.3"
 kotlin-plugin = "1.9.23"
 kotlin-wrappers = "1.0.0-pre.668"
-kotlinx-datetime = "0.6.0" # 0.6 for date formatting
+kotlinx-datetime = "0.6.1" # 0.6 for date formatting
 
 [libraries]
 
