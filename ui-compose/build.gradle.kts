@@ -1,10 +1,11 @@
 import org.jetbrains.compose.desktop.application.dsl.*
-import org.jetbrains.kotlin.gradle.targets.js.dsl.*
+import org.jetbrains.kotlin.gradle.*
 import org.jetbrains.kotlin.gradle.targets.js.webpack.*
 
 plugins {
     kotlin("multiplatform")
-    id("org.jetbrains.compose") version libs.versions.compose
+    alias(libs.plugins.jetbrainsCompose)
+    alias(libs.plugins.kotlin.compose)
 }
 
 kotlin {

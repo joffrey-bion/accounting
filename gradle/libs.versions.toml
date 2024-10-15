@@ -1,9 +1,9 @@
 [versions]
 
 bignum = "0.3.10"
-compose = "1.6.1"
+compose = "1.6.11"
 koalaplot = "0.6.3"
-kotlin-plugin = "1.9.23"
+kotlin-plugin = "2.0.21"
 kotlin-wrappers = "1.0.0-pre.668"
 kotlinx-datetime = "0.6.1" # 0.6 for date formatting
 
@@ -20,3 +20,8 @@ kotlin-wrappers-react-core = { module = "org.jetbrains.kotlin-wrappers:kotlin-re
 kotlin-wrappers-react-dom = { module = "org.jetbrains.kotlin-wrappers:kotlin-react-dom" }
 
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
+
+[plugins]
+
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin-plugin" }
+jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose" }
