@@ -7,8 +7,8 @@ import kotlinx.datetime.LocalDate
 fun localDateAxisModel(
     min: LocalDate,
     max: LocalDate,
-    zoomRangeLimit: Float = (LocalDateFloatConverter.convertFrom(max) - LocalDateFloatConverter.convertFrom(min)) * 0.2f,
-    minimumMajorTickIncrement: Float = (LocalDateFloatConverter.convertFrom(max) - LocalDateFloatConverter.convertFrom(min)) * 0.1f,
+    zoomRangeLimit: Double = (LocalDateDoubleConverter.convertFrom(max) - LocalDateDoubleConverter.convertFrom(min)) * 0.2,
+    minimumMajorTickIncrement: Double = (LocalDateDoubleConverter.convertFrom(max) - LocalDateDoubleConverter.convertFrom(min)) * 0.1,
     minimumMajorTickSpacing: Dp = 50.dp,
     minorTickCount: Int = 4,
     allowZooming: Boolean = true,
@@ -16,7 +16,7 @@ fun localDateAxisModel(
 ) = linearAxisModel(
     min = min,
     max = max,
-    converter = LocalDateFloatConverter,
+    converter = LocalDateDoubleConverter,
     zoomRangeLimit = zoomRangeLimit,
     minimumMajorTickIncrement = minimumMajorTickIncrement,
     minimumMajorTickSpacing = minimumMajorTickSpacing,
@@ -25,9 +25,9 @@ fun localDateAxisModel(
     allowPanning = allowPanning,
 )
 
-private object LocalDateFloatConverter : FloatConverter<LocalDate> {
+private object LocalDateDoubleConverter : DoubleConverter<LocalDate> {
 
-    override fun convertTo(value: Float): LocalDate = LocalDate.fromEpochDays(value.toInt())
+    override fun convertTo(value: Double): LocalDate = LocalDate.fromEpochDays(value.toInt())
 
-    override fun convertFrom(value: LocalDate): Float = value.toEpochDays().toFloat()
+    override fun convertFrom(value: LocalDate): Double = value.toEpochDays().toDouble()
 }

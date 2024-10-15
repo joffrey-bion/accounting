@@ -6,15 +6,15 @@ import io.github.koalaplot.core.xygraph.*
 internal fun <T> linearAxisModel(
     min: T,
     max: T,
-    converter: FloatConverter<T>,
-    zoomRangeLimit: Float = (converter.convertFrom(max) - converter.convertFrom(min)) * 0.2f,
-    minimumMajorTickIncrement: Float = (converter.convertFrom(max) - converter.convertFrom(min)) * 0.1f,
+    converter: DoubleConverter<T>,
+    zoomRangeLimit: Double = (converter.convertFrom(max) - converter.convertFrom(min)) * 0.2,
+    minimumMajorTickIncrement: Double = (converter.convertFrom(max) - converter.convertFrom(min)) * 0.1,
     minimumMajorTickSpacing: Dp = 50.dp,
     minorTickCount: Int = 4,
     allowZooming: Boolean = true,
     allowPanning: Boolean = true,
 ): AxisModel<T> = AxisModelAdapter(
-    delegate = LinearAxisModel(
+    delegate = DoubleLinearAxisModel(
         range = converter.convertFrom(min)..converter.convertFrom(max),
         zoomRangeLimit = zoomRangeLimit,
         minimumMajorTickIncrement = minimumMajorTickIncrement,
@@ -26,9 +26,9 @@ internal fun <T> linearAxisModel(
     converter = converter,
 )
 
-internal interface FloatConverter<T> : Converter<T, Float> {
-    override fun convertTo(value: Float): T
-    override fun convertFrom(value: T): Float
+internal interface DoubleConverter<T> : Converter<T, Double> {
+    override fun convertTo(value: Double): T
+    override fun convertFrom(value: T): Double
 }
 
 internal interface Converter<T, U> {

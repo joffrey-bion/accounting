@@ -6,8 +6,8 @@ import org.hildan.accounting.money.*
 fun amountAxisModel(
     min: Amount = Amount.ZERO,
     max: Amount,
-    zoomRangeLimit: Float = (AmountFloatConverter.convertFrom(max) - AmountFloatConverter.convertFrom(min)) * 0.2f,
-    minimumMajorTickIncrement: Float = (AmountFloatConverter.convertFrom(max) - AmountFloatConverter.convertFrom(min)) * 0.1f,
+    zoomRangeLimit: Double = (AmountDoubleConverter.convertFrom(max) - AmountDoubleConverter.convertFrom(min)) * 0.2,
+    minimumMajorTickIncrement: Double = (AmountDoubleConverter.convertFrom(max) - AmountDoubleConverter.convertFrom(min)) * 0.1,
     minimumMajorTickSpacing: Dp = 50.dp,
     minorTickCount: Int = 4,
     allowZooming: Boolean = true,
@@ -15,7 +15,7 @@ fun amountAxisModel(
 ) = linearAxisModel(
     min = min,
     max = max,
-    converter = AmountFloatConverter,
+    converter = AmountDoubleConverter,
     zoomRangeLimit = zoomRangeLimit,
     minimumMajorTickIncrement = minimumMajorTickIncrement,
     minimumMajorTickSpacing = minimumMajorTickSpacing,
@@ -24,7 +24,7 @@ fun amountAxisModel(
     allowPanning = allowPanning,
 )
 
-private object AmountFloatConverter : FloatConverter<Amount> {
-    override fun convertTo(value: Float): Amount = Amount(value.toString())
-    override fun convertFrom(value: Amount): Float = value.floatValue()
+private object AmountDoubleConverter : DoubleConverter<Amount> {
+    override fun convertTo(value: Double): Amount = Amount(value.toString())
+    override fun convertFrom(value: Amount): Double = value.doubleValue()
 }
