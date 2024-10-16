@@ -11,7 +11,7 @@ import androidx.compose.ui.graphics.vector.*
 import androidx.compose.ui.input.pointer.*
 import kotlinx.coroutines.*
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun InfotipBubble(
     tooltipText: String,
@@ -19,13 +19,13 @@ fun InfotipBubble(
     icon: ImageVector = Icons.AutoMirrored.Filled.HelpOutline,
 ) {
     val scope = rememberCoroutineScope()
-    val tooltipState = rememberBasicTooltipState()
+    val tooltipState = rememberTooltipState()
     val tooltipPositionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider()
 
     fun showTooltip() = scope.launch { tooltipState.show() }
     fun hideTooltip() = tooltipState.dismiss()
 
-    BasicTooltipBox(
+    TooltipBox(
         positionProvider = tooltipPositionProvider,
         tooltip = {
             RichTooltip {
