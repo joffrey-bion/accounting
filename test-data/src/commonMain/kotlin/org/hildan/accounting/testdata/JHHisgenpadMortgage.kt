@@ -48,8 +48,8 @@ val jhHisgenpadSimulationIncremental = SimulationSettings(
         termInYears = 30,
     ),
     property = Property.NewConstruction(
-        installments = listOf(
-            Payment(startDate, landPrice),
+        initialNotaryPayment = Payment(startDate, landPrice),
+        constructionInstallments = listOf(
             Payment(startDate, parkingPrice),
             Payment(startDate, optionsPrice),
             *constructionBillsPayments.toTypedArray<Payment>(),
@@ -67,12 +67,8 @@ val jhHisgenpadSimulationBulk = SimulationSettings(
         termInYears = 30,
     ),
     property = Property.NewConstruction(
-        installments = listOf(
-            Payment(startDate, landPrice),
-            Payment(startDate, parkingPrice),
-            Payment(startDate, optionsPrice),
-            Payment(startDate, constructionPrice),
-        ),
+        initialNotaryPayment = Payment(startDate, landPrice + parkingPrice + optionsPrice + constructionPrice),
+        constructionInstallments = emptyList(),
         wozValue = estimatedWozValue,
     ),
 )

@@ -8,6 +8,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.unit.*
+import kotlinx.datetime.*
+import org.hildan.accounting.money.*
 import org.hildan.accounting.mortgage.*
 import org.hildan.accounting.ui.components.datepicker.*
 import org.hildan.accounting.ui.components.textinput.*
@@ -28,7 +30,15 @@ fun EditablePaymentList(
             )
         }
     }
+    IconButton(onClick = { onValueChange(payments + createPaymentTodayZero()) }) {
+        Icon(Icons.Default.Add, contentDescription = "Add payment")
+    }
 }
+
+private fun createPaymentTodayZero() = Payment(
+    date = Clock.System.todayIn(TimeZone.currentSystemDefault()),
+    amount = Amount.ZERO,
+)
 
 @Composable
 private fun EditablePaymentListItem(value: Payment, onValueChange: (Payment) -> Unit) {

@@ -25,26 +25,46 @@ data class SimulationSettings(
  * Runs this simulation assuming a linear mortgage type.
  */
 fun SimulationSettings.simulateLinear(): SimulationResult {
-    val firstMonthIsPartial = mortgage.startDate.dayOfMonth > 1
-    val linearMonthlyPrincipalReduction = mortgage.amount / (mortgage.termInYears * 12)
+    val mortgagePayments = mortgage.calculatePaymentsLinear(propertyWozValue = { property.wozValue })
+    return when (property) {
+        is Property.Existing -> SimulationResult(settings = this, monthlyPayments = mortgagePayments)
+        is Property.NewConstruction -> {
+            val sortedBills = SortedPayments(property.constructionInstallments)
+            var constructionAccountBalance = property.constructionInstallments.sumOf { it.amount }
 
-    val sortedBills = SortedPayments(property.installments)
-    val sortedExtraPayments = SortedPayments(mortgage.extraPayments)
+            val effectivePayments = mutableListOf<MortgagePayment>()
+            mortgagePayments.forEach { payment ->
+                val constructionAccountBalanceBefore = constructionAccountBalance
+                constructionAccountBalance -= sortedBills.removeAmountUntil(payment.date)
 
-    val totalPrice = property.installments.sumOf { it.amount }
-    // we subtract the value because it will be added gradually through bills
-    var mortgageBalance = mortgage.amount - totalPrice
-    var interestPeriodStart = mortgage.startDate
+                effectivePayments.add(payment.copy(
+                    constructionAccountBalanceBefore = constructionAccountBalanceBefore,
+                    constructionAccountInterest = constructionAccountBalance * payment.appliedInterestRate / 12,
+                ))
+            }
+
+            SimulationResult(settings = this, monthlyPayments = effectivePayments)
+        }
+    }
+}
+
+/**
+ * Calculates the monthly payments for this [Mortgage] assuming a linear reimbursement scheme.
+ */
+private fun Mortgage.calculatePaymentsLinear(propertyWozValue: (LocalDate) -> Amount): List<MortgagePayment> {
+    val firstMonthIsPartial = startDate.dayOfMonth > 1
+    val linearMonthlyPrincipalReduction = amount / (termInYears * 12)
+
+    val remainingExtraPayments = SortedPayments(extraPayments)
+
+    var mortgageBalance = amount
+    var interestPeriodStart = startDate
 
     val payments = mutableListOf<MortgagePayment>()
-    mortgage.monthlyPaymentDates.forEachIndexed { paymentIndex, paymentDate ->
-        // TODO Track the construction account separately from the mortgage balance
-        //  (currently the LTV ratio is incorrect, and the interest should be deducted on the next month only)
-        mortgageBalance += sortedBills.removeAmountUpTo(paymentDate)
+    monthlyPaymentDates.forEachIndexed { paymentIndex, paymentDate ->
+        val currentLtvRatio = mortgageBalance / propertyWozValue(paymentDate)
+        val effectiveAnnualRate = annualInterestRate.at(interestPeriodStart, currentLtvRatio = currentLtvRatio)
 
-        val currentLtvRatio = mortgageBalance / property.wozValue
-        val effectiveAnnualRate = mortgage.annualInterestRate.at(interestPeriodStart, currentLtvRatio = currentLtvRatio)
-        
         val fullMonthInterest = mortgageBalance.coerceAtLeast(Amount.ZERO) * effectiveAnnualRate / 12
         val effectiveInterest = if (paymentIndex == 0 && firstMonthIsPartial) {
             val interestPeriodDays = interestPeriodStart.daysUntil(paymentDate.nextMonthFirstDay())
@@ -57,14 +77,20 @@ fun SimulationSettings.simulateLinear(): SimulationResult {
         // We only start paying back the principal on the first full month.
         // If the first month is partial, we just pay interest.
         val principalReduction = if (paymentIndex == 0 && firstMonthIsPartial) Amount.ZERO else linearMonthlyPrincipalReduction
-        val extraRedemption = sortedExtraPayments.removeAmountUpTo(paymentDate)
+
+        // We count all the extra payments of the month, even the ones that are technically after the mandatory payment
+        // date, because our goal is to aggregate per month
+        val extraRedemption = remainingExtraPayments.removeAmountUntil(paymentDate.nextMonthFirstDay())
 
         val payment = MortgagePayment(
             date = paymentDate,
+            balanceBefore = mortgageBalance,
+            constructionAccountBalanceBefore = Amount.ZERO, // will be filled it later if necessary
             principalReduction = principalReduction,
             extraPrincipalReduction = extraRedemption,
+            appliedInterestRate = effectiveAnnualRate,
             interest = effectiveInterest,
-            balanceBefore = mortgageBalance,
+            constructionAccountInterest = Amount.ZERO, // will be filled it later if necessary
         )
         payments.add(payment)
 
@@ -76,23 +102,22 @@ fun SimulationSettings.simulateLinear(): SimulationResult {
         // The next payment on January 30th (more than a month later) includes exactly one month of interest too.
         interestPeriodStart = paymentDate.nextMonthFirstDay()
     }
-    return SimulationResult(settings = this, monthlyPayments = payments)
+    return payments
 }
 
 private fun LocalDate.nDaysInMonth(): Int = nextMonthFirstDay().minus(1, DateTimeUnit.DAY).dayOfMonth
 
-private fun LocalDate.nextMonthFirstDay(): LocalDate {
-    val sameDayNextMonth = plus(1, DateTimeUnit.MONTH)
-    return LocalDate(year = sameDayNextMonth.year, month = sameDayNextMonth.month, dayOfMonth = 1)
-}
+private fun LocalDate.nextMonthFirstDay(): LocalDate = firstOfMonthOf(this).plus(1, DateTimeUnit.MONTH)
+
+private fun firstOfMonthOf(date: LocalDate) = LocalDate(year = date.year, month = date.month, dayOfMonth = 1)
 
 private class SortedPayments(payments: List<Payment>) {
     private var sortedPayments = payments.sortedBy { it.date }
-    
-    fun removeAmountUpTo(dateInclusive: LocalDate): Amount {
-        val found = sortedPayments.takeWhile { it.date <= dateInclusive }
+
+    fun removeAmountUntil(dateExclusive: LocalDate): Amount {
+        val found = sortedPayments.takeWhile { it.date < dateExclusive }
         if (found.isNotEmpty()) {
-            sortedPayments = sortedPayments.subList(found.size, sortedPayments.size)
+            sortedPayments = sortedPayments.drop(found.size)
         }
         return found.sumOf { it.amount }
     }

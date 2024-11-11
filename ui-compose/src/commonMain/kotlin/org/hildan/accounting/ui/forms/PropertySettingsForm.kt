@@ -32,15 +32,30 @@ fun PropertySettingsForm(value: Property, onValueChange: (Property) -> Unit) {
         }
         when (value) {
             is Property.NewConstruction -> {
+                // TODO hide this initially, and offer to override it optionally
                 AmountTextField(
                     value = value.wozValue,
                     onValueChange = { onValueChange(value.copy(wozValue = it)) },
                     label = { Text("WOZ Value") },
                     supportingText = { Text("For a new construction, this is usually defined as the total price.") }
                 )
+                AmountTextField(
+                    value = value.initialNotaryPayment.amount,
+                    onValueChange = {
+                        onValueChange(value.copy(initialNotaryPayment = value.initialNotaryPayment.copy(amount = it)))
+                    },
+                    label = { Text("Initial notary payment") },
+                    supportingText = {
+                        Text(
+                            "The amount paid at the notary when signing the deed. " +
+                                "This includes everything that is not covered by the construction account " +
+                                "(land price, development costs, advisor fees, notary fees, tanslation fees, etc.)"
+                        )
+                    }
+                )
                 EditablePaymentList(
-                    payments = value.installments,
-                    onValueChange = { onValueChange(value.copy(installments = it)) },
+                    payments = value.constructionInstallments,
+                    onValueChange = { onValueChange(value.copy(constructionInstallments = it)) },
                     modifier = Modifier.wrapContentWidth(),
                 )
             }
@@ -61,7 +76,8 @@ fun PropertySettingsForm(value: Property, onValueChange: (Property) -> Unit) {
 }
 
 private fun Property.Existing.toNewConstruction() = Property.NewConstruction(
-    installments = listOf(purchase),
+    initialNotaryPayment = purchase,
+    constructionInstallments = emptyList(),
     wozValue = wozValue,
 )
 

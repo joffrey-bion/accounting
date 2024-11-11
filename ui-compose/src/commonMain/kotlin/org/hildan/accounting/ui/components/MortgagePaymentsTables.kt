@@ -1,12 +1,8 @@
 package org.hildan.accounting.ui.components
 
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
-import androidx.compose.ui.unit.*
 import org.hildan.accounting.money.*
 import org.hildan.accounting.mortgage.*
 
@@ -19,8 +15,16 @@ fun MortgageYearSummaryTable(yearlySummaries: List<MortgageYearSummary>, modifie
         column(header = "Balance\nbefore") {
             AmountText(it.balanceBefore, modifier = Modifier.align(Alignment.CenterEnd))
         }
+        if (yearlySummaries.any { it.constructionAccountBalanceBefore > Amount.ZERO }) {
+            column(header = "Const. acc. balance before") {
+                AmountText(it.constructionAccountBalanceBefore, modifier = Modifier.align(Alignment.CenterEnd))
+            }
+        }
         column(header = "Principal reduction") {
             AmountText(it.principalReduction, modifier = Modifier.align(Alignment.CenterEnd))
+        }
+        column(header = "Interest rate") {
+            Text(it.interestRates.joinToString(" → "), modifier = Modifier.align(Alignment.Center))
         }
         column(header = "Interest") {
             AmountText(it.interest, modifier = Modifier.align(Alignment.CenterEnd))
@@ -48,8 +52,16 @@ fun MortgagePaymentsTable(monthlyPayments: List<MortgagePayment>, modifier: Modi
         column(header = "Balance before") {
             AmountText(it.balanceBefore, modifier = Modifier.align(Alignment.CenterEnd))
         }
+        if (monthlyPayments.any { it.constructionAccountBalanceBefore > Amount.ZERO }) {
+            column(header = "Const. acc. balance before") {
+                AmountText(it.constructionAccountBalanceBefore, modifier = Modifier.align(Alignment.CenterEnd))
+            }
+        }
         column(header = "Principal reduction") {
             AmountText(it.principalReduction, modifier = Modifier.align(Alignment.CenterEnd))
+        }
+        column(header = "Interest rate") {
+            Text(it.appliedInterestRate.toString(), modifier = Modifier.align(Alignment.Center))
         }
         column(header = "Interest") {
             AmountText(it.interest, modifier = Modifier.align(Alignment.CenterEnd))
@@ -57,6 +69,11 @@ fun MortgagePaymentsTable(monthlyPayments: List<MortgagePayment>, modifier: Modi
         if (monthlyPayments.any { it.extraPrincipalReduction > Amount.ZERO }) {
             column(header = "Extra") {
                 AmountText(it.extraPrincipalReduction, modifier = Modifier.align(Alignment.CenterEnd))
+            }
+        }
+        if (monthlyPayments.any { it.constructionAccountInterest > Amount.ZERO }) {
+            column(header = "Const. acc. interest") {
+                AmountText(it.constructionAccountInterest, modifier = Modifier.align(Alignment.CenterEnd))
             }
         }
         column(header = "Total payment") {

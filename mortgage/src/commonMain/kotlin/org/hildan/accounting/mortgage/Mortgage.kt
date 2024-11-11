@@ -29,11 +29,12 @@ data class Mortgage(
      * The total duration (in years) over which the mortgage will be repaid.
      */
     val termInYears: Int = 30,
+) {
     /**
      * The dates of the monthly payments for the duration of the mortgage.
      */
-    val monthlyPaymentDates: List<LocalDate> = monthlyPaymentDates(startDate, termInYears, dayOfMonth = 28),
-)
+    val monthlyPaymentDates: List<LocalDate> = monthlyPaymentDates(startDate, termInYears, dayOfMonth = 28)
+}
 
 /**
  * Returns the monthly payment dates based on the [startDate] of the loan and the [termInYears], assuming a fixed day

@@ -40,16 +40,45 @@ sealed class Property {
 
     /**
      * A new house or apartment that has yet to be built.
-     *
-     * The [installments] are the payments that need to be made for a new build:
-     *  * the land purchase price, paid at the notary upon signature, after which we start paying back the loan
-     *  * the construction bills, paid out from the mortgage when some construction milestone is complete.
-     *    Interest is only paid on the part of the mortgage that was actually spent to pay bills.
-     *
-     * The WOZ value is defined to be exactly the total purchase price, include the land and construction bills.
      */
     data class NewConstruction(
-        override val installments: List<Payment>,
-        override val wozValue: Amount = installments.sumOf { it.amount },
-    ) : Property()
+        /**
+         * This is the initial payment made at the notary on the day of the purchase.
+         *
+         * It includes everything except what goes to the construction account:
+         *
+         * - land price, development costs, land leasehold advance payment (Erfpachtcanon)
+         * - first VvE contribution
+         * - mortgage advisor fees
+         * - notary fees (mortgage act, cohabitation agreement if applicable, etc.)
+         * - registration fees to declare the mortgage at the Kadaster
+         * - registration fees to declare the cohabitation agreement to the Centraal Testamenten Register (if applicable)
+         * - translation fees (if a translator was hired for the procedure)
+         *
+         * The construction bills, additional construction options (meerwerk), and other delayed purchases (like a
+         * potential parking space) go to the construction account and are not paid at the notary.
+         */
+        val initialNotaryPayment: Payment,
+        /**
+         * The installments paid from the construction account during the construction.
+         *
+         * The construction contract defines a list of construction milestones (e.g. "inner cavity walls are complete",
+         * or "roof is watertight") and a corresponding amount that is due when this milestone is complete.
+         *
+         * In addition to this, the [constructionInstallments] also include additional construction options (meerwerk),
+         * and other delayed purchases like a potential parking space purchase.
+         */
+        val constructionInstallments: List<Payment>,
+        /**
+         * The property value (known as the [Waardering Onroerende Zaken value](https://www.amsterdam.nl/en/municipal-taxes/property-valuation-woz),
+         * or WOZ value in short) is used to calculate how much tax you owe, and also determines the maximum that
+         * the banks can lend.
+         *
+         * For a new build purchase, there is no valuation of the property, and the WOZ value is usually set to the
+         * total purchase price, including options/extra work (and subtracting the discarded work).
+         */
+        override val wozValue: Amount = initialNotaryPayment.amount + constructionInstallments.sumOf { it.amount },
+    ) : Property() {
+        override val installments: List<Payment> = listOf(initialNotaryPayment) + constructionInstallments
+    }
 }

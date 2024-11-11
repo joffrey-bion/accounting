@@ -64,7 +64,7 @@ fun MortgageSimulationScreen() {
                 if (simulations.isNotEmpty()) {
                     SimulationDetails(
                         simulation = simulations.first(),
-                        modifier = Modifier.widthIn(max = 900.dp),
+                        modifier = Modifier.widthIn(max = 1000.dp),
                     )
                 }
             }
