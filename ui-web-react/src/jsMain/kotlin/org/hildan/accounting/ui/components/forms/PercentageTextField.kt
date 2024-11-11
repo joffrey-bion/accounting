@@ -6,7 +6,7 @@ import org.hildan.accounting.money.*
 import org.hildan.accounting.ui.global.*
 import react.*
 
-fun percentageStateOf(amount: Fraction): TextFieldState<Fraction> = TextFieldState.Valid(amount.formatPercent(), amount)
+fun percentageStateOf(amount: Fraction): TextFieldState<Fraction> = TextFieldState.Valid(amount.formatPercentValue(), amount)
 
 val PercentageTextField = FC<TypedTextFieldProps<Fraction>>("PercentageTextField") { props ->
     validatedTypedTextField(props, convert = ::convertToPercentage) {

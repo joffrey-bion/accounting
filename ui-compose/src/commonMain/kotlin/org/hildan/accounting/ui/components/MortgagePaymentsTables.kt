@@ -61,7 +61,7 @@ fun MortgagePaymentsTable(monthlyPayments: List<MortgagePayment>, modifier: Modi
             AmountText(it.principalReduction, modifier = Modifier.align(Alignment.CenterEnd))
         }
         column(header = "Interest rate") {
-            Text(it.appliedInterestRate.toString(), modifier = Modifier.align(Alignment.Center))
+            Text(it.appliedInterestRate.formatPercent(), modifier = Modifier.align(Alignment.Center))
         }
         column(header = "Interest") {
             AmountText(it.interest, modifier = Modifier.align(Alignment.CenterEnd))

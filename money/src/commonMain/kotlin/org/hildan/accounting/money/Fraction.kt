@@ -21,9 +21,18 @@ value class Fraction internal constructor(internal val value: BigDecimal) : Comp
     override fun compareTo(other: Fraction): Int = value.compareTo(other.value)
 
     fun formatRate(): String = value.toStringExpanded()
-    fun formatPercent(): String = (value * 100).toStringExpanded()
 
-    override fun toString(): String = formatPercent() + "\u2060%" // U+2060 is the word-joiner (no-break) character
+    /**
+     * Returns a string representation of this [Fraction] as a percentage value without the percent sign.
+     */
+    fun formatPercentValue(): String = (value * 100).toStringExpanded()
+
+    /**
+     * Returns a string representation of this [Fraction] as a percentage (with the percent sign).
+     */
+    fun formatPercent(): String = formatPercentValue() + "\u2060%" // U+2060 is the word-joiner (no-break) character
+
+    override fun toString(): String = formatPercent()
 
     companion object {
         val ZERO = Fraction("0")

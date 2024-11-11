@@ -4,7 +4,6 @@ import emotion.react.*
 import js.core.*
 import mui.material.*
 import mui.material.Box
-import mui.material.InputProps
 import mui.material.Size
 import org.hildan.accounting.money.*
 import org.hildan.accounting.mortgage.*
@@ -104,7 +103,7 @@ private val RateGroupFields = FC<RateGroupFieldsProps>("RateGroupFields") { prop
         }
         rateGroups.sortedBy { it.maxLtvRatio }.forEachIndexed { index, rateGroup ->
             PercentageTextField {
-                key = rateGroup.rate.formatPercent()
+                key = rateGroup.rate.formatPercentValue()
                 textFieldProps = jso {
                     label = ReactNode("Rate")
                     size = Size.small
@@ -112,7 +111,7 @@ private val RateGroupFields = FC<RateGroupFieldsProps>("RateGroupFields") { prop
                         width = 5.5.rem
                     }
                 }
-                value = TextFieldState.Valid(rateGroup.rate.formatPercent(), rateGroup.rate)
+                value = TextFieldState.Valid(rateGroup.rate.formatPercentValue(), rateGroup.rate)
                 onChange = {
                     if (it is TextFieldState.Valid) {
                         val newGroup = InterestRate.DynamicLtv.RateGroup(rateGroup.maxLtvRatio, it.value)
@@ -122,7 +121,7 @@ private val RateGroupFields = FC<RateGroupFieldsProps>("RateGroupFields") { prop
             }
             ReactHTML.span { +"<=" }
             PercentageTextField {
-                key = rateGroup.maxLtvRatio.formatPercent()
+                key = rateGroup.maxLtvRatio.formatPercentValue()
                 textFieldProps = jso {
                     label = ReactNode("LTV")
                     size = Size.small
@@ -135,7 +134,7 @@ private val RateGroupFields = FC<RateGroupFieldsProps>("RateGroupFields") { prop
                         }
                     }
                 }
-                value = TextFieldState.Valid(rateGroup.maxLtvRatio.formatPercent(), rateGroup.maxLtvRatio)
+                value = TextFieldState.Valid(rateGroup.maxLtvRatio.formatPercentValue(), rateGroup.maxLtvRatio)
                 onChange = {
                     if (it is TextFieldState.Valid) {
                         val newGroup = InterestRate.DynamicLtv.RateGroup(it.value, rateGroup.rate)
