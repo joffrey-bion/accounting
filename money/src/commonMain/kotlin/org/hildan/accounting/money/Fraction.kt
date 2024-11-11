@@ -23,7 +23,7 @@ value class Fraction internal constructor(internal val value: BigDecimal) : Comp
     fun formatRate(): String = value.toStringExpanded()
     fun formatPercent(): String = (value * 100).toStringExpanded()
 
-    override fun toString(): String = formatPercent() + "%"
+    override fun toString(): String = formatPercent() + "\u2060%" // U+2060 is the word-joiner (no-break) character
 
     companion object {
         val ZERO = Fraction("0")
