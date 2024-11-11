@@ -7,10 +7,7 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
-import androidx.compose.ui.text.font.*
 import androidx.compose.ui.unit.*
-import io.github.koalaplot.core.pie.*
-import io.github.koalaplot.core.util.*
 import kotlinx.coroutines.*
 import org.hildan.accounting.mortgage.*
 import org.hildan.accounting.ui.components.*
