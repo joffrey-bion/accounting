@@ -44,7 +44,7 @@ data class SimulationResult(
                     extraPrincipalReduction = p.extraPrincipalReduction,
                     interestRates = listOf(p.appliedInterestRate),
                     interest = p.interest,
-                    constructionAccountInterest = p.constructionAccountInterest,
+                    constructionAccountInterest = p.constructionAccountGeneratedInterest,
                 )
             } else {
                 MortgageYearSummary(
@@ -60,7 +60,7 @@ data class SimulationResult(
                         acc.interestRates + p.appliedInterestRate
                     },
                     interest = acc.interest + p.interest,
-                    constructionAccountInterest = acc.constructionAccountInterest + p.constructionAccountInterest,
+                    constructionAccountInterest = acc.constructionAccountInterest + p.constructionAccountGeneratedInterest,
                 )
             }
         }

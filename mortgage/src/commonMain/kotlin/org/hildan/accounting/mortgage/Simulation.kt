@@ -33,14 +33,27 @@ fun SimulationSettings.simulateLinear(): SimulationResult {
             var constructionAccountBalance = property.constructionInstallments.sumOf { it.amount }
 
             val effectivePayments = mutableListOf<MortgagePayment>()
+            var nextDeductedInterest = Amount.ZERO
             mortgagePayments.forEach { payment ->
                 val constructionAccountBalanceBefore = constructionAccountBalance
+
+                // FIXME interest is wrong for partial month - follow the example in calculatePaymentsLinear()
+                val constructionAccountInterest = constructionAccountBalance * payment.appliedInterestRate / 12
+
+                // TODO should we count the interest before/after each bill?
                 constructionAccountBalance -= sortedBills.removeAmountUntil(payment.date)
 
                 effectivePayments.add(payment.copy(
                     constructionAccountBalanceBefore = constructionAccountBalanceBefore,
-                    constructionAccountInterest = constructionAccountBalance * payment.appliedInterestRate / 12,
+                    constructionAccountGeneratedInterest = constructionAccountInterest,
+                    constructionAccountDeductedInterest = nextDeductedInterest,
                 ))
+                // TODO the first partial month doesn't result in a payment, so the first 2 months should credit their
+                //  interest to the construction account, not just the first.
+                if (nextDeductedInterest == Amount.ZERO) {
+                    constructionAccountBalance += constructionAccountInterest
+                }
+                nextDeductedInterest = constructionAccountInterest
             }
 
             SimulationResult(settings = this, monthlyPayments = effectivePayments)
@@ -53,6 +66,8 @@ fun SimulationSettings.simulateLinear(): SimulationResult {
  */
 private fun Mortgage.calculatePaymentsLinear(propertyWozValue: (LocalDate) -> Amount): List<MortgagePayment> {
     val firstMonthIsPartial = startDate.dayOfMonth > 1
+
+    // FIXME should be adjusted when extra payments are made (based on the remaining months)
     val linearMonthlyPrincipalReduction = amount / (termInYears * 12)
 
     val remainingExtraPayments = SortedPayments(extraPayments)
@@ -85,12 +100,13 @@ private fun Mortgage.calculatePaymentsLinear(propertyWozValue: (LocalDate) -> Am
         val payment = MortgagePayment(
             date = paymentDate,
             balanceBefore = mortgageBalance,
-            constructionAccountBalanceBefore = Amount.ZERO, // will be filled it later if necessary
+            constructionAccountBalanceBefore = Amount.ZERO, // will be filled in later if necessary
             principalReduction = principalReduction,
             extraPrincipalReduction = extraRedemption,
             appliedInterestRate = effectiveAnnualRate,
             interest = effectiveInterest,
-            constructionAccountInterest = Amount.ZERO, // will be filled it later if necessary
+            constructionAccountGeneratedInterest = Amount.ZERO, // will be filled in later if necessary
+            constructionAccountDeductedInterest = Amount.ZERO, // will be filled in later if necessary
         )
         payments.add(payment)
 

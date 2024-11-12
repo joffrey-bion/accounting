@@ -53,7 +53,7 @@ fun MortgagePaymentsTable(monthlyPayments: List<MortgagePayment>, modifier: Modi
             AmountText(it.balanceBefore, modifier = Modifier.align(Alignment.CenterEnd))
         }
         if (monthlyPayments.any { it.constructionAccountBalanceBefore > Amount.ZERO }) {
-            column(header = "Const. acc. balance before") {
+            column(header = "BD balance before") {
                 AmountText(it.constructionAccountBalanceBefore, modifier = Modifier.align(Alignment.CenterEnd))
             }
         }
@@ -71,9 +71,12 @@ fun MortgagePaymentsTable(monthlyPayments: List<MortgagePayment>, modifier: Modi
                 AmountText(it.extraPrincipalReduction, modifier = Modifier.align(Alignment.CenterEnd))
             }
         }
-        if (monthlyPayments.any { it.constructionAccountInterest > Amount.ZERO }) {
-            column(header = "Const. acc. interest") {
-                AmountText(it.constructionAccountInterest, modifier = Modifier.align(Alignment.CenterEnd))
+        if (monthlyPayments.any { it.constructionAccountGeneratedInterest > Amount.ZERO }) {
+            column(header = "BD interest") {
+                AmountText(it.constructionAccountGeneratedInterest, modifier = Modifier.align(Alignment.CenterEnd))
+            }
+            column(header = "BD interest deducted") {
+                AmountText(-it.constructionAccountDeductedInterest, modifier = Modifier.align(Alignment.CenterEnd))
             }
         }
         column(header = "Total payment") {
