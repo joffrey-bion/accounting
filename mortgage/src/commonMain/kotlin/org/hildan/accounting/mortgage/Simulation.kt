@@ -27,12 +27,21 @@ data class SimulationSettings(
 fun SimulationSettings.simulateLinear(): SimulationResult {
     val mortgagePayments = mortgage.calculatePaymentsLinear(propertyWozValue = { property.wozValue })
     return when (property) {
-        is Property.Existing -> SimulationResult(settings = this, monthlyPayments = mortgagePayments)
+        is Property.Existing -> SimulationResult(
+            settings = this,
+            monthSummaries = mortgagePayments.map {
+                MortgageMonthSummary(
+                    date = it.date,
+                    mortgagePayment = it,
+                    constructionAccount = null,
+                )
+            },
+        )
         is Property.NewConstruction -> {
             val sortedBills = SortedPayments(property.constructionInstallments)
             var constructionAccountBalance = property.constructionInstallments.sumOf { it.amount }
 
-            val effectivePayments = mutableListOf<MortgagePayment>()
+            val effectivePayments = mutableListOf<MortgageMonthSummary>()
             var nextDeductedInterest = Amount.ZERO
             mortgagePayments.forEach { payment ->
                 val constructionAccountBalanceBefore = constructionAccountBalance
@@ -43,10 +52,14 @@ fun SimulationSettings.simulateLinear(): SimulationResult {
                 // TODO should we count the interest before/after each bill?
                 constructionAccountBalance -= sortedBills.removeAmountUntil(payment.date)
 
-                effectivePayments.add(payment.copy(
-                    constructionAccountBalanceBefore = constructionAccountBalanceBefore,
-                    constructionAccountGeneratedInterest = constructionAccountInterest,
-                    constructionAccountDeductedInterest = nextDeductedInterest,
+                effectivePayments.add(MortgageMonthSummary(
+                    date = payment.date,
+                    mortgagePayment = payment,
+                    constructionAccount = ConstructionAccountSummary(
+                        balanceBefore = constructionAccountBalanceBefore,
+                        generatedInterest = constructionAccountInterest,
+                        deductedInterest = nextDeductedInterest,
+                    ),
                 ))
                 // TODO the first partial month doesn't result in a payment, so the first 2 months should credit their
                 //  interest to the construction account, not just the first.
@@ -56,7 +69,7 @@ fun SimulationSettings.simulateLinear(): SimulationResult {
                 nextDeductedInterest = constructionAccountInterest
             }
 
-            SimulationResult(settings = this, monthlyPayments = effectivePayments)
+            SimulationResult(settings = this, monthSummaries = effectivePayments)
         }
     }
 }
@@ -100,13 +113,10 @@ private fun Mortgage.calculatePaymentsLinear(propertyWozValue: (LocalDate) -> Am
         val payment = MortgagePayment(
             date = paymentDate,
             balanceBefore = mortgageBalance,
-            constructionAccountBalanceBefore = Amount.ZERO, // will be filled in later if necessary
             principalReduction = principalReduction,
             extraPrincipalReduction = extraRedemption,
             appliedInterestRate = effectiveAnnualRate,
             interest = effectiveInterest,
-            constructionAccountGeneratedInterest = Amount.ZERO, // will be filled in later if necessary
-            constructionAccountDeductedInterest = Amount.ZERO, // will be filled in later if necessary
         )
         payments.add(payment)
 

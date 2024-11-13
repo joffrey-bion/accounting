@@ -41,7 +41,7 @@ val SimulationsTable = FC<SimulationsTableProps>("SimulationsTable") { props ->
                         TableCell { +s.mortgageAmount.format(scale = 0) }
                         TableCell { +s.ownFunds.format(scale = 0) }
                         TableCell { +s.totalInterest.format(2) }
-                        TableCell { +(s.monthlyPayments.sumOf { it.total } / s.monthlyPayments.size).format(2) }
+                        TableCell { +(s.monthSummaries.sumOf { it.effectiveTotal } / s.monthSummaries.size).format(2) }
                         TableCell { +s.annuitiesDistribution.max.format(2) }
                         TableCell { +s.annuitiesDistribution.p99.format(2) }
                         TableCell { +s.annuitiesDistribution.p95.format(2) }

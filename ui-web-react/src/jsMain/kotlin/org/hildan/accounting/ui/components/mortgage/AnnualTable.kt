@@ -75,7 +75,7 @@ val AnnualTable = FC<AnnualTableProps> { props ->
             }
 
             TableBody {
-                props.simulation.summarizedYears.forEach { p ->
+                props.simulation.yearSummaries.forEach { p ->
                     TableRow {
                         key = p.year.toString()
 

@@ -7,17 +7,18 @@ import org.hildan.accounting.money.*
 import org.hildan.accounting.mortgage.*
 
 @Composable
-fun MortgageYearSummaryTable(yearlySummaries: List<MortgageYearSummary>, modifier: Modifier = Modifier) {
-    Table(items = yearlySummaries, modifier) {
+fun MortgageYearlySummaryTable(yearSummaries: List<MortgageYearSummary>, modifier: Modifier = Modifier) {
+    val hasConstructionAccount = yearSummaries.any { it.constructionAccount != null }
+    Table(items = yearSummaries, modifier) {
         column(header = "Year") {
             Text(it.year.toString(), modifier = Modifier.align(Alignment.Center))
         }
         column(header = "Balance\nbefore") {
             AmountText(it.balanceBefore, modifier = Modifier.align(Alignment.CenterEnd))
         }
-        if (yearlySummaries.any { it.constructionAccountBalanceBefore > Amount.ZERO }) {
-            column(header = "Const. acc. balance before") {
-                AmountText(it.constructionAccountBalanceBefore, modifier = Modifier.align(Alignment.CenterEnd))
+        if (hasConstructionAccount) {
+            column(header = "BD balance before") {
+                AmountText(it.constructionAccount!!.balanceBefore, modifier = Modifier.align(Alignment.CenterEnd))
             }
         }
         column(header = "Principal reduction") {
@@ -29,13 +30,18 @@ fun MortgageYearSummaryTable(yearlySummaries: List<MortgageYearSummary>, modifie
         column(header = "Interest") {
             AmountText(it.interest, modifier = Modifier.align(Alignment.CenterEnd))
         }
-        if (yearlySummaries.any { it.extraPrincipalReduction > Amount.ZERO }) {
+        if (yearSummaries.any { it.extraPrincipalReduction > Amount.ZERO }) {
             column(header = "Extra") {
                 AmountText(it.extraPrincipalReduction, modifier = Modifier.align(Alignment.CenterEnd))
             }
         }
         column(header = "Avg. monthly payment") {
             AmountText(it.avgMonthlyPayment, modifier = Modifier.align(Alignment.CenterEnd))
+        }
+        if (hasConstructionAccount) {
+            column(header = "BD deducted interest") {
+                AmountText(it.constructionAccount!!.deductedInterest, modifier = Modifier.align(Alignment.CenterEnd))
+            }
         }
         column(header = "Total payments") {
             AmountText(it.totalPayments, modifier = Modifier.align(Alignment.CenterEnd))
@@ -44,43 +50,47 @@ fun MortgageYearSummaryTable(yearlySummaries: List<MortgageYearSummary>, modifie
 }
 
 @Composable
-fun MortgagePaymentsTable(monthlyPayments: List<MortgagePayment>, modifier: Modifier = Modifier) {
-    LazyTable(items = monthlyPayments, modifier = modifier, key = { it.date }) {
+fun MortgageMonthlySummaryTable(monthSummaries: List<MortgageMonthSummary>, modifier: Modifier = Modifier) {
+    val hasConstructionAccount = monthSummaries.any { it.constructionAccount != null }
+    LazyTable(items = monthSummaries, modifier = modifier, key = { it.date }) {
         column(header = "Date") {
             LocalDateText(it.date, modifier = Modifier.align(Alignment.Center))
         }
         column(header = "Balance before") {
-            AmountText(it.balanceBefore, modifier = Modifier.align(Alignment.CenterEnd))
+            AmountText(it.mortgagePayment.balanceBefore, modifier = Modifier.align(Alignment.CenterEnd))
         }
-        if (monthlyPayments.any { it.constructionAccountBalanceBefore > Amount.ZERO }) {
+        if (hasConstructionAccount) {
             column(header = "BD balance before") {
-                AmountText(it.constructionAccountBalanceBefore, modifier = Modifier.align(Alignment.CenterEnd))
+                AmountText(
+                    amount = it.constructionAccount?.balanceBefore ?: Amount.ZERO,
+                    modifier = Modifier.align(Alignment.CenterEnd),
+                )
             }
         }
         column(header = "Principal reduction") {
-            AmountText(it.principalReduction, modifier = Modifier.align(Alignment.CenterEnd))
+            AmountText(it.mortgagePayment.principalReduction, modifier = Modifier.align(Alignment.CenterEnd))
         }
         column(header = "Interest rate") {
-            Text(it.appliedInterestRate.formatPercent(), modifier = Modifier.align(Alignment.Center))
+            Text(it.mortgagePayment.appliedInterestRate.formatPercent(), modifier = Modifier.align(Alignment.Center))
         }
         column(header = "Interest") {
-            AmountText(it.interest, modifier = Modifier.align(Alignment.CenterEnd))
+            AmountText(it.mortgagePayment.interest, modifier = Modifier.align(Alignment.CenterEnd))
         }
-        if (monthlyPayments.any { it.extraPrincipalReduction > Amount.ZERO }) {
+        if (monthSummaries.any { it.mortgagePayment.extraPrincipalReduction > Amount.ZERO }) {
             column(header = "Extra") {
-                AmountText(it.extraPrincipalReduction, modifier = Modifier.align(Alignment.CenterEnd))
+                AmountText(it.mortgagePayment.extraPrincipalReduction, modifier = Modifier.align(Alignment.CenterEnd))
             }
         }
-        if (monthlyPayments.any { it.constructionAccountGeneratedInterest > Amount.ZERO }) {
+        if (hasConstructionAccount) {
             column(header = "BD interest") {
-                AmountText(it.constructionAccountGeneratedInterest, modifier = Modifier.align(Alignment.CenterEnd))
+                AmountText(it.constructionAccount!!.generatedInterest, modifier = Modifier.align(Alignment.CenterEnd))
             }
             column(header = "BD interest deducted") {
-                AmountText(-it.constructionAccountDeductedInterest, modifier = Modifier.align(Alignment.CenterEnd))
+                AmountText(-it.constructionAccount!!.deductedInterest, modifier = Modifier.align(Alignment.CenterEnd))
             }
         }
         column(header = "Total payment") {
-            AmountText(it.total, modifier = Modifier.align(Alignment.CenterEnd))
+            AmountText(it.effectiveTotal, modifier = Modifier.align(Alignment.CenterEnd))
         }
     }
 }

@@ -85,12 +85,12 @@ private fun SimulationDetails(simulation: SimulationResult, modifier: Modifier =
                 modifier = Modifier.weight(2f).fillMaxHeight(),
             )
         }
-        MortgageYearSummaryTable(
-            yearlySummaries = simulation.summarizedYears,
+        MortgageYearlySummaryTable(
+            yearSummaries = simulation.yearSummaries,
             modifier = Modifier.fillMaxWidth(),
         )
-        MortgagePaymentsTable(
-            monthlyPayments = simulation.monthlyPayments,
+        MortgageMonthlySummaryTable(
+            monthSummaries = simulation.monthSummaries,
             modifier = Modifier.fillMaxWidth().heightIn(max = 700.dp),
         )
     }

@@ -49,25 +49,25 @@ val MonthlyTable = FC<MonthlyTableProps> { props ->
             }
 
             TableBody {
-                props.simulation.monthlyPayments.forEach { p ->
+                props.simulation.monthSummaries.forEach { ms ->
                     TableRow {
-                        key = p.date.toString()
+                        key = ms.date.toString()
 
-                        TableCell { +p.date.toString() }
+                        TableCell { +ms.date.toString() }
                         AmountTableCell {
-                            amount = p.balanceBefore
+                            amount = ms.mortgagePayment.balanceBefore
                             scale = 0
                         }
                         AmountTableCell {
-                            amount = p.principalReduction
+                            amount = ms.mortgagePayment.principalReduction
                             scale = 2
                         }
                         AmountTableCell {
-                            amount = p.interest
+                            amount = ms.mortgagePayment.interest
                             scale = 2
                         }
                         AmountTableCell {
-                            amount = p.total
+                            amount = ms.effectiveTotal
                             scale = 2
                         }
                     }

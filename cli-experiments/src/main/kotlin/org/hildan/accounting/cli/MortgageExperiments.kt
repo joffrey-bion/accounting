@@ -15,10 +15,10 @@ fun simulateMortgages() {
 
 private fun printTables(simulation: SimulationResult) {
     println("=== Annual simulation (${simulation.name}) ===")
-    println(YearTable.format(simulation.summarizedYears))
+    println(YearTable.format(simulation.yearSummaries))
     println()
     println("=== Monthly simulation (${simulation.name}) ===")
-    println(MonthTable.format(simulation.monthlyPayments))
+    println(MonthTable.format(simulation.monthSummaries))
 }
 
 private val SummaryTable = table<SimulationResult> {
@@ -26,7 +26,7 @@ private val SummaryTable = table<SimulationResult> {
     column("Total loan") { mortgageAmount.format(2) }
     column("Own funds") { ownFunds.format(2) }
     column("Total interest") { totalInterest.format(2) }
-    column("Avg pay") { (monthlyPayments.sumOf { it.total } / monthlyPayments.size).format(2) }
+    column("Avg pay") { (monthSummaries.sumOf { it.effectiveTotal } / monthSummaries.size).format(2) }
     column("Max pay") { annuitiesDistribution.max.format(2) }
     column("99p pay") { annuitiesDistribution.p99.format(2) }
     column("95p pay") { annuitiesDistribution.p95.format(2) }
@@ -42,10 +42,10 @@ private val YearTable = table<MortgageYearSummary> {
     column("Avg Pay.") { avgMonthlyPayment.format(2) }
 }
 
-private val MonthTable = table<MortgagePayment> {
+private val MonthTable = table<MortgageMonthSummary> {
     column("Date") { date }
-    column("Balance") { balanceBefore.format(2) }
-    column("P. Reduction") { principalReduction.format(2) }
-    column("Interest") { interest.format(2) }
-    column("Total") { total.format(2) }
+    column("Balance") { mortgagePayment.balanceBefore.format(2) }
+    column("P. Reduction") { mortgagePayment.principalReduction.format(2) }
+    column("Interest") { mortgagePayment.interest.format(2) }
+    column("Total") { effectiveTotal.format(2) }
 }

@@ -16,16 +16,16 @@ import org.hildan.accounting.mortgage.*
 @OptIn(ExperimentalKoalaPlotApi::class)
 @Composable
 fun MortgagePaymentsPlot(simulationResult: SimulationResult, modifier: Modifier) {
-    val payments = simulationResult.monthlyPayments
+    val payments = simulationResult.monthSummaries
     val xAxisModel = remember(payments) {
         val dates = payments.map { it.date }
         localDateAxisModel(min = dates.min(), max = dates.max())
     }
     val yAxisModel = remember(payments) {
-        amountAxisModel(max = payments.maxOf { it.total + 100.eur })
+        amountAxisModel(max = payments.maxOf { it.effectiveTotal + 100.eur })
     }
     val entries = remember(payments) {
-        payments.map { stackedAreaPlotEntry(it.date, arrayOf(it.total, it.principalReduction)) }
+        payments.map { stackedAreaPlotEntry(it.date, arrayOf(it.effectiveTotal, it.mortgagePayment.principalReduction)) }
     }
     val styles = List(2) {
         StackedAreaStyle(
