@@ -110,10 +110,6 @@ data class MortgageYearSummary(
  */
 data class MortgageMonthSummary(
     /**
-     * The date of the payment for the month.
-     */
-    val date: LocalDate,
-    /**
      * The mortgage payment for the month.
      */
     val mortgagePayment: MortgagePayment,
@@ -122,6 +118,11 @@ data class MortgageMonthSummary(
      */
     val constructionAccount: ConstructionAccountSummary?,
 ) {
+    /**
+     * The date of the payment for the month.
+     */
+    val date: LocalDate get() = mortgagePayment.date
+
     /**
      * The total amount effectively paid to the bank (with deductions applied).
      */

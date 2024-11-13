@@ -31,7 +31,6 @@ fun SimulationSettings.simulateLinear(): SimulationResult {
             settings = this,
             monthSummaries = mortgagePayments.map {
                 MortgageMonthSummary(
-                    date = it.date,
                     mortgagePayment = it,
                     constructionAccount = null,
                 )
@@ -52,7 +51,6 @@ fun SimulationSettings.simulateLinear(): SimulationResult {
                 constructionAccountBalance -= sortedBills.removeAmountUntil(payment.date)
 
                 effectivePayments.add(MortgageMonthSummary(
-                    date = payment.date,
                     mortgagePayment = payment,
                     constructionAccount = ConstructionAccountSummary(
                         balanceBefore = constructionAccountBalanceBefore,
