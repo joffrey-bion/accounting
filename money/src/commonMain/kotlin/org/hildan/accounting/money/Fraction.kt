@@ -11,6 +11,8 @@ value class Fraction internal constructor(internal val value: BigDecimal) : Comp
 
     constructor(value: Int) : this(value.toBigDecimalForCurrencyOps())
     constructor(value: String) : this(value.toBigDecimalForCurrencyOps())
+    constructor(numerator: Int, denominator: Int) :
+        this(numerator.toBigDecimalForCurrencyOps() / denominator.toBigDecimalForCurrencyOps())
 
     operator fun unaryMinus() = Fraction(-value)
     operator fun plus(other: Fraction) = Fraction(value + other.value)

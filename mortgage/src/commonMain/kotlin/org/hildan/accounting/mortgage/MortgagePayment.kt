@@ -12,6 +12,14 @@ data class MortgagePayment(
      */
     val date: LocalDate,
     /**
+     * The start date of the period paid this month.
+     */
+    val periodStart: LocalDate,
+    /**
+     * One day after the end date of the period paid this month.
+     */
+    val nextPeriodStart: LocalDate,
+    /**
      * The balance of the mortgage before making this payment.
      */
     val balanceBefore: Amount,

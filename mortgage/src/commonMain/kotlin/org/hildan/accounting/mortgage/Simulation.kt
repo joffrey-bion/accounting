@@ -46,8 +46,7 @@ fun SimulationSettings.simulateLinear(): SimulationResult {
             mortgagePayments.forEach { payment ->
                 val constructionAccountBalanceBefore = constructionAccountBalance
 
-                // FIXME interest is wrong for partial month - follow the example in calculatePaymentsLinear()
-                val constructionAccountInterest = constructionAccountBalance * payment.appliedInterestRate / 12
+                val constructionAccountInterest = constructionAccountBalance * payment.appliedInterestRate / 12 * payment.fractionOfMonth
 
                 // TODO should we count the interest before/after each bill?
                 constructionAccountBalance -= sortedBills.removeAmountUntil(payment.date)
@@ -74,6 +73,9 @@ fun SimulationSettings.simulateLinear(): SimulationResult {
     }
 }
 
+private val MortgagePayment.fractionOfMonth
+    get() = Fraction(periodStart.daysUntil(nextPeriodStart), date.nDaysInMonth())
+
 /**
  * Calculates the monthly payments for this [Mortgage] assuming a linear reimbursement scheme.
  */
@@ -94,8 +96,9 @@ private fun Mortgage.calculatePaymentsLinear(propertyWozValue: (LocalDate) -> Am
         val effectiveAnnualRate = annualInterestRate.at(interestPeriodStart, currentLtvRatio = currentLtvRatio)
 
         val fullMonthInterest = mortgageBalance.coerceAtLeast(Amount.ZERO) * effectiveAnnualRate / 12
+        val nextPeriodStart = paymentDate.nextMonthFirstDay()
         val effectiveInterest = if (paymentIndex == 0 && firstMonthIsPartial) {
-            val interestPeriodDays = interestPeriodStart.daysUntil(paymentDate.nextMonthFirstDay())
+            val interestPeriodDays = interestPeriodStart.daysUntil(nextPeriodStart)
             val totalDaysInMonth = paymentDate.nDaysInMonth()
             fullMonthInterest * interestPeriodDays / totalDaysInMonth
         } else {
@@ -108,10 +111,12 @@ private fun Mortgage.calculatePaymentsLinear(propertyWozValue: (LocalDate) -> Am
 
         // We count all the extra payments of the month, even the ones that are technically after the mandatory payment
         // date, because our goal is to aggregate per month
-        val extraRedemption = remainingExtraPayments.removeAmountUntil(paymentDate.nextMonthFirstDay())
+        val extraRedemption = remainingExtraPayments.removeAmountUntil(nextPeriodStart)
 
         val payment = MortgagePayment(
             date = paymentDate,
+            periodStart = interestPeriodStart,
+            nextPeriodStart = nextPeriodStart,
             balanceBefore = mortgageBalance,
             principalReduction = principalReduction,
             extraPrincipalReduction = extraRedemption,
@@ -126,7 +131,7 @@ private fun Mortgage.calculatePaymentsLinear(propertyWozValue: (LocalDate) -> Am
         // Interestingly, interest is not calculated between payment dates, but for complete months.
         // A payment on December 28th includes interest up to December 31st.
         // The next payment on January 30th (more than a month later) includes exactly one month of interest too.
-        interestPeriodStart = paymentDate.nextMonthFirstDay()
+        interestPeriodStart = nextPeriodStart
     }
     return payments
 }
