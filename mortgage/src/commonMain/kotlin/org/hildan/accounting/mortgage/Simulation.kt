@@ -80,9 +80,6 @@ fun SimulationSettings.simulateLinear(): SimulationResult {
 private fun Mortgage.calculatePaymentsLinear(propertyWozValue: (LocalDate) -> Amount): List<MortgagePayment> {
     val firstMonthIsPartial = startDate.dayOfMonth > 1
 
-    // FIXME should be adjusted when extra payments are made (based on the remaining months)
-    val linearMonthlyPrincipalReduction = amount / (termInYears * 12)
-
     val remainingExtraPayments = SortedPayments(extraPayments)
 
     var mortgageBalance = amount
@@ -90,6 +87,9 @@ private fun Mortgage.calculatePaymentsLinear(propertyWozValue: (LocalDate) -> Am
 
     val payments = mutableListOf<MortgagePayment>()
     monthlyPaymentDates.forEachIndexed { paymentIndex, paymentDate ->
+        val remainingMonths = monthlyPaymentDates.size - paymentIndex
+        val linearMonthlyPrincipalReduction = mortgageBalance / remainingMonths
+
         val currentLtvRatio = mortgageBalance / propertyWozValue(paymentDate)
         val effectiveAnnualRate = annualInterestRate.at(interestPeriodStart, currentLtvRatio = currentLtvRatio)
 
