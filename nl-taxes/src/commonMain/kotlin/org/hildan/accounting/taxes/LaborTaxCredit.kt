@@ -17,7 +17,7 @@ class LaborTaxCredit(
         return TaxItem(
             name = "Labor tax credit - Arbeidskorting (ARK)",
             description = "A tax credit received by everyone who works in the Netherlands (deducted from taxes by the employer when paying the salary).",
-            totalAmount = subItems.sumOf { it.amount }.round(), // rounded to whole euros as per the PDF
+            totalAmount = subItems.sumOf { it.amount }.rounded(), // rounded to whole euros as per the PDF
             details = null,
             breakdown = subItems,
             type = TaxItemType.TAX_CREDIT,
@@ -29,7 +29,7 @@ class LaborTaxCredit(
             TaxSubItem(
                 name = "Labor tax credit (bracket ${i + 1})",
                 description = null,
-                amount = appliedBracket.result.roundToScale(scale = 5), // rounded to 5 decimals as per the PDF
+                amount = appliedBracket.result.roundedToScale(scale = 5), // rounded to 5 decimals as per the PDF
                 details = appliedWageTaxBracketDescription(appliedBracket, bracketNum = i + 1),
             )
         }

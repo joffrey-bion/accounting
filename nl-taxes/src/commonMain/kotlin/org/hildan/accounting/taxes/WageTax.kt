@@ -21,7 +21,7 @@ class WageTax(
                     "parts of the annual income (brackets). It is always calculated on the full annual salary, as if " +
                     "a whole year was worked. For partial years (start or stop working at the company mid-year)," +
                     "the difference is adjusted in the tax return.",
-            totalAmount = subItems.sumOf { it.amount }.round(),
+            totalAmount = subItems.sumOf { it.amount }.rounded(),
             details = null,
             breakdown = subItems,
             type = TaxItemType.TAX,

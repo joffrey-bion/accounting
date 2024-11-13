@@ -19,7 +19,7 @@ class GeneralTaxCredit(
             name = "General tax credit",
             description = "A tax credit received by everyone who lives in the Netherlands for the whole year " +
                 "(deducted from taxes by the employer when paying the salary).",
-            totalAmount = creditAmount.round(), // rounded to whole euros as per the PDF
+            totalAmount = creditAmount.rounded(), // rounded to whole euros as per the PDF
             details = detailsMessage(phaseOutReduction, excess),
             breakdown = null,
             type = TaxItemType.TAX_CREDIT,

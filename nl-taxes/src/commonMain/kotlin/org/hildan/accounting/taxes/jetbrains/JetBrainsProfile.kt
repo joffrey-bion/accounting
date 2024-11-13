@@ -22,7 +22,7 @@ data class JetBrainsProfile(
     fun computeGrossBonus(year: Int): Amount {
         val companyBonus = JetBrainsCompanyBonus.forYear(year)
         val coeff = performance.totalBonusCoeff(companyBonus)
-        return ((profile.grossAnnualSalary / 12) * coeff).round()
+        return ((profile.grossAnnualSalary / 12) * coeff).rounded()
     }
 }
 

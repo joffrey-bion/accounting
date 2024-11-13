@@ -23,14 +23,15 @@ value class Amount private constructor(private val value: BigDecimal) : Comparab
     operator fun div(other: Amount) = Fraction(value / other.value)
 
     /**
-     * Rounds this amount to the nearest integer, rounding ties away from zero.
+     * Returns a copy of this amount rounded to the nearest integer, rounding ties away from zero.
      */
-    fun round() = roundToScale(scale = 0)
+    fun rounded() = roundedToScale(scale = 0)
 
     /**
-     * Rounds this amount to the [scale] digits after the decimal point, rounding ties away from zero.
+     * Returns a copy of this amount rounded to a number of digits after the decimal point equal to [scale], rounding
+     * ties away from zero.
      */
-    fun roundToScale(scale: Int) = Amount(value.roundToDigitPositionAfterDecimalPoint(
+    fun roundedToScale(scale: Int) = Amount(value.roundToDigitPositionAfterDecimalPoint(
         digitPosition = scale.toLong(),
         roundingMode = RoundingMode.ROUND_HALF_AWAY_FROM_ZERO,
     ))
@@ -59,7 +60,7 @@ value class Amount private constructor(private val value: BigDecimal) : Comparab
     /**
      * Formats this amount rounded to the given [scale] (number of digits after the decimal point).
      */
-    fun format(scale: Int): String = roundToScale(scale).formatWithMinScale(scale)
+    fun format(scale: Int): String = roundedToScale(scale).formatWithMinScale(scale)
 
     /**
      * Formats this amount as a string without any rounding, but ensuring a [minScale] number of digits after the
