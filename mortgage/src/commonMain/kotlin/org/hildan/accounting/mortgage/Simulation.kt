@@ -46,7 +46,8 @@ fun SimulationSettings.simulateLinear(): SimulationResult {
             mortgagePayments.forEach { payment ->
                 val constructionAccountBalanceBefore = constructionAccountBalance
 
-                val constructionAccountInterest = constructionAccountBalance * payment.appliedInterestRate / 12 * payment.fractionOfMonth
+                // rounded to the cent because that's how the bank does it (it shows with whole cents in statements)
+                val constructionAccountInterest = (constructionAccountBalance * payment.appliedInterestRate / 12 * payment.fractionOfMonth).roundedToTheCent()
 
                 // TODO should we count the interest before/after each bill?
                 val paidBills = sortedBills.popPaymentsUntil(payment.date)
@@ -99,7 +100,6 @@ private fun Mortgage.calculatePaymentsLinear(propertyWozValue: (LocalDate) -> Am
     val payments = mutableListOf<MortgagePayment>()
     monthlyPaymentDates.forEachIndexed { paymentIndex, paymentDate ->
         val remainingMonths = monthlyPaymentDates.size - paymentIndex
-        val linearMonthlyPrincipalReduction = mortgageBalance / remainingMonths
 
         val currentLtvRatio = mortgageBalance / propertyWozValue(paymentDate)
         val effectiveAnnualRate = annualInterestRate.at(interestPeriodStart, currentLtvRatio = currentLtvRatio)
@@ -114,6 +114,8 @@ private fun Mortgage.calculatePaymentsLinear(propertyWozValue: (LocalDate) -> Am
             fullMonthInterest
         }
 
+        // Not sure how the bank gets a round number in the total, so we round both principal and interest to get this
+        val linearMonthlyPrincipalReduction = (mortgageBalance / remainingMonths).roundedToTheCent()
         // We only start paying back the principal on the first full month.
         // If the first month is partial, we just pay interest.
         val principalReduction = if (paymentIndex == 0 && firstMonthIsPartial) Amount.ZERO else linearMonthlyPrincipalReduction
@@ -131,7 +133,8 @@ private fun Mortgage.calculatePaymentsLinear(propertyWozValue: (LocalDate) -> Am
             principalReduction = principalReduction,
             extraPrincipalReduction = extraPrincipalReduction,
             appliedInterestRate = effectiveAnnualRate,
-            interest = effectiveInterest,
+            // Not sure how the bank gets a round number in the total, so we round both principal and interest to get this
+            interest = effectiveInterest.roundedToTheCent(),
         )
         payments.add(payment)
 

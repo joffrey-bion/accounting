@@ -25,16 +25,25 @@ value class Amount private constructor(private val value: BigDecimal) : Comparab
     /**
      * Returns a copy of this amount rounded to the nearest integer, rounding ties away from zero.
      */
-    fun rounded() = roundedToScale(scale = 0)
+    fun rounded(roundingMode: RoundingMode = RoundingMode.ROUND_HALF_AWAY_FROM_ZERO) =
+        roundedToScale(scale = 0, roundingMode)
+
+    /**
+     * Returns a copy of this amount rounded to 2 decimal points to have a whole number of cents, rounding ties away
+     * from zero.
+     */
+    fun roundedToTheCent(roundingMode: RoundingMode = RoundingMode.ROUND_HALF_AWAY_FROM_ZERO) =
+        roundedToScale(scale = 2, roundingMode)
 
     /**
      * Returns a copy of this amount rounded to a number of digits after the decimal point equal to [scale], rounding
      * ties away from zero.
      */
-    fun roundedToScale(scale: Int) = Amount(value.roundToDigitPositionAfterDecimalPoint(
-        digitPosition = scale.toLong(),
-        roundingMode = RoundingMode.ROUND_HALF_AWAY_FROM_ZERO,
-    ))
+    fun roundedToScale(scale: Int, roundingMode: RoundingMode = RoundingMode.ROUND_HALF_AWAY_FROM_ZERO) =
+        Amount(value.roundToDigitPositionAfterDecimalPoint(
+            digitPosition = scale.toLong(),
+            roundingMode = roundingMode,
+        ))
 
     override fun compareTo(other: Amount): Int = value.compareTo(other.value)
 

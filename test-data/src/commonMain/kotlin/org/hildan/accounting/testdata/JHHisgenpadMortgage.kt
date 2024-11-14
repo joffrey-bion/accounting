@@ -1,5 +1,6 @@
 package org.hildan.accounting.testdata
 
+import com.ionspin.kotlin.bignum.decimal.RoundingMode
 import kotlinx.datetime.*
 import org.hildan.accounting.money.*
 import org.hildan.accounting.mortgage.*
@@ -34,16 +35,19 @@ private val ObvionRateSept2023 = InterestRate.DynamicLtv(
 
 // these dates are not the dates of the bills, but the dates of the payments themselves
 private val constructionBillsPayments = listOf(
-    Payment(date = LocalDate.parse("2024-01-16"), amount = constructionPrice * 3.pct),      // T1
-    Payment(date = LocalDate.parse("2024-04-18"), amount = constructionPrice * 10.pct),     // T2
-    Payment(date = LocalDate.parse("2024-06-11"), amount = constructionPrice * 15.pct),     // T3
-    Payment(date = LocalDate.parse("2024-06-16"), amount = constructionPrice * 10.pct),     // T4
-    Payment(date = LocalDate.parse("2024-12-01"), amount = constructionPrice * 5.pct),      // T5 TODO add real date
-    Payment(date = LocalDate.parse("2025-01-15"), amount = constructionPrice * "23.5".pct), // T6 TODO add real date
-    Payment(date = LocalDate.parse("2024-11-11"), amount = constructionPrice * 10.pct),     // T7
-    Payment(date = LocalDate.parse("2024-11-01"), amount = constructionPrice * "13.5".pct), // T8 TODO add real date
-    Payment(date = LocalDate.parse("2025-09-01"), amount = constructionPrice * 10.pct), // on delivery date TODO add real date
-)
+    "2024-01-16" to constructionPrice * 3.pct,      // T1
+    "2024-04-18" to constructionPrice * 10.pct,     // T2
+    "2024-06-11" to constructionPrice * 15.pct,     // T3
+    "2024-06-16" to constructionPrice * 10.pct,     // T4
+    "2024-12-01" to constructionPrice * 5.pct,      // T5 TODO add real date
+    "2025-01-15" to constructionPrice * "23.5".pct, // T6 TODO add real date
+    "2024-11-11" to constructionPrice * 10.pct,     // T7
+    "2024-11-01" to constructionPrice * "13.5".pct, // T8 TODO add real date
+    "2025-09-01" to constructionPrice * 10.pct, // on delivery date TODO add real date
+).map { (date, amount) ->
+    // BotBouw rounds the numbers up even when less than 0.5
+    Payment(date = LocalDate.parse(date), amount = amount.roundedToTheCent(RoundingMode.CEILING))
+}
 
 val jhHisgenpadSimulationIncremental = SimulationSettings(
     simulationName = "700k Incremental",
@@ -63,6 +67,9 @@ val jhHisgenpadSimulationIncremental = SimulationSettings(
             Payment(date = LocalDate.parse("2025-03-01"), parkingPrice), // TODO add real date
             Payment(date = LocalDate.parse("2025-07-01"), optionsPrice), // TODO add real date
             *constructionBillsPayments.toTypedArray<Payment>(),
+            // Compensates for bills rounding so it still amounts to the real construction price.
+            // In reality, BotBouw will probably adjust the last bill, or the bank will give/take the difference.
+            Payment(date = LocalDate.parse("2025-12-31"), constructionPrice - constructionBillsPayments.sumOf { it.amount }),
         ),
         wozValue = estimatedWozValue,
     ),
