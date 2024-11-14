@@ -49,12 +49,14 @@ fun SimulationSettings.simulateLinear(): SimulationResult {
                 val constructionAccountInterest = constructionAccountBalance * payment.appliedInterestRate / 12 * payment.fractionOfMonth
 
                 // TODO should we count the interest before/after each bill?
-                constructionAccountBalance -= sortedBills.removeAmountUntil(payment.date)
+                val paidBills = sortedBills.popPaymentsUntil(payment.date)
+                constructionAccountBalance -= paidBills.sumOf { it.amount }
 
                 effectivePayments.add(MortgageMonthSummary(
                     mortgagePayment = payment,
                     constructionAccount = ConstructionAccountSummary(
                         balanceBefore = constructionAccountBalanceBefore,
+                        paidBills = paidBills,
                         generatedInterest = constructionAccountInterest,
                         deductedInterest = if (deductPastInterest) interestToDeduct else Amount.ZERO,
                     ),
@@ -118,7 +120,8 @@ private fun Mortgage.calculatePaymentsLinear(propertyWozValue: (LocalDate) -> Am
 
         // We count all the extra payments of the month, even the ones that are technically after the mandatory payment
         // date, because our goal is to aggregate per month
-        val extraRedemption = remainingExtraPayments.removeAmountUntil(nextPeriodStart)
+        val extraPaymentsThisMonth = remainingExtraPayments.popPaymentsUntil(nextPeriodStart)
+        val extraPrincipalReduction = extraPaymentsThisMonth.sumOf { it.amount }
 
         val payment = MortgagePayment(
             date = paymentDate,
@@ -126,13 +129,13 @@ private fun Mortgage.calculatePaymentsLinear(propertyWozValue: (LocalDate) -> Am
             nextPeriodStart = nextPeriodStart,
             balanceBefore = mortgageBalance,
             principalReduction = principalReduction,
-            extraPrincipalReduction = extraRedemption,
+            extraPrincipalReduction = extraPrincipalReduction,
             appliedInterestRate = effectiveAnnualRate,
             interest = effectiveInterest,
         )
         payments.add(payment)
 
-        mortgageBalance -= extraRedemption
+        mortgageBalance -= extraPrincipalReduction
         mortgageBalance -= principalReduction
 
         // Interestingly, interest is not calculated between payment dates, but for complete months.
@@ -152,11 +155,11 @@ private fun firstOfMonthOf(date: LocalDate) = LocalDate(year = date.year, month 
 private class SortedPayments(payments: List<Payment>) {
     private var sortedPayments = payments.sortedBy { it.date }
 
-    fun removeAmountUntil(dateExclusive: LocalDate): Amount {
-        val found = sortedPayments.takeWhile { it.date < dateExclusive }
-        if (found.isNotEmpty()) {
-            sortedPayments = sortedPayments.drop(found.size)
+    fun popPaymentsUntil(dateExclusive: LocalDate): List<Payment> {
+        val bills = sortedPayments.takeWhile { it.date < dateExclusive }
+        if (bills.isNotEmpty()) {
+            sortedPayments = sortedPayments.drop(bills.size)
         }
-        return found.sumOf { it.amount }
+        return bills
     }
 }
