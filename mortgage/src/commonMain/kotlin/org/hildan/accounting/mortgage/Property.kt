@@ -19,12 +19,6 @@ sealed class Property {
      * purchase price, including options/extra work (and subtracting the discarded work).
      */
     abstract val wozValue: Amount
-    /**
-     * The different installments that constitute the purchase.
-     * Existing houses/apartments have a single payment.
-     * New builds have the land purchase and several construction bills.
-     */
-    abstract val installments: List<Payment>
 
     /**
      * An existing house or apartment, bought with the given [purchase] payment, and with a given estimated [wozValue].
@@ -34,9 +28,7 @@ sealed class Property {
     data class Existing(
         val purchase: Payment,
         override val wozValue: Amount,
-    ) : Property() {
-        override val installments = listOf(purchase)
-    }
+    ) : Property()
 
     /**
      * A new house or apartment that has yet to be built.
@@ -78,7 +70,5 @@ sealed class Property {
          * total purchase price, including options/extra work (and subtracting the discarded work).
          */
         override val wozValue: Amount = initialNotaryPayment.amount + constructionInstallments.sumOf { it.amount },
-    ) : Property() {
-        override val installments: List<Payment> = listOf(initialNotaryPayment) + constructionInstallments
-    }
+    ) : Property()
 }

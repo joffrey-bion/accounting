@@ -82,6 +82,9 @@ private fun Property.Existing.toNewConstruction() = Property.NewConstruction(
 )
 
 private fun Property.NewConstruction.toExisting() = Property.Existing(
-    purchase = Payment(date = installments.first().date, amount = installments.sumOf { it.amount }),
+    purchase = Payment(
+        date = initialNotaryPayment.date,
+        amount = initialNotaryPayment.amount + constructionInstallments.sumOf { it.amount },
+    ),
     wozValue = wozValue,
 )
