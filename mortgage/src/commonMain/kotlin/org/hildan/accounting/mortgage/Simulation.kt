@@ -41,7 +41,8 @@ fun SimulationSettings.simulateLinear(): SimulationResult {
             var constructionAccountBalance = property.constructionInstallments.sumOf { it.amount }
 
             val effectivePayments = mutableListOf<MortgageMonthSummary>()
-            var nextDeductedInterest = Amount.ZERO
+            var deductPastInterest = false
+            var interestToDeduct = Amount.ZERO
             mortgagePayments.forEach { payment ->
                 val constructionAccountBalanceBefore = constructionAccountBalance
 
@@ -55,15 +56,23 @@ fun SimulationSettings.simulateLinear(): SimulationResult {
                     constructionAccount = ConstructionAccountSummary(
                         balanceBefore = constructionAccountBalanceBefore,
                         generatedInterest = constructionAccountInterest,
-                        deductedInterest = nextDeductedInterest,
+                        deductedInterest = if (deductPastInterest) interestToDeduct else Amount.ZERO,
                     ),
                 ))
-                // TODO the first partial month doesn't result in a payment, so the first 2 months should credit their
-                //  interest to the construction account, not just the first.
-                if (nextDeductedInterest == Amount.ZERO) {
+
+                // if we're not deducting interest from the payments yet, we cumulate them on the construction account
+                if (deductPastInterest) {
+                    interestToDeduct = Amount.ZERO // consume it
+                } else {
                     constructionAccountBalance += constructionAccountInterest
                 }
-                nextDeductedInterest = constructionAccountInterest
+                interestToDeduct += constructionAccountInterest
+
+                // we start deducting the construction fund interest after the first real payment occurs (first full month)
+                val isPartialMonth = payment.fractionOfMonth < 100.pct
+                if (!isPartialMonth) {
+                    deductPastInterest = true
+                }
             }
 
             SimulationResult(settings = this, monthSummaries = effectivePayments)
