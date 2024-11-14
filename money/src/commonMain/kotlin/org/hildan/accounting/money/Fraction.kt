@@ -19,6 +19,7 @@ value class Fraction internal constructor(internal val value: BigDecimal) : Comp
     operator fun minus(other: Fraction) = Fraction(value - other.value)
     operator fun minus(other: Int) = Fraction(value - other.toBigDecimalForCurrencyOps())
     operator fun times(other: Fraction) = Fraction(value * other.value)
+    operator fun div(other: Int) = Fraction(value / other.toBigDecimalForCurrencyOps())
 
     override fun compareTo(other: Fraction): Int = value.compareTo(other.value)
 

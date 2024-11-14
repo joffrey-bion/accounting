@@ -45,12 +45,11 @@ fun SimulationSettings.simulateLinear(): SimulationResult {
             var interestToDeduct = Amount.ZERO
             mortgagePayments.forEach { payment ->
                 val constructionAccountBalanceBefore = constructionAccountBalance
+                val paidBills = sortedBills.popPaymentsUntil(payment.date)
 
                 // rounded to the cent because that's how the bank does it (it shows with whole cents in statements)
-                val constructionAccountInterest = (constructionAccountBalance * payment.appliedInterestRate / 12 * payment.fractionOfMonth).roundedToTheCent()
+                val constructionAccountInterest = bdInterest(payment, constructionAccountBalance, paidBills).roundedToTheCent()
 
-                // TODO should we count the interest before/after each bill?
-                val paidBills = sortedBills.popPaymentsUntil(payment.date)
                 constructionAccountBalance -= paidBills.sumOf { it.amount }
 
                 effectivePayments.add(MortgageMonthSummary(
@@ -72,7 +71,7 @@ fun SimulationSettings.simulateLinear(): SimulationResult {
                 interestToDeduct += constructionAccountInterest
 
                 // we start deducting the construction fund interest after the first real payment occurs (first full month)
-                val isPartialMonth = payment.fractionOfMonth < 100.pct
+                val isPartialMonth = payment.periodStart.dayOfMonth > 1
                 if (!isPartialMonth) {
                     deductPastInterest = true
                 }
@@ -83,8 +82,22 @@ fun SimulationSettings.simulateLinear(): SimulationResult {
     }
 }
 
-private val MortgagePayment.fractionOfMonth
-    get() = Fraction(periodStart.daysUntil(nextPeriodStart), date.nDaysInMonth())
+private fun bdInterest(payment: MortgagePayment, bdStartBalance: Amount, bills: List<Payment>): Amount {
+    val totalDaysInMonth = payment.date.nDaysInMonth()
+    val monthlyRate = payment.appliedInterestRate / 12
+    var from = payment.periodStart
+    var balance = bdStartBalance
+    var interest = Amount.ZERO
+    bills.forEach { bill ->
+        val fractionOfMonth = Fraction(from.daysUntil(bill.date), totalDaysInMonth)
+        interest += balance * monthlyRate * fractionOfMonth
+        balance -= bill.amount
+        from = bill.date
+    }
+    val fractionOfMonth = Fraction(from.daysUntil(payment.nextPeriodStart), totalDaysInMonth)
+    interest += balance * monthlyRate * fractionOfMonth
+    return interest
+}
 
 /**
  * Calculates the monthly payments for this [Mortgage] assuming a linear reimbursement scheme.
