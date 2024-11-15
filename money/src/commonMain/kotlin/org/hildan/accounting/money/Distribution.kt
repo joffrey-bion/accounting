@@ -36,7 +36,7 @@ fun Iterable<Amount>.distribution(): Distribution {
         p99 = sorted[nthPercentile(99, sorted.size)],
         p95 = sorted[nthPercentile(95, sorted.size)],
         p90 = sorted[nthPercentile(90, sorted.size)],
-        average = sum() / sorted.size,
+        average = sorted.sum() / sorted.size,
     )
 }
 
