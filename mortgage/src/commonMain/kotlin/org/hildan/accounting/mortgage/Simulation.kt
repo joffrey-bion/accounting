@@ -67,13 +67,12 @@ fun SimulationSettings.simulateLinear(): SimulationResult {
                     ),
                 ))
 
-                // FIXME we don't handle the transition well here, double check when we credit/remove interest
                 // if we're not deducting interest from the payments yet, we cumulate them on the construction account
                 if (deductPastInterest) {
+                    constructionAccountBalance -= interestToDeduct
                     interestToDeduct = Amount.ZERO // consume it
-                } else {
-                    constructionAccountBalance += constructionAccountInterest
                 }
+                constructionAccountBalance += constructionAccountInterest
                 interestToDeduct += constructionAccountInterest
 
                 // we start deducting the construction fund interest after the first real payment occurs (first full month)
