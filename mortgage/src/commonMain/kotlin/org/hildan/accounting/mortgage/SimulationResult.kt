@@ -34,23 +34,21 @@ data class SimulationResult(
 
     val yearSummaries: List<MortgageYearSummary> = monthSummaries
         .groupBy { it.date.year }
-        .mapValues { (year, summaries) ->
-            MortgageYearSummary(
-                year = year,
-                nMonths = summaries.size,
-                balanceBefore = summaries.first().mortgagePayment.balanceBefore,
-                principalReduction = summaries.sumOf { it.mortgagePayment.principalReduction },
-                extraPrincipalReduction = summaries.sumOf { it.mortgagePayment.extraPrincipalReduction },
-                interestRates = summaries.map { it.mortgagePayment.appliedInterestRate }.distinct(),
-                interest = summaries.sumOf { it.mortgagePayment.interest },
-                constructionAccount = summaries.mapNotNull { it.constructionAccount }
-                    .takeIf { it.isNotEmpty() }
-                    ?.aggregate(),
-            )
-        }
+        .mapValues { (year, summaries) -> summaries.aggregateYear(year) }
         .values
         .sortedBy { it.year }
 }
+
+private fun List<MortgageMonthSummary>.aggregateYear(year: Int): MortgageYearSummary = MortgageYearSummary(
+    year = year,
+    nMonths = size,
+    balanceBefore = this.first().mortgagePayment.balanceBefore,
+    principalReduction = sumOf { it.mortgagePayment.principalReduction },
+    extraPrincipalReduction = sumOf { it.mortgagePayment.extraPrincipalReduction },
+    interestRates = map { it.mortgagePayment.appliedInterestRate }.distinct(),
+    interest = sumOf { it.mortgagePayment.interest },
+    constructionAccount = mapNotNull { it.constructionAccount }.takeIf { it.isNotEmpty() }?.aggregate(),
+)
 
 private fun List<ConstructionAccountSummary>.aggregate() = ConstructionAccountSummary(
     balanceBefore = first().balanceBefore,
