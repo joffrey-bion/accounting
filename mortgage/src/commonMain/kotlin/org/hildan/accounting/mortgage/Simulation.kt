@@ -45,10 +45,15 @@ fun SimulationSettings.simulateLinear(): SimulationResult {
             var interestToDeduct = Amount.ZERO
             mortgagePayments.forEach { payment ->
                 val constructionAccountBalanceBefore = constructionAccountBalance
-                val paidBills = sortedBills.popPaymentsUntil(payment.date)
+                val paidBills = sortedBills.popPaymentsUntil(payment.nextPeriodStart)
 
                 // rounded to the cent because that's how the bank does it (it shows with whole cents in statements)
-                val constructionAccountInterest = bdInterest(payment, constructionAccountBalance, paidBills).roundedToTheCent()
+                val constructionAccountInterest = bdInterest(
+                    payment = payment,
+                    bdStartBalance = constructionAccountBalance,
+                    bills = paidBills,
+                    dayCountConvention = mortgage.dayCountConvention,
+                ).roundedToTheCent()
 
                 constructionAccountBalance -= paidBills.sumOf { it.amount }
 
@@ -62,6 +67,7 @@ fun SimulationSettings.simulateLinear(): SimulationResult {
                     ),
                 ))
 
+                // FIXME we don't handle the transition well here, double check when we credit/remove interest
                 // if we're not deducting interest from the payments yet, we cumulate them on the construction account
                 if (deductPastInterest) {
                     interestToDeduct = Amount.ZERO // consume it
@@ -82,19 +88,23 @@ fun SimulationSettings.simulateLinear(): SimulationResult {
     }
 }
 
-private fun bdInterest(payment: MortgagePayment, bdStartBalance: Amount, bills: List<Payment>): Amount {
-    val totalDaysInMonth = payment.date.nDaysInMonth()
+private fun bdInterest(
+    payment: MortgagePayment,
+    bdStartBalance: Amount,
+    bills: List<Payment>,
+    dayCountConvention: DayCountConvention,
+): Amount {
     val monthlyRate = payment.appliedInterestRate / 12
     var from = payment.periodStart
     var balance = bdStartBalance
     var interest = Amount.ZERO
     bills.forEach { bill ->
-        val fractionOfMonth = Fraction(from.daysUntil(bill.date), totalDaysInMonth)
+        val fractionOfMonth = dayCountConvention.monthRatio(start = from, endExclusive = bill.date)
         interest += balance * monthlyRate * fractionOfMonth
         balance -= bill.amount
         from = bill.date
     }
-    val fractionOfMonth = Fraction(from.daysUntil(payment.nextPeriodStart), totalDaysInMonth)
+    val fractionOfMonth = dayCountConvention.monthRatio(start = from, endExclusive = payment.nextPeriodStart)
     interest += balance * monthlyRate * fractionOfMonth
     return interest
 }
@@ -120,9 +130,8 @@ private fun Mortgage.calculatePaymentsLinear(propertyWozValue: (LocalDate) -> Am
         val fullMonthInterest = mortgageBalance.coerceAtLeast(Amount.ZERO) * effectiveAnnualRate / 12
         val nextPeriodStart = paymentDate.nextMonthFirstDay()
         val effectiveInterest = if (paymentIndex == 0 && firstMonthIsPartial) {
-            val interestPeriodDays = interestPeriodStart.daysUntil(nextPeriodStart)
-            val totalDaysInMonth = paymentDate.nDaysInMonth()
-            fullMonthInterest * interestPeriodDays / totalDaysInMonth
+            val monthFraction = dayCountConvention.monthRatio(start = interestPeriodStart, endExclusive = nextPeriodStart)
+            fullMonthInterest * monthFraction
         } else {
             fullMonthInterest
         }
@@ -161,12 +170,6 @@ private fun Mortgage.calculatePaymentsLinear(propertyWozValue: (LocalDate) -> Am
     }
     return payments
 }
-
-private fun LocalDate.nDaysInMonth(): Int = nextMonthFirstDay().minus(1, DateTimeUnit.DAY).dayOfMonth
-
-private fun LocalDate.nextMonthFirstDay(): LocalDate = firstOfMonthOf(this).plus(1, DateTimeUnit.MONTH)
-
-private fun firstOfMonthOf(date: LocalDate) = LocalDate(year = date.year, month = date.month, dayOfMonth = 1)
 
 private class SortedPayments(payments: List<Payment>) {
     private var sortedPayments = payments.sortedBy { it.date }

@@ -29,6 +29,10 @@ data class Mortgage(
      * The total duration (in years) over which the mortgage will be repaid.
      */
     val termInYears: Int = 30,
+    /**
+     * The day-count rule for this mortgage, which defines how interest is applied to partial months.
+     */
+    val dayCountConvention: DayCountConvention = DayCountConvention.ActualActual,
 ) {
     /**
      * The dates of the monthly payments for the duration of the mortgage.
