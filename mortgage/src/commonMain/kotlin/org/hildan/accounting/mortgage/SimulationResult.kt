@@ -24,7 +24,7 @@ data class SimulationResult(
     /**
      * The personal money invested at the start.
      */
-    val ownFunds: Amount = settings.property.wozValue - mortgageAmount
+    val ownFunds: Amount = settings.property.totalPrice - mortgageAmount
 
     val totalInterest: Amount = monthSummaries.sumOf { it.mortgagePayment.interest }
 

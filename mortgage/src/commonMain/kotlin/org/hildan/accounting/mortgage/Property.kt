@@ -7,6 +7,11 @@ import org.hildan.accounting.money.*
  */
 sealed class Property {
     /**
+     * The total price paid for the property.
+     */
+    abstract val totalPrice: Amount
+
+    /**
      * The property value (known as the [Waardering Onroerende Zaken value](https://www.amsterdam.nl/en/municipal-taxes/property-valuation-woz),
      * or WOZ value in short) is used to calculate how much tax you owe, and also determines the maximum that
      * the banks can lend.
@@ -28,7 +33,11 @@ sealed class Property {
     data class Existing(
         val purchase: Payment,
         override val wozValue: Amount,
-    ) : Property()
+    ) : Property() {
+
+        override val totalPrice: Amount
+            get() = purchase.amount
+    }
 
     /**
      * A new house or apartment that has yet to be built.
@@ -70,5 +79,8 @@ sealed class Property {
          * total purchase price, including options/extra work (and subtracting the discarded work).
          */
         override val wozValue: Amount = initialNotaryPayment.amount + constructionInstallments.sumOf { it.amount },
-    ) : Property()
+    ) : Property() {
+
+        override val totalPrice: Amount = initialNotaryPayment.amount + constructionInstallments.sumOf { it.amount }
+    }
 }
