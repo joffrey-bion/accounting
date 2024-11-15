@@ -44,7 +44,7 @@ data class Mortgage(
  * Returns the monthly payment dates based on the [startDate] of the loan and the [termInYears], assuming a fixed day
  * [dayOfMonth] each month.
  */
-fun monthlyPaymentDates(startDate: LocalDate, termInYears: Int, dayOfMonth: Int): List<LocalDate> {
+internal fun monthlyPaymentDates(startDate: LocalDate, termInYears: Int, dayOfMonth: Int): List<LocalDate> {
     val firstPayment = LocalDate(startDate.year, startDate.month, dayOfMonth)
     val firstMonthIsPartial = startDate.dayOfMonth > 1
     val redemptionDay = startDate.plus(termInYears, DateTimeUnit.YEAR).let {
@@ -55,4 +55,66 @@ fun monthlyPaymentDates(startDate: LocalDate, termInYears: Int, dayOfMonth: Int)
     return generateSequence(firstPayment) { it.plus(1, DateTimeUnit.MONTH) }
         .takeWhile { it <= redemptionDay }
         .toList()
+}
+
+/**
+ * Calculates the monthly payments for this [Mortgage] assuming a linear reimbursement scheme.
+ */
+internal fun Mortgage.calculatePaymentsLinear(propertyWozValue: (LocalDate) -> Amount): List<MortgagePayment> {
+    val firstMonthIsPartial = startDate.dayOfMonth > 1
+
+    val remainingExtraPayments = SortedPayments(extraPayments)
+
+    var mortgageBalance = amount
+    var interestPeriodStart = startDate
+
+    val payments = mutableListOf<MortgagePayment>()
+    monthlyPaymentDates.forEachIndexed { paymentIndex, paymentDate ->
+        val remainingMonths = monthlyPaymentDates.size - paymentIndex
+
+        val currentLtvRatio = mortgageBalance / propertyWozValue(paymentDate)
+        val effectiveAnnualRate = annualInterestRate.at(interestPeriodStart, currentLtvRatio = currentLtvRatio)
+
+        val fullMonthInterest = mortgageBalance.coerceAtLeast(Amount.ZERO) * effectiveAnnualRate / 12
+        val nextPeriodStart = paymentDate.nextMonthFirstDay()
+        val effectiveInterest = if (paymentIndex == 0 && firstMonthIsPartial) {
+            val monthFraction = dayCountConvention.monthRatio(start = interestPeriodStart, endExclusive = nextPeriodStart)
+            fullMonthInterest * monthFraction
+        } else {
+            fullMonthInterest
+        }
+
+        // Not sure how the bank gets a round number in the total, so we round both principal and interest to get this
+        val linearMonthlyPrincipalReduction = (mortgageBalance / remainingMonths).roundedToTheCent()
+        // We only start paying back the principal on the first full month.
+        // If the first month is partial, we just pay interest.
+        val principalReduction = if (paymentIndex == 0 && firstMonthIsPartial) Amount.ZERO else linearMonthlyPrincipalReduction
+
+        // We count all the extra payments of the month, even the ones that are technically after the mandatory payment
+        // date, because our goal is to aggregate per month
+        val extraPaymentsThisMonth = remainingExtraPayments.popPaymentsUntil(nextPeriodStart)
+        val extraPrincipalReduction = extraPaymentsThisMonth.sumOf { it.amount }
+
+        val payment = MortgagePayment(
+            date = paymentDate,
+            periodStart = interestPeriodStart,
+            nextPeriodStart = nextPeriodStart,
+            balanceBefore = mortgageBalance,
+            principalReduction = principalReduction,
+            extraPrincipalReduction = extraPrincipalReduction,
+            appliedInterestRate = effectiveAnnualRate,
+            // Not sure how the bank gets a round number in the total, so we round both principal and interest to get this
+            interest = effectiveInterest.roundedToTheCent(),
+        )
+        payments.add(payment)
+
+        mortgageBalance -= extraPrincipalReduction
+        mortgageBalance -= principalReduction
+
+        // Interestingly, interest is not calculated between payment dates, but for complete months.
+        // A payment on December 28th includes interest up to December 31st.
+        // The next payment on January 30th (more than a month later) includes exactly one month of interest too.
+        interestPeriodStart = nextPeriodStart
+    }
+    return payments
 }

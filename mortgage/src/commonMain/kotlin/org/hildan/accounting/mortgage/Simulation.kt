@@ -1,6 +1,5 @@
 package org.hildan.accounting.mortgage
 
-import kotlinx.datetime.*
 import org.hildan.accounting.money.*
 
 /**
@@ -106,78 +105,4 @@ private fun bdInterest(
     val fractionOfMonth = dayCountConvention.monthRatio(start = from, endExclusive = payment.nextPeriodStart)
     interest += balance * monthlyRate * fractionOfMonth
     return interest
-}
-
-/**
- * Calculates the monthly payments for this [Mortgage] assuming a linear reimbursement scheme.
- */
-private fun Mortgage.calculatePaymentsLinear(propertyWozValue: (LocalDate) -> Amount): List<MortgagePayment> {
-    val firstMonthIsPartial = startDate.dayOfMonth > 1
-
-    val remainingExtraPayments = SortedPayments(extraPayments)
-
-    var mortgageBalance = amount
-    var interestPeriodStart = startDate
-
-    val payments = mutableListOf<MortgagePayment>()
-    monthlyPaymentDates.forEachIndexed { paymentIndex, paymentDate ->
-        val remainingMonths = monthlyPaymentDates.size - paymentIndex
-
-        val currentLtvRatio = mortgageBalance / propertyWozValue(paymentDate)
-        val effectiveAnnualRate = annualInterestRate.at(interestPeriodStart, currentLtvRatio = currentLtvRatio)
-
-        val fullMonthInterest = mortgageBalance.coerceAtLeast(Amount.ZERO) * effectiveAnnualRate / 12
-        val nextPeriodStart = paymentDate.nextMonthFirstDay()
-        val effectiveInterest = if (paymentIndex == 0 && firstMonthIsPartial) {
-            val monthFraction = dayCountConvention.monthRatio(start = interestPeriodStart, endExclusive = nextPeriodStart)
-            fullMonthInterest * monthFraction
-        } else {
-            fullMonthInterest
-        }
-
-        // Not sure how the bank gets a round number in the total, so we round both principal and interest to get this
-        val linearMonthlyPrincipalReduction = (mortgageBalance / remainingMonths).roundedToTheCent()
-        // We only start paying back the principal on the first full month.
-        // If the first month is partial, we just pay interest.
-        val principalReduction = if (paymentIndex == 0 && firstMonthIsPartial) Amount.ZERO else linearMonthlyPrincipalReduction
-
-        // We count all the extra payments of the month, even the ones that are technically after the mandatory payment
-        // date, because our goal is to aggregate per month
-        val extraPaymentsThisMonth = remainingExtraPayments.popPaymentsUntil(nextPeriodStart)
-        val extraPrincipalReduction = extraPaymentsThisMonth.sumOf { it.amount }
-
-        val payment = MortgagePayment(
-            date = paymentDate,
-            periodStart = interestPeriodStart,
-            nextPeriodStart = nextPeriodStart,
-            balanceBefore = mortgageBalance,
-            principalReduction = principalReduction,
-            extraPrincipalReduction = extraPrincipalReduction,
-            appliedInterestRate = effectiveAnnualRate,
-            // Not sure how the bank gets a round number in the total, so we round both principal and interest to get this
-            interest = effectiveInterest.roundedToTheCent(),
-        )
-        payments.add(payment)
-
-        mortgageBalance -= extraPrincipalReduction
-        mortgageBalance -= principalReduction
-
-        // Interestingly, interest is not calculated between payment dates, but for complete months.
-        // A payment on December 28th includes interest up to December 31st.
-        // The next payment on January 30th (more than a month later) includes exactly one month of interest too.
-        interestPeriodStart = nextPeriodStart
-    }
-    return payments
-}
-
-private class SortedPayments(payments: List<Payment>) {
-    private var sortedPayments = payments.sortedBy { it.date }
-
-    fun popPaymentsUntil(dateExclusive: LocalDate): List<Payment> {
-        val bills = sortedPayments.takeWhile { it.date < dateExclusive }
-        if (bills.isNotEmpty()) {
-            sortedPayments = sortedPayments.drop(bills.size)
-        }
-        return bills
-    }
 }
