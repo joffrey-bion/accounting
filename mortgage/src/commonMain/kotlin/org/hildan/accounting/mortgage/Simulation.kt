@@ -92,17 +92,16 @@ private fun bdInterest(
     bills: List<Payment>,
     dayCountConvention: DayCountConvention,
 ): Amount {
-    val monthlyRate = payment.appliedInterestRate / 12
     var from = payment.periodStart
     var balance = bdStartBalance
     var interest = Amount.ZERO
     bills.forEach { bill ->
-        val fractionOfMonth = dayCountConvention.monthRatio(start = from, endExclusive = bill.date)
-        interest += balance * monthlyRate * fractionOfMonth
+        val fractionOfMonth = dayCountConvention.dayCountFactor(start = from, endExclusive = bill.date)
+        interest += balance * payment.appliedInterestRate * fractionOfMonth
         balance -= bill.amount
         from = bill.date
     }
-    val fractionOfMonth = dayCountConvention.monthRatio(start = from, endExclusive = payment.nextPeriodStart)
-    interest += balance * monthlyRate * fractionOfMonth
+    val fractionOfMonth = dayCountConvention.dayCountFactor(start = from, endExclusive = payment.nextPeriodStart)
+    interest += balance * payment.appliedInterestRate * fractionOfMonth
     return interest
 }

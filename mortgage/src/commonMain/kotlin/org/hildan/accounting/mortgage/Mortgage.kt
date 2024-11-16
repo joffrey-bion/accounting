@@ -75,14 +75,9 @@ internal fun Mortgage.calculatePaymentsLinear(propertyWozValue: (LocalDate) -> A
         val currentLtvRatio = mortgageBalance / propertyWozValue(paymentDate)
         val effectiveAnnualRate = annualInterestRate.at(interestPeriodStart, currentLtvRatio = currentLtvRatio)
 
-        val fullMonthInterest = mortgageBalance.coerceAtLeast(Amount.ZERO) * effectiveAnnualRate / 12
         val nextPeriodStart = paymentDate.nextMonthFirstDay()
-        val effectiveInterest = if (paymentIndex == 0 && firstMonthIsPartial) {
-            val monthFraction = dayCountConvention.monthRatio(start = interestPeriodStart, endExclusive = nextPeriodStart)
-            fullMonthInterest * monthFraction
-        } else {
-            fullMonthInterest
-        }
+        val dayCountFactor = dayCountConvention.dayCountFactor(start = interestPeriodStart, endExclusive = nextPeriodStart)
+        val effectiveInterest = mortgageBalance.coerceAtLeast(Amount.ZERO) * effectiveAnnualRate * dayCountFactor
 
         // Not sure how the bank gets a round number in the total, so we round both principal and interest to get this
         val linearMonthlyPrincipalReduction = (mortgageBalance / remainingMonths).roundedToTheCent()

@@ -60,7 +60,7 @@ val jhHisgenpadSimulationIncremental = SimulationSettings(
             Payment(LocalDate.parse("2024-06-07"), 50_000.eur),
             Payment(LocalDate.parse("2024-06-13"), "12202.92".eur),
         ),
-        dayCountConvention = DayCountConvention.Thirty360,
+        dayCountConvention = DayCountConvention.ThirtyE360,
     ),
     property = Property.NewConstruction(
         initialNotaryPayment = Payment(startDate, landPrice),
