@@ -3,28 +3,71 @@ package org.hildan.accounting.mortgage
 import kotlinx.datetime.*
 import org.hildan.accounting.money.*
 
+data class MortgagePayment(
+    /**
+     * The breakdown of the payments for each part.
+     */
+    val partsBreakdown: List<MortgagePartPayment>,
+) {
+    /**
+     * The date this payment was made. All parts are paid on the same date.
+     */
+    val date: LocalDate = partsBreakdown.first().date
+    /**
+     * The date range covered by this payment.
+     */
+    val period: PaymentPeriod = partsBreakdown.first().period
+    /**
+     * The balance of the total mortgage (including all parts) before making this payment.
+     */
+    val balanceBefore: Amount = partsBreakdown.sumOf { it.balanceBefore }
+    /**
+     * The part of the payment that goes towards the mortgage principal (effectively paying back the mortgage).
+     * It is subtracted from the current mortgage balance as a result.
+     */
+    val principalReduction: Amount = partsBreakdown.sumOf { it.principalReduction }
+    /**
+     * The amount invested voluntarily to repay a part of the mortgage this month on top of the mandatory payment.
+     * Like [principalReduction], it is subtracted from the mortgage balance (principal) as a result.
+     */
+    val extraPrincipalReduction: Amount = partsBreakdown.sumOf { it.extraPrincipalReduction }
+    /**
+     * The weighted average of the annual interest rate used for each loan part at the time of this payment.
+     */
+    val averageInterestRateApplied: Fraction = partsBreakdown.sumOf { it.balanceBefore * it.appliedInterestRate } / balanceBefore
+    /**
+     * The interest paid to the bank as a fee for borrowing the money.
+     */
+    val interest: Amount = partsBreakdown.sumOf { it.interest }
+    /**
+     * The total amount paid to the bank.
+     */
+    val total: Amount = partsBreakdown.sumOf { it.total }
+}
+
 /**
  * A payment towards the mortgage.
  */
-data class MortgagePayment(
+data class MortgagePartPayment(
+    /**
+     * The [MortgagePartId] of the part that this payment concerns.
+     */
+    val partId: MortgagePartId,
     /**
      * The date this payment was made.
      */
     val date: LocalDate,
     /**
-     * The start date of the period paid this month.
+     * The date range covered by this payment.
      */
-    val periodStart: LocalDate,
-    /**
-     * One day after the end date of the period paid this month.
-     */
-    val nextPeriodStart: LocalDate,
+    val period: PaymentPeriod,
     /**
      * The balance of the mortgage before making this payment.
      */
     val balanceBefore: Amount,
     /**
-     * The amount used to pay back the mortgage, which is subtracted from the current mortgage balance as a result.
+     * The part of the payment that goes towards the mortgage principal (effectively paying back the mortgage).
+     * It is subtracted from the current mortgage balance as a result.
      */
     val principalReduction: Amount,
     /**
@@ -37,12 +80,13 @@ data class MortgagePayment(
      */
     val appliedInterestRate: Fraction,
     /**
-     * The interest paid to the bank for borrowing the money.
+     * The interest paid to the bank as a fee for borrowing the money.
      */
     val interest: Amount,
 ) {
     /**
-     * The total amount paid to the bank.
+     * The total amount due to the bank, always rounded to the cent.
      */
-    val total: Amount = principalReduction + extraPrincipalReduction + interest
+    // the bank does the rounding here; it doesn't round the principal and interest individually
+    val total: Amount = (principalReduction + extraPrincipalReduction + interest).roundedToTheCent()
 }

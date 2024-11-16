@@ -27,10 +27,15 @@ private val defaultStartDate = Clock.System.todayIn(TimeZone.currentSystemDefaul
 private val defaultConfig = SimulationSettings(
     simulationName = "My Simulation",
     mortgage = Mortgage(
-        amount = 400_000.eur,
-        annualInterestRate = InterestRate.Fixed(Fraction("0.04")),
         startDate = defaultStartDate,
         termInYears = 30,
+        listOf(
+            MortgagePart(
+                id = MortgagePartId("Part1"),
+                amount = 400_000.eur,
+                annualInterestRate = InterestRate.Fixed(Fraction("0.04")),
+            )
+        )
     ),
     property = Property.Existing(purchase = Payment(defaultStartDate, 420_000.eur), wozValue = 400_000.eur),
 )
@@ -40,10 +45,10 @@ val SimulationSettingsDialog = FC<SimulationSettingsDialogProps> { props ->
 
     var simName by useState(initialSettings.simulationName)
     var mortgageAmount by useState(amountStateOf(initialSettings.mortgage.amount))
-    var mortgageInterestRate by useState(initialSettings.mortgage.annualInterestRate)
+    var mortgageInterestRate by useState(initialSettings.mortgage.parts.first().annualInterestRate)
     var mortgageTerm by useState(intTextFieldStateOf(initialSettings.mortgage.termInYears))
     var mortgageStartMonth by useState(localDateStateOf(initialSettings.mortgage.startDate))
-    var extraRedemptions by useState(initialSettings.mortgage.extraPayments)
+    var extraRedemptions by useState(initialSettings.mortgage.parts.first().extraPayments)
 
     val isValid = simName.isNotEmpty() || //
         mortgageAmount is TextFieldState.Valid || //
@@ -137,10 +142,14 @@ val SimulationSettingsDialog = FC<SimulationSettingsDialogProps> { props ->
                     val settings = initialSettings.copy(
                         simulationName = simName,
                         mortgage = initialSettings.mortgage.copy(
-                            amount = mortgageAmount.valueOrThrow(),
-                            termInYears = mortgageTerm.valueOrThrow(),
                             startDate = mortgageStartMonth.valueOrThrow(),
-                            extraPayments = extraRedemptions,
+                            termInYears = mortgageTerm.valueOrThrow(),
+                            parts = listOf(
+                                initialSettings.mortgage.parts[0].copy(
+                                    amount = mortgageAmount.valueOrThrow(),
+                                    extraPayments = extraRedemptions,
+                                )
+                            ),
                         )
                     )
                     props.onCreate?.invoke(settings)

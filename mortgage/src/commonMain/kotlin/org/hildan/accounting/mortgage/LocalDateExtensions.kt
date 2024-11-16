@@ -19,4 +19,4 @@ internal fun LocalDate.nextMonthFirstDay(): LocalDate = withDayOfMonth(1).plus(1
  * Returns a copy of this [LocalDate] with the day of month replaced with the given [dayOfMonth], keeping the year and
  * month intact. The given [dayOfMonth] has to be valid for the month of this date.
  */
-private fun LocalDate.withDayOfMonth(dayOfMonth: Int): LocalDate = LocalDate(year, month, dayOfMonth)
+internal fun LocalDate.withDayOfMonth(dayOfMonth: Int): LocalDate = LocalDate(year, month, dayOfMonth)

@@ -11,10 +11,15 @@ import org.hildan.accounting.mortgage.*
 private val defaultStartDate = Clock.System.todayIn(TimeZone.currentSystemDefault())
 
 private val defaultMortgage = Mortgage(
-    amount = 400_000.eur,
-    annualInterestRate = InterestRate.Fixed(4.pct),
     startDate = defaultStartDate,
     termInYears = 30,
+    parts = listOf(
+        MortgagePart(
+            id = MortgagePartId("Part1"),
+            amount = 400_000.eur,
+            annualInterestRate = InterestRate.Fixed(4.pct),
+        ),
+    ),
 )
 
 private val defaultProperty = Property.Existing(

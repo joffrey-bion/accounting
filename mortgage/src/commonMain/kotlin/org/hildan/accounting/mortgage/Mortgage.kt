@@ -2,13 +2,58 @@ package org.hildan.accounting.mortgage
 
 import kotlinx.datetime.*
 import org.hildan.accounting.money.*
+import kotlin.jvm.JvmInline
+
+@JvmInline
+value class MortgagePartId(val id: String)
 
 /**
  * Defines the conditions of a mortgage.
  */
 data class Mortgage(
     /**
+     * The start date of the loan (when signed at the notary's office).
+     * This is the moment when the funds are released and interest starts being due.
+     */
+    val startDate: LocalDate,
+    /**
+     * The total duration (in years) over which the mortgage will be repaid.
+     */
+    val termInYears: Int = 30,
+    /**
+     * Defines the conditions of each mortgage part.
+     */
+    val parts: List<MortgagePart>,
+    /**
+     * The day-count convention for this mortgage, which defines how interest is applied to partial months.
+     */
+    val dayCountConvention: DayCountConvention = DayCountConvention.ActualActual,
+) {
+    /**
      * The total amount borrowed.
+     */
+    val amount: Amount = parts.sumOf { it.amount }
+    /**
+     * The monthly payment periods for the duration of the mortgage.
+     */
+    val monthlyPaymentPeriods: List<PaymentPeriod> = monthlyPaymentPeriods(startDate, termInYears)
+}
+
+data class PaymentPeriod(
+    val start: LocalDate,
+    val endExclusive: LocalDate,
+)
+
+/**
+ * Defines the conditions of a mortgage part.
+ */
+data class MortgagePart(
+    /**
+     * A name to identify this part of the mortgage.
+     */
+    val id: MortgagePartId,
+    /**
+     * The total amount borrowed for this part.
      */
     val amount: Amount,
     /**
@@ -17,99 +62,97 @@ data class Mortgage(
      */
     val annualInterestRate: InterestRate,
     /**
-     * The start date of the loan (when signed at the notary's office).
-     * This is the moment when the funds are released and interest starts being due.
-     */
-    val startDate: LocalDate,
-    /**
      * The payments made voluntarily to pay back the loan, usually to reduce the interest and thus the monthly payments.
      */
     val extraPayments: List<Payment> = emptyList(),
-    /**
-     * The total duration (in years) over which the mortgage will be repaid.
-     */
-    val termInYears: Int = 30,
-    /**
-     * The day-count rule for this mortgage, which defines how interest is applied to partial months.
-     */
-    val dayCountConvention: DayCountConvention = DayCountConvention.ActualActual,
-) {
-    /**
-     * The dates of the monthly payments for the duration of the mortgage.
-     */
-    val monthlyPaymentDates: List<LocalDate> = monthlyPaymentDates(startDate, termInYears, dayOfMonth = 28)
-}
+)
 
 /**
- * Returns the monthly payment dates based on the [startDate] of the loan and the [termInYears], assuming a fixed day
- * [dayOfMonth] each month.
+ * Returns the monthly payment periods based on the [startDate] of the loan and the [termInYears].
  */
-internal fun monthlyPaymentDates(startDate: LocalDate, termInYears: Int, dayOfMonth: Int): List<LocalDate> {
-    val firstPayment = LocalDate(startDate.year, startDate.month, dayOfMonth)
+internal fun monthlyPaymentPeriods(startDate: LocalDate, termInYears: Int): List<PaymentPeriod> {
     val firstMonthIsPartial = startDate.dayOfMonth > 1
     val redemptionDay = startDate.plus(termInYears, DateTimeUnit.YEAR).let {
         // We only start paying back the principal on the first full month.
         // If the first month is partial, we just pay interest.
         if (firstMonthIsPartial) it.plus(1, DateTimeUnit.MONTH) else it
     }
-    return generateSequence(firstPayment) { it.plus(1, DateTimeUnit.MONTH) }
+    return generateSequence(startDate) { it.nextMonthFirstDay() }
         .takeWhile { it <= redemptionDay }
+        .zipWithNext { d1, d2 -> PaymentPeriod(d1, d2) }
         .toList()
 }
 
 /**
  * Calculates the monthly payments for this [Mortgage] assuming a linear reimbursement scheme.
  */
-internal fun Mortgage.calculatePaymentsLinear(propertyWozValue: (LocalDate) -> Amount): List<MortgagePayment> {
-    val firstMonthIsPartial = startDate.dayOfMonth > 1
+internal fun Mortgage.simulatePayments(propertyWozValue: (LocalDate) -> Amount): List<MortgagePayment> {
+    val partSimulators = parts.map { PartSimulator(part = it, dayCountConvention, monthlyPaymentPeriods) }
+    return buildList {
+        while (true) {
+            val mortgageBalance = partSimulators.sumOf { part -> part.balance }
+            val payments = partSimulators.mapNotNull { partSim ->
+                partSim.simulateNextMonth(currentLtvRatio = { period -> mortgageBalance / propertyWozValue(period.start) })
+            }
+            if (payments.isEmpty()) {
+                break
+            }
+            add(MortgagePayment(payments))
+        }
+    }
+}
 
-    val remainingExtraPayments = SortedPayments(extraPayments)
+private class PartSimulator(
+    val part: MortgagePart,
+    val dayCountConvention: DayCountConvention,
+    val monthlyPaymentPeriods: List<PaymentPeriod>,
+) {
+    private val sortedExtraPayments = SortedPayments(part.extraPayments)
 
-    var mortgageBalance = amount
-    var interestPeriodStart = startDate
+    var balance = part.amount
+        private set
 
-    val payments = mutableListOf<MortgagePayment>()
-    monthlyPaymentDates.forEachIndexed { paymentIndex, paymentDate ->
-        val remainingMonths = monthlyPaymentDates.size - paymentIndex
+    private var nextMonthIndex = 0
 
-        val currentLtvRatio = mortgageBalance / propertyWozValue(paymentDate)
-        val effectiveAnnualRate = annualInterestRate.at(interestPeriodStart, currentLtvRatio = currentLtvRatio)
+    fun simulateNextMonth(currentLtvRatio: (PaymentPeriod) -> Fraction): MortgagePartPayment? {
+        if (nextMonthIndex !in monthlyPaymentPeriods.indices) {
+            return null
+        }
+        val monthIndex = nextMonthIndex++
+        val period = monthlyPaymentPeriods[monthIndex]
+        return simulateMonth(
+            period = period,
+            currentLtvRatio = currentLtvRatio(period),
+            remainingMonths = monthlyPaymentPeriods.size - monthIndex
+        )
+    }
 
-        val nextPeriodStart = paymentDate.nextMonthFirstDay()
-        val dayCountFactor = dayCountConvention.dayCountFactor(start = interestPeriodStart, endExclusive = nextPeriodStart)
-        val effectiveInterest = mortgageBalance.coerceAtLeast(Amount.ZERO) * effectiveAnnualRate * dayCountFactor
+    private fun simulateMonth(period: PaymentPeriod, currentLtvRatio: Fraction, remainingMonths: Int): MortgagePartPayment {
+        val effectiveAnnualRate = part.annualInterestRate.at(period.start, currentLtvRatio = currentLtvRatio)
 
-        // Not sure how the bank gets a round number in the total, so we round both principal and interest to get this
-        val linearMonthlyPrincipalReduction = (mortgageBalance / remainingMonths).roundedToTheCent()
+        val dayCountFactor = dayCountConvention.dayCountFactor(period)
+        val effectiveInterest = balance * effectiveAnnualRate * dayCountFactor
+
+        val linearMonthlyPrincipalReduction = balance / remainingMonths
         // We only start paying back the principal on the first full month.
         // If the first month is partial, we just pay interest.
-        val principalReduction = if (paymentIndex == 0 && firstMonthIsPartial) Amount.ZERO else linearMonthlyPrincipalReduction
+        val principalReduction = if (period.start.dayOfMonth > 1) Amount.ZERO else linearMonthlyPrincipalReduction
 
-        // We count all the extra payments of the month, even the ones that are technically after the mandatory payment
-        // date, because our goal is to aggregate per month
-        val extraPaymentsThisMonth = remainingExtraPayments.popPaymentsUntil(nextPeriodStart)
-        val extraPrincipalReduction = extraPaymentsThisMonth.sumOf { it.amount }
+        val extraPrincipalReduction = sortedExtraPayments.paidIn(period).sumOf { it.amount }
 
-        val payment = MortgagePayment(
-            date = paymentDate,
-            periodStart = interestPeriodStart,
-            nextPeriodStart = nextPeriodStart,
-            balanceBefore = mortgageBalance,
+        val payment = MortgagePartPayment(
+            partId = part.id,
+            date = period.start.withDayOfMonth(28), // TODO use real last working day
+            period = period,
+            balanceBefore = balance.roundedToTheCent(), // the bank rounds the balance
             principalReduction = principalReduction,
             extraPrincipalReduction = extraPrincipalReduction,
             appliedInterestRate = effectiveAnnualRate,
-            // Not sure how the bank gets a round number in the total, so we round both principal and interest to get this
-            interest = effectiveInterest.roundedToTheCent(),
+            interest = effectiveInterest,
         )
-        payments.add(payment)
 
-        mortgageBalance -= extraPrincipalReduction
-        mortgageBalance -= principalReduction
-
-        // Interestingly, interest is not calculated between payment dates, but for complete months.
-        // A payment on December 28th includes interest up to December 31st.
-        // The next payment on January 30th (more than a month later) includes exactly one month of interest too.
-        interestPeriodStart = nextPeriodStart
+        balance -= payment.extraPrincipalReduction
+        balance -= payment.principalReduction
+        return payment
     }
-    return payments
 }

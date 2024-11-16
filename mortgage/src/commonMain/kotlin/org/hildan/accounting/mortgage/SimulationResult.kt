@@ -45,7 +45,7 @@ private fun List<MortgageMonthSummary>.aggregateYear(year: Int): MortgageYearSum
     balanceBefore = this.first().mortgagePayment.balanceBefore,
     principalReduction = sumOf { it.mortgagePayment.principalReduction },
     extraPrincipalReduction = sumOf { it.mortgagePayment.extraPrincipalReduction },
-    interestRates = map { it.mortgagePayment.appliedInterestRate }.distinct(),
+    interestRates = map { it.mortgagePayment.averageInterestRateApplied }.distinct(),
     interest = sumOf { it.mortgagePayment.interest },
     constructionAccount = mapNotNull { it.constructionAccount }.takeIf { it.isNotEmpty() }?.aggregate(),
 )

@@ -1,22 +1,16 @@
 package org.hildan.accounting.mortgage
 
-import kotlinx.datetime.LocalDate
-
 /**
- * Manages a set of [Payment]s and allows to consume them until a given date using [popPaymentsUntil].
+ * Manages a set of [Payment]s and allows to query them for a given period.
  */
 internal class SortedPayments(payments: List<Payment>) {
 
     private var sortedPayments = payments.sortedBy { it.date }
 
     /**
-     * Removes and returns the list of all payments that occurred until the given [dateExclusive].
+     * Returns the payments that happened during the given [period].
      */
-    fun popPaymentsUntil(dateExclusive: LocalDate): List<Payment> {
-        val bills = sortedPayments.takeWhile { it.date < dateExclusive }
-        if (bills.isNotEmpty()) {
-            sortedPayments = sortedPayments.drop(bills.size)
-        }
-        return bills
-    }
+    fun paidIn(period: PaymentPeriod): List<Payment> = sortedPayments
+        .dropWhile { it.date < period.start }
+        .takeWhile { it.date < period.endExclusive }
 }

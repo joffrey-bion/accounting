@@ -24,7 +24,7 @@ data class SimulationSettings(
  * Runs this simulation assuming a linear mortgage type.
  */
 fun SimulationSettings.simulateLinear(): SimulationResult {
-    val mortgagePayments = mortgage.calculatePaymentsLinear(propertyWozValue = { property.wozValue })
+    val mortgagePayments = mortgage.simulatePayments(propertyWozValue = { property.wozValue })
     return when (property) {
         is Property.Existing -> SimulationResult(
             settings = this,
@@ -44,14 +44,15 @@ fun SimulationSettings.simulateLinear(): SimulationResult {
             var interestToDeduct = Amount.ZERO
             mortgagePayments.forEach { payment ->
                 val constructionAccountBalanceBefore = constructionAccountBalance
-                val paidBills = sortedBills.popPaymentsUntil(payment.nextPeriodStart)
+                val paidBills = sortedBills.paidIn(payment.period)
 
                 // rounded to the cent because that's how the bank does it (it shows with whole cents in statements)
                 val constructionAccountInterest = bdInterest(
-                    payment = payment,
                     bdStartBalance = constructionAccountBalance,
                     bills = paidBills,
                     dayCountConvention = mortgage.dayCountConvention,
+                    period = payment.period,
+                    interestRate = payment.averageInterestRateApplied,
                 ).roundedToTheCent()
 
                 constructionAccountBalance -= paidBills.sumOf { it.amount }
@@ -75,7 +76,7 @@ fun SimulationSettings.simulateLinear(): SimulationResult {
                 interestToDeduct += constructionAccountInterest
 
                 // we start deducting the construction fund interest after the first real payment occurs (first full month)
-                val isPartialMonth = payment.periodStart.dayOfMonth > 1
+                val isPartialMonth = payment.period.start.dayOfMonth > 1
                 if (!isPartialMonth) {
                     deductPastInterest = true
                 }
@@ -87,21 +88,22 @@ fun SimulationSettings.simulateLinear(): SimulationResult {
 }
 
 private fun bdInterest(
-    payment: MortgagePayment,
     bdStartBalance: Amount,
     bills: List<Payment>,
     dayCountConvention: DayCountConvention,
+    period: PaymentPeriod,
+    interestRate: Fraction,
 ): Amount {
-    var from = payment.periodStart
+    var from = period.start
     var balance = bdStartBalance
     var interest = Amount.ZERO
     bills.forEach { bill ->
         val fractionOfMonth = dayCountConvention.dayCountFactor(start = from, endExclusive = bill.date)
-        interest += balance * payment.appliedInterestRate * fractionOfMonth
+        interest += balance * interestRate * fractionOfMonth
         balance -= bill.amount
         from = bill.date
     }
-    val fractionOfMonth = dayCountConvention.dayCountFactor(start = from, endExclusive = payment.nextPeriodStart)
-    interest += balance * payment.appliedInterestRate * fractionOfMonth
+    val fractionOfMonth = dayCountConvention.dayCountFactor(start = from, endExclusive = period.endExclusive)
+    interest += balance * interestRate * fractionOfMonth
     return interest
 }

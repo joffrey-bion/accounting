@@ -49,19 +49,32 @@ private val constructionBillsPayments = listOf(
     Payment(date = LocalDate.parse(date), amount = amount.roundedToTheCent(RoundingMode.CEILING))
 }
 
-val jhHisgenpadSimulationIncremental = SimulationSettings(
-    simulationName = "700k Incremental",
-    mortgage = Mortgage(
-        amount = 700_000.eur,
-        annualInterestRate = ObvionRateSept2023,
-        startDate = startDate,
-        termInYears = 30,
-        extraPayments = listOf(
-            Payment(LocalDate.parse("2024-06-07"), 50_000.eur),
-            Payment(LocalDate.parse("2024-06-13"), "12202.92".eur),
+private val testMortgage = Mortgage(
+    startDate = startDate,
+    termInYears = 30,
+    parts = listOf(
+        MortgagePart(
+            id = MortgagePartId("101"),
+            amount = 350_000.eur,
+            annualInterestRate = ObvionRateSept2023,
+            extraPayments = listOf(
+                Payment(LocalDate.parse("2024-06-07"), 50_000.eur),
+                Payment(LocalDate.parse("2024-06-13"), "12202.92".eur),
+            ),
         ),
-        dayCountConvention = DayCountConvention.ThirtyE360,
+        MortgagePart(
+            id = MortgagePartId("102"),
+            amount = 350_000.eur,
+            annualInterestRate = ObvionRateSept2023,
+            extraPayments = emptyList(),
+        ),
     ),
+    dayCountConvention = DayCountConvention.ThirtyE360ISDA,
+)
+
+val testSimulationIncremental = SimulationSettings(
+    simulationName = "700k Incremental",
+    mortgage = testMortgage,
     property = Property.NewConstruction(
         initialNotaryPayment = Payment(startDate, landPrice),
         constructionInstallments = listOf(
@@ -76,14 +89,9 @@ val jhHisgenpadSimulationIncremental = SimulationSettings(
     ),
 )
 
-val jhHisgenpadSimulationBulk = SimulationSettings(
+val testSimulationBulk = SimulationSettings(
     simulationName = "700k Bulk",
-    mortgage = Mortgage(
-        amount = 700_000.eur,
-        annualInterestRate = ObvionRateSept2023,
-        startDate = startDate,
-        termInYears = 30,
-    ),
+    mortgage = testMortgage,
     property = Property.NewConstruction(
         initialNotaryPayment = Payment(startDate, landPrice + parkingPrice + optionsPrice + constructionPrice),
         constructionInstallments = emptyList(),

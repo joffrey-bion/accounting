@@ -71,7 +71,7 @@ fun MortgageMonthlySummaryTable(monthSummaries: List<MortgageMonthSummary>, modi
             AmountText(it.mortgagePayment.principalReduction, modifier = Modifier.align(Alignment.CenterEnd))
         }
         column(header = "Interest rate") {
-            Text(it.mortgagePayment.appliedInterestRate.formatPercent(), modifier = Modifier.align(Alignment.Center))
+            Text(it.mortgagePayment.averageInterestRateApplied.formatPercent(), modifier = Modifier.align(Alignment.Center))
         }
         column(header = "Interest") {
             AmountText(it.mortgagePayment.interest, modifier = Modifier.align(Alignment.CenterEnd))
