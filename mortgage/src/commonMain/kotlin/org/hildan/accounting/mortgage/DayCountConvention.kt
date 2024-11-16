@@ -14,16 +14,16 @@ enum class DayCountConvention(val ruleCode: String) {
      * A day-count rule where the number of days in each month and year are respected.
      */
     ActualActual("Actual/Actual ISDA") {
-        override fun dayCountFactor(start: LocalDate, endExclusive: LocalDate): Fraction {
-            if (start.year == endExclusive.year) {
-                return Fraction(start.daysUntil(endExclusive), nDaysInYear(start.year))
+        override fun dayCountFactor(period: PaymentPeriod): Fraction {
+            if (period.start.year == period.endExclusive.year) {
+                return Fraction(period.start.daysUntil(period.endExclusive), nDaysInYear(period.start.year))
             } else {
-                val nDaysInStartYear = start.daysUntil(LocalDate(start.year + 1, 1, 1))
-                val nDaysInEndYear = LocalDate(endExclusive.year, 1, 1).daysUntil(endExclusive)
+                val nDaysInStartYear = period.start.daysUntil(LocalDate(period.start.year + 1, 1, 1))
+                val nDaysInEndYear = LocalDate(period.endExclusive.year, 1, 1).daysUntil(period.endExclusive)
 
-                val startFraction = Fraction(nDaysInStartYear, nDaysInYear(start.year))
-                val endFraction = Fraction(nDaysInEndYear, nDaysInYear(endExclusive.year))
-                val nMiddleYears = endExclusive.year - start.year - 1
+                val startFraction = Fraction(nDaysInStartYear, nDaysInYear(period.start.year))
+                val endFraction = Fraction(nDaysInEndYear, nDaysInYear(period.endExclusive.year))
+                val nMiddleYears = period.endExclusive.year - period.start.year - 1
                 return startFraction + endFraction + Fraction(nMiddleYears)
             }
         }
@@ -33,10 +33,17 @@ enum class DayCountConvention(val ruleCode: String) {
      * If the bound of a date range falls on the 31st of a month, it is replaced with 30 before the calculation.
      */
     ThirtyE360("30E/360") {
-        override fun dayCountFactor(start: LocalDate, endExclusive: LocalDate): Fraction {
-            val d1 = if (start.dayOfMonth == 31) 30 else start.dayOfMonth
-            val d2 = if (endExclusive.dayOfMonth == 31) 30 else endExclusive.dayOfMonth
-            return dayCount30360(start.year, start.monthNumber, d1, endExclusive.year, endExclusive.monthNumber, d2)
+        override fun dayCountFactor(period: PaymentPeriod): Fraction {
+            val d1 = if (period.start.dayOfMonth == 31) 30 else period.start.dayOfMonth
+            val d2 = if (period.endExclusive.dayOfMonth == 31) 30 else period.endExclusive.dayOfMonth
+            return dayCount30360(
+                y1 = period.start.year,
+                m1 = period.start.monthNumber,
+                d1 = d1,
+                y2 = period.endExclusive.year,
+                m2 = period.endExclusive.monthNumber,
+                d2 = d2
+            )
         }
     },
     /**
@@ -44,18 +51,31 @@ enum class DayCountConvention(val ruleCode: String) {
      * If the bound of a date range falls on the 31st of a month, it is replaced with 30 before the calculation.
      */
     ThirtyE360ISDA("30E/360 ISDA") {
-        override fun dayCountFactor(start: LocalDate, endExclusive: LocalDate): Fraction {
-            val d1 = if (start.dayOfMonth == start.nDaysInMonth()) 30 else start.dayOfMonth
-            val d2 = if (endExclusive.dayOfMonth == endExclusive.nDaysInMonth()) 30 else endExclusive.dayOfMonth
-            return dayCount30360(start.year, start.monthNumber, d1, endExclusive.year, endExclusive.monthNumber, d2)
+        override fun dayCountFactor(period: PaymentPeriod): Fraction {
+            val d1 = if (period.start.dayOfMonth == period.start.nDaysInMonth()) 30 else period.start.dayOfMonth
+            val d2 = if (period.endExclusive.dayOfMonth == period.endExclusive.nDaysInMonth()) 30 else period.endExclusive.dayOfMonth
+            return dayCount30360(
+                y1 = period.start.year,
+                m1 = period.start.monthNumber,
+                d1 = d1,
+                y2 = period.endExclusive.year,
+                m2 = period.endExclusive.monthNumber,
+                d2 = d2
+            )
         }
     };
+
+    /**
+     * Calculates the fraction of the annual interest rate that should be applied to the given [period].
+     */
+    abstract fun dayCountFactor(period: PaymentPeriod): Fraction
 
     /**
      * Calculates the fraction of the annual interest rate that should be applied to a date range from [start] to
      * [endExclusive].
      */
-    abstract fun dayCountFactor(start: LocalDate, endExclusive: LocalDate): Fraction
+    fun dayCountFactor(start: LocalDate, endExclusive: LocalDate): Fraction =
+        dayCountFactor(PaymentPeriod(start, endExclusive))
 }
 
 // can't use LocalDate directly because we need to support February 30th
