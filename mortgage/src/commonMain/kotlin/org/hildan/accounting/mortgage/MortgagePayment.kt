@@ -3,6 +3,23 @@ package org.hildan.accounting.mortgage
 import kotlinx.datetime.*
 import org.hildan.accounting.money.*
 
+/**
+ * A period for which a payment applies.
+ */
+data class PaymentPeriod(
+    /**
+     * The start date of the period (inclusive).
+     */
+    val start: LocalDate,
+    /**
+     * The end date of the period (exclusive).
+     */
+    val endExclusive: LocalDate,
+)
+
+/**
+ * A payment towards the mortgage.
+ */
 data class MortgagePayment(
     /**
      * The breakdown of the payments for each part.
@@ -46,7 +63,7 @@ data class MortgagePayment(
 }
 
 /**
- * A payment towards the mortgage.
+ * A payment towards the mortgage part identified by [partId].
  */
 data class MortgagePartPayment(
     /**

@@ -4,6 +4,9 @@ import kotlinx.datetime.*
 import org.hildan.accounting.money.*
 import kotlin.jvm.JvmInline
 
+/**
+ * Identifies one part of a mortgage.
+ */
 @JvmInline
 value class MortgagePartId(val id: String)
 
@@ -33,16 +36,7 @@ data class Mortgage(
      * The total amount borrowed.
      */
     val amount: Amount = parts.sumOf { it.amount }
-    /**
-     * The monthly payment periods for the duration of the mortgage.
-     */
-    val monthlyPaymentPeriods: List<PaymentPeriod> = monthlyPaymentPeriods(startDate, termInYears)
 }
-
-data class PaymentPeriod(
-    val start: LocalDate,
-    val endExclusive: LocalDate,
-)
 
 /**
  * Defines the conditions of a mortgage part.
@@ -68,25 +62,10 @@ data class MortgagePart(
 )
 
 /**
- * Returns the monthly payment periods based on the [startDate] of the loan and the [termInYears].
- */
-internal fun monthlyPaymentPeriods(startDate: LocalDate, termInYears: Int): List<PaymentPeriod> {
-    val firstMonthIsPartial = startDate.dayOfMonth > 1
-    val redemptionDay = startDate.plus(termInYears, DateTimeUnit.YEAR).let {
-        // We only start paying back the principal on the first full month.
-        // If the first month is partial, we just pay interest.
-        if (firstMonthIsPartial) it.plus(1, DateTimeUnit.MONTH) else it
-    }
-    return generateSequence(startDate) { it.nextMonthFirstDay() }
-        .takeWhile { it <= redemptionDay }
-        .zipWithNext { d1, d2 -> PaymentPeriod(d1, d2) }
-        .toList()
-}
-
-/**
  * Calculates the monthly payments for this [Mortgage] assuming a linear reimbursement scheme.
  */
 internal fun Mortgage.simulatePayments(propertyWozValue: (LocalDate) -> Amount): List<MortgagePayment> {
+    val monthlyPaymentPeriods = monthlyPaymentPeriods(startDate, termInYears)
     val partSimulators = parts.map { PartSimulator(part = it, dayCountConvention, monthlyPaymentPeriods) }
     return buildList {
         while (true) {
@@ -100,6 +79,22 @@ internal fun Mortgage.simulatePayments(propertyWozValue: (LocalDate) -> Amount):
             add(MortgagePayment(payments))
         }
     }
+}
+
+/**
+ * Returns the monthly payment periods based on the [startDate] of the loan and the [termInYears].
+ */
+private fun monthlyPaymentPeriods(startDate: LocalDate, termInYears: Int): List<PaymentPeriod> {
+    val firstMonthIsPartial = startDate.dayOfMonth > 1
+    val redemptionDay = startDate.plus(termInYears, DateTimeUnit.YEAR).let {
+        // We only start paying back the principal on the first full month.
+        // If the first month is partial, we just pay interest.
+        if (firstMonthIsPartial) it.plus(1, DateTimeUnit.MONTH) else it
+    }
+    return generateSequence(startDate) { it.nextMonthFirstDay() }
+        .takeWhile { it <= redemptionDay }
+        .zipWithNext { d1, d2 -> PaymentPeriod(d1, d2) }
+        .toList()
 }
 
 private class PartSimulator(
@@ -131,7 +126,7 @@ private class PartSimulator(
         val effectiveAnnualRate = part.annualInterestRate.at(period.start, currentLtvRatio = currentLtvRatio)
 
         val dayCountFactor = dayCountConvention.dayCountFactor(period)
-        val effectiveInterest = balance * effectiveAnnualRate * dayCountFactor
+        val interest = balance * effectiveAnnualRate * dayCountFactor
 
         val linearMonthlyPrincipalReduction = balance / remainingMonths
         // We only start paying back the principal on the first full month.
@@ -148,7 +143,7 @@ private class PartSimulator(
             principalReduction = principalReduction,
             extraPrincipalReduction = extraPrincipalReduction,
             appliedInterestRate = effectiveAnnualRate,
-            interest = effectiveInterest,
+            interest = interest,
         )
 
         balance -= payment.extraPrincipalReduction
