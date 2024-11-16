@@ -9,9 +9,16 @@ import org.hildan.accounting.money.Fraction
  *
  * See [Day count convention](https://en.wikipedia.org/wiki/Day_count_convention).
  */
-enum class DayCountConvention(val ruleCode: String) {
+enum class DayCountConvention(val code: String) {
     /**
-     * A day-count rule where the number of days in each month and year are respected.
+     * The actual number of days in each month and year is respected, including 28/29/30/31-day months and leap years.
+     *
+     * The ISDA variant means that the days in the period are prorated over a whole year duration in 2 groups: the days
+     * that fall in a leap year, and the days that don't:
+     *
+     * ```
+     * DaysInLeapYear / 366 + DaysInRegularYear / 365
+     * ```
      */
     ActualActual("Actual/Actual ISDA") {
         override fun dayCountFactor(period: PaymentPeriod): Fraction {
@@ -29,7 +36,7 @@ enum class DayCountConvention(val ruleCode: String) {
         }
     },
     /**
-     * A day-count rule where each month is considered 30 days long, and each year 360 days.
+     * Each month is considered 30 days long, and each year 360 days.
      * If the bound of a date range falls on the 31st of a month, it is replaced with 30 before the calculation.
      */
     ThirtyE360("30E/360") {
@@ -47,7 +54,7 @@ enum class DayCountConvention(val ruleCode: String) {
         }
     },
     /**
-     * A day-count rule where each month is considered 30 days long, and each year 360 days.
+     * Each month is considered 30 days long, and each year 360 days.
      * If the bound of a date range falls on the 31st of a month, it is replaced with 30 before the calculation.
      */
     ThirtyE360ISDA("30E/360 ISDA") {
