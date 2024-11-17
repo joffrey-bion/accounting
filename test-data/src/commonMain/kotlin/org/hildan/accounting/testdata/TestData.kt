@@ -61,14 +61,13 @@ object TestData {
 
     // these dates are not the dates of the bills, but the dates of the payments themselves
     private val constructionBillsPayments = listOf(
-        "2024-01-16" to constructionPrice * 3.pct,      // T1
-        "2024-04-18" to constructionPrice * 10.pct,     // T2
-        "2024-06-11" to constructionPrice * 15.pct,     // T3
-        "2024-06-16" to constructionPrice * 10.pct,     // T4
-        "2024-12-01" to constructionPrice * 5.pct,      // T5 TODO add real date
-        "2025-01-15" to constructionPrice * "23.5".pct, // T6 TODO add real date
-        "2024-11-11" to constructionPrice * 10.pct,     // T7
-        "2024-11-01" to constructionPrice * "13.5".pct, // T8 TODO add real date
+        "2024-01-16" to constructionPrice * 3.pct,             // T1
+        "2024-04-18" to constructionPrice * 10.pct,            // T2
+        "2024-06-18" to constructionPrice * (15.pct + 10.pct), // T3 + T4 were paid together
+        "2024-11-11" to constructionPrice * 10.pct,            // T7
+        "2024-12-01" to constructionPrice * 5.pct,             // T5 TODO add real date
+        "2025-01-15" to constructionPrice * "23.5".pct,        // T6 TODO add real date
+        "2025-05-01" to constructionPrice * "13.5".pct,        // T8 TODO add real date
         "2025-09-01" to constructionPrice * 10.pct, // on delivery date TODO add real date
     ).map { (date, amount) ->
         // BotBouw rounds the numbers up even when less than 0.5
@@ -110,7 +109,9 @@ object TestData {
                 // Compensates for bills rounding so it still amounts to the real construction price.
                 // In reality, BotBouw will probably adjust the last bill, or the bank will give/take the difference.
                 Payment(date = LocalDate.parse("2025-12-31"), constructionPrice - constructionBillsPayments.sumOf { it.amount }),
-            ),
+            ).also { installments ->
+                check(installments.sumOf { p -> p.amount } == initialConstructionAccountBalance)
+            },
             wozValue = estimatedWozValue,
         ),
     )
