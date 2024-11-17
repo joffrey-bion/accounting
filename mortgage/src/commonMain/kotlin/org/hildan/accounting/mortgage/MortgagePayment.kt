@@ -59,7 +59,7 @@ data class MortgagePayment(
     /**
      * The total amount paid to the bank.
      */
-    val total: Amount = partsBreakdown.sumOf { it.total }
+    val total: Amount = partsBreakdown.sumOf { it.totalDue }
 }
 
 /**
@@ -105,5 +105,5 @@ data class MortgagePartPayment(
      * The total amount due to the bank, always rounded to the cent.
      */
     // the bank does the rounding here; it doesn't round the principal and interest individually
-    val total: Amount = (principalReduction + extraPrincipalReduction + interest).roundedToTheCent()
+    val totalDue: Amount = (principalReduction + interest).roundedToTheCent()
 }
