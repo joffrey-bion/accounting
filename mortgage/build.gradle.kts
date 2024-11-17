@@ -12,7 +12,7 @@ kotlin {
         }
         commonTest {
             dependencies {
-                api(kotlin("test"))
+                implementation(kotlin("test"))
             }
         }
     }
