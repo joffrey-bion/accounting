@@ -47,12 +47,12 @@ fun SimulationSettings.simulateLinear(): SimulationResult {
                 val paidBills = sortedBills.paidIn(payment.period)
 
                 // rounded to the cent because that's how the bank does it (it shows with whole cents in statements)
-                val constructionAccountInterest = bdInterest(
-                    bdStartBalance = constructionAccountBalance,
-                    bills = paidBills,
-                    dayCountConvention = mortgage.dayCountConvention,
+                val constructionAccountInterest = interestByParts(
+                    initialBalance = constructionAccountBalance,
+                    balanceReductions = paidBills,
                     period = payment.period,
-                    interestRate = payment.averageInterestRateApplied,
+                    annualInterestRate = payment.averageInterestRateApplied,
+                    dayCountConvention = mortgage.dayCountConvention,
                 ).roundedToTheCent()
 
                 constructionAccountBalance -= paidBills.sumOf { it.amount }
@@ -67,7 +67,6 @@ fun SimulationSettings.simulateLinear(): SimulationResult {
                     ),
                 ))
 
-                // if we're not deducting interest from the payments yet, we cumulate them on the construction account
                 if (deductPastInterest) {
                     constructionAccountBalance -= interestToDeduct
                     interestToDeduct = Amount.ZERO // consume it
@@ -85,25 +84,4 @@ fun SimulationSettings.simulateLinear(): SimulationResult {
             SimulationResult(settings = this, monthSummaries = effectivePayments)
         }
     }
-}
-
-private fun bdInterest(
-    bdStartBalance: Amount,
-    bills: List<Payment>,
-    dayCountConvention: DayCountConvention,
-    period: PaymentPeriod,
-    interestRate: Fraction,
-): Amount {
-    var from = period.start
-    var balance = bdStartBalance
-    var interest = Amount.ZERO
-    bills.forEach { bill ->
-        val fractionOfMonth = dayCountConvention.dayCountFactor(start = from, endExclusive = bill.date)
-        interest += balance * interestRate * fractionOfMonth
-        balance -= bill.amount
-        from = bill.date
-    }
-    val fractionOfMonth = dayCountConvention.dayCountFactor(start = from, endExclusive = period.endExclusive)
-    interest += balance * interestRate * fractionOfMonth
-    return interest
 }
