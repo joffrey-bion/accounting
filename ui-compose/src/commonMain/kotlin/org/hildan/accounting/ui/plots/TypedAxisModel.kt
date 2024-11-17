@@ -7,7 +7,8 @@ internal fun <T> linearAxisModel(
     min: T,
     max: T,
     converter: DoubleConverter<T>,
-    zoomRangeLimit: Double = (converter.convertFrom(max) - converter.convertFrom(min)) * 0.2,
+    minViewExtent: Double = (converter.convertFrom(max) - converter.convertFrom(min)) * 0.2,
+    maxViewExtent: Double = converter.convertFrom(max) - converter.convertFrom(min),
     minimumMajorTickIncrement: Double = (converter.convertFrom(max) - converter.convertFrom(min)) * 0.1,
     minimumMajorTickSpacing: Dp = 50.dp,
     minorTickCount: Int = 4,
@@ -16,7 +17,8 @@ internal fun <T> linearAxisModel(
 ): AxisModel<T> = AxisModelAdapter(
     delegate = DoubleLinearAxisModel(
         range = converter.convertFrom(min)..converter.convertFrom(max),
-        zoomRangeLimit = zoomRangeLimit,
+        minViewExtent = minViewExtent,
+        maxViewExtent = maxViewExtent,
         minimumMajorTickIncrement = minimumMajorTickIncrement,
         minimumMajorTickSpacing = minimumMajorTickSpacing,
         minorTickCount = minorTickCount,
@@ -40,9 +42,6 @@ private class AxisModelAdapter<T, B>(
     val delegate: AxisModel<B>,
     val converter: Converter<T, B>,
 ) : AxisModel<T> {
-    override val minimumMajorTickSpacing: Dp
-        get() = delegate.minimumMajorTickSpacing
-
     override fun computeTickValues(axisLength: Dp): TickValues<T> =
         delegate.computeTickValues(axisLength).map(converter::convertTo)
 
