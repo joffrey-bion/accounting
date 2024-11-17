@@ -6,7 +6,7 @@ import org.hildan.accounting.money.*
 import org.hildan.accounting.mortgage.*
 import org.hildan.accounting.mortgage.Property
 
-object TestData {
+object SampleSimulation {
     /**
      * The land purchase price as specified in the purchase contract (Koopovereenkomst, or KO).
      * It includes development costs (106071.90), pre-payment for the canon (11667.77), and VAT (48155.31).
@@ -50,7 +50,7 @@ object TestData {
     // From: https://www.obvion.nl/Hypotheek-rente/Actuele-hypotheekrente-Obvion?duurzaamheidskorting=Ja
     // The following rates were locked in on 2023-09-11
     private val ObvionRateSept2023 = InterestRate.DynamicLtv(
-        mapOf(
+        ratesPerLtvRatio = mapOf(
             60.pct to "3.58".pct,
             70.pct to "3.62".pct,
             80.pct to "3.67".pct,
@@ -75,7 +75,7 @@ object TestData {
         Payment(date = LocalDate.parse(date), amount = amount.roundedToTheCent(RoundingMode.CEILING))
     }
 
-    private val testMortgage = Mortgage(
+    private val mortgage = Mortgage(
         startDate = closingDate,
         termInYears = 30,
         parts = listOf(
@@ -98,9 +98,9 @@ object TestData {
         dayCountConvention = DayCountConvention.ThirtyE360ISDA,
     )
 
-    val testSimulationIncremental = SimulationSettings(
+    val settingsIncremental = SimulationSettings(
         simulationName = "700k Incremental",
-        mortgage = testMortgage,
+        mortgage = mortgage,
         property = Property.NewConstruction(
             initialNotaryPayment = Payment(closingDate, landPrice),
             constructionInstallments = listOf(
@@ -117,9 +117,9 @@ object TestData {
         ),
     )
 
-    val testSimulationBulk = SimulationSettings(
+    val settingsBulk = SimulationSettings(
         simulationName = "700k Bulk",
-        mortgage = testMortgage,
+        mortgage = mortgage,
         property = Property.NewConstruction(
             initialNotaryPayment = Payment(closingDate, landPrice + parkingPrice + optionsPrice + constructionPrice),
             constructionInstallments = emptyList(),

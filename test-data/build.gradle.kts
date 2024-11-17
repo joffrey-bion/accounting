@@ -10,5 +10,10 @@ kotlin {
                 api(project(":mortgage"))
             }
         }
+        commonTest {
+            dependencies {
+                implementation(kotlin("test"))
+            }
+        }
     }
 }
