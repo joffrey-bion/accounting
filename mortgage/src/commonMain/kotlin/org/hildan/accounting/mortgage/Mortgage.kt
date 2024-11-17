@@ -123,26 +123,36 @@ private class PartSimulator(
     }
 
     private fun simulateMonth(period: PaymentPeriod, currentLtvRatio: Fraction, remainingMonths: Int): MortgagePartPayment {
-        val effectiveAnnualRate = part.annualInterestRate.at(period.start, currentLtvRatio = currentLtvRatio)
-
-        val dayCountFactor = dayCountConvention.dayCountFactor(period)
-        val interest = balance * effectiveAnnualRate * dayCountFactor
+        val annualRate = part.annualInterestRate.at(period.start, currentLtvRatio = currentLtvRatio)
 
         val linearMonthlyPrincipalReduction = balance / remainingMonths
         // We only start paying back the principal on the first full month.
         // If the first month is partial, we just pay interest.
         val principalReduction = if (period.start.dayOfMonth > 1) Amount.ZERO else linearMonthlyPrincipalReduction
 
-        val extraPrincipalReduction = sortedExtraPayments.paidIn(period).sumOf { it.amount }
+        val extraRepayments = sortedExtraPayments.paidIn(period)
+        val interest = interestByParts(
+            initialBalance = balance,
+            balanceReductions = extraRepayments,
+            period = period,
+            annualInterestRate = annualRate,
+            dayCountConvention = dayCountConvention,
+        )
+
+        // When extra payments are made, the bank keeps the total payment due the same, and compensates for the extra
+        // interest perceived by counting it as more principal reduction
+        val interestIgnoringExtraPayments = balance * annualRate * dayCountConvention.dayCountFactor(period)
+        val totalIgnoringExtraPayments = (principalReduction + interestIgnoringExtraPayments).roundedToTheCent()
+        val effectivePrincipalReduction = totalIgnoringExtraPayments - interest
 
         val payment = MortgagePartPayment(
             partId = part.id,
             date = period.start.withDayOfMonth(28), // TODO use real last working day
             period = period,
             balanceBefore = balance,
-            principalReduction = principalReduction,
-            extraPrincipalReduction = extraPrincipalReduction,
-            appliedInterestRate = effectiveAnnualRate,
+            principalReduction = effectivePrincipalReduction,
+            extraPrincipalReduction = extraRepayments.sumOf { it.amount },
+            appliedInterestRate = annualRate,
             interest = interest,
         )
 
