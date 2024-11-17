@@ -139,7 +139,7 @@ private class PartSimulator(
             partId = part.id,
             date = period.start.withDayOfMonth(28), // TODO use real last working day
             period = period,
-            balanceBefore = balance.roundedToTheCent(), // the bank rounds the balance
+            balanceBefore = balance,
             principalReduction = principalReduction,
             extraPrincipalReduction = extraPrincipalReduction,
             appliedInterestRate = effectiveAnnualRate,
@@ -148,6 +148,9 @@ private class PartSimulator(
 
         balance -= payment.extraPrincipalReduction
         balance -= payment.principalReduction
+
+        // the bank rounds the mortgage balance (and the total payment), but not the principal reduction individually
+        balance = balance.roundedToTheCent()
         return payment
     }
 }
