@@ -4,4 +4,6 @@
 .gradle
 build/
 
+karma.config.d/
+
 TaxProfiles.kt
