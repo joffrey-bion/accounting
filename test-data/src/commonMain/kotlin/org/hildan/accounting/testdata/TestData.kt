@@ -83,8 +83,8 @@ object TestData {
                 amount = 350_000.eur,
                 annualInterestRate = ObvionRateSept2023,
                 extraPayments = listOf(
-                    Payment(LocalDate.parse("2024-06-07"), 50_000.eur),
-                    Payment(LocalDate.parse("2024-06-13"), "12202.92".eur),
+                    Payment(LocalDate.parse("2024-06-06"), 50_000.eur),
+                    Payment(LocalDate.parse("2024-06-12"), "12202.92".eur),
                 ),
             ),
             MortgagePart(
