@@ -33,7 +33,7 @@ internal fun LoanSummaryPieChart(simulation: SimulationResult, modifier: Modifie
             }
         },
         holeSize = 0.5f,
-        labelConnector = {},
+        labelConnector = {}, // remove the line between the labels and the pie
         minPieDiameter = 50.dp,
         forceCenteredPie = true,
     )

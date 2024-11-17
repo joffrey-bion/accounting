@@ -12,7 +12,10 @@ import org.hildan.accounting.mortgage.*
 internal fun SimulationSummaryCard(simulation: SimulationResult, modifier: Modifier = Modifier) {
     ElevatedCard(modifier = modifier) {
         Column(modifier = Modifier.padding(all = 15.dp).fillMaxHeight(), verticalArrangement = Arrangement.SpaceBetween) {
-            LoanSummaryPieChart(simulation, modifier = Modifier.padding(all = 10.dp))
+            LoanSummaryPieChart(
+                simulation = simulation,
+                modifier = Modifier.padding(all = 10.dp).fillMaxWidth().heightIn(max = 150.dp),
+            )
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text(text = "Total payments: ", fontWeight = FontWeight.Bold)
                 AmountText(simulation.totalPayments)
