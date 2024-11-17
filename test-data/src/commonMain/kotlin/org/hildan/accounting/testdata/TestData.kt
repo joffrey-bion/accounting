@@ -59,11 +59,12 @@ object TestData {
         )
     )
 
-    // these dates are not the dates of the bills, but the dates of the payments themselves
+    // These dates are not the dates of the bills, but the dates at which the bank released the funds and paid.
+    // Note: both T3 and T4 were paid in the same month, and the bank released the funds in one go on June 18th.
     private val constructionBillsPayments = listOf(
         "2024-01-16" to constructionPrice * 3.pct,             // T1
         "2024-04-18" to constructionPrice * 10.pct,            // T2
-        "2024-06-18" to constructionPrice * (15.pct + 10.pct), // T3 + T4 were paid together
+        "2024-06-18" to constructionPrice * (15.pct + 10.pct), // T3 + T4
         "2024-11-11" to constructionPrice * 10.pct,            // T7
         "2024-12-01" to constructionPrice * 5.pct,             // T5 TODO add real date
         "2025-01-15" to constructionPrice * "23.5".pct,        // T6 TODO add real date
