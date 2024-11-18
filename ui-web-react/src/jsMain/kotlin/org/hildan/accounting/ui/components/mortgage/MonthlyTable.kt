@@ -67,7 +67,7 @@ val MonthlyTable = FC<MonthlyTableProps> { props ->
                             scale = 2
                         }
                         AmountTableCell {
-                            amount = ms.effectiveTotal
+                            amount = ms.totalCollected
                             scale = 2
                         }
                     }

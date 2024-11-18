@@ -22,10 +22,10 @@ fun MortgagePaymentsPlot(simulationResult: SimulationResult, modifier: Modifier)
         localDateAxisModel(min = dates.min(), max = dates.max())
     }
     val yAxisModel = remember(payments) {
-        amountAxisModel(max = payments.maxOf { it.effectiveTotal + 100.eur })
+        amountAxisModel(max = payments.maxOf { it.totalCollected + 100.eur })
     }
     val entries = remember(payments) {
-        payments.map { stackedAreaPlotEntry(it.date, arrayOf(it.effectiveTotal, it.mortgagePayment.principalReduction)) }
+        payments.map { stackedAreaPlotEntry(it.date, arrayOf(it.totalCollected, it.mortgagePayment.principalReduction)) }
     }
     val styles = List(2) {
         StackedAreaStyle(

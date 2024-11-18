@@ -57,9 +57,13 @@ data class MortgagePayment(
      */
     val interest: Amount = partsBreakdown.sumOf { it.interest }
     /**
-     * The total amount paid to the bank.
+     * The total amount due to the bank.
      */
-    val total: Amount = partsBreakdown.sumOf { it.totalDue }
+    val totalDue: Amount = partsBreakdown.sumOf { it.totalDue }
+    /**
+     * The total amount paid to the bank, including what is due and the voluntary extra payments.
+     */
+    val totalWithExtra: Amount = partsBreakdown.sumOf { it.extraPrincipalReduction }
 }
 
 /**

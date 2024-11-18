@@ -96,7 +96,7 @@ val AnnualTable = FC<AnnualTableProps> { props ->
                             scale = 2
                         }
                         AmountTableCell {
-                            amount = p.interest
+                            amount = p.effectiveInterest
                             scale = 2
                         }
                         AmountTableCell {

@@ -25,7 +25,7 @@ class SimulationTest {
 
         val simulatedNovember = simulationResult.monthSummaries[0]
         val simulatedDecember = simulationResult.monthSummaries[1]
-        val simulatedTotalNovAndDec = simulatedNovember.effectiveTotal + simulatedDecember.effectiveTotal
+        val simulatedTotalNovAndDec = simulatedNovember.totalCollected + simulatedDecember.totalCollected
         assertEquals(SampleBankData.collectionDecember.aggregated.totalDebit, simulatedTotalNovAndDec)
 
         // checks the correct
@@ -53,15 +53,12 @@ class SimulationTest {
         )
     }
 
-    private fun MortgageMonthSummary.equivalentCollectionNotice(): AccountDebitDetails {
-        val deductedInterest = constructionAccount?.deductedInterest ?: Amount.ZERO
-        return AccountDebitDetails(
-            part101 = mortgagePayment.partsBreakdown[0].totalDue,
-            part102 = mortgagePayment.partsBreakdown[1].totalDue,
-            bdInterestDeduction = deductedInterest,
-            totalDebit = mortgagePayment.total - deductedInterest,
-        )
-    }
+    private fun MortgageMonthSummary.equivalentCollectionNotice(): AccountDebitDetails = AccountDebitDetails(
+        part101 = mortgagePayment.partsBreakdown[0].totalDue,
+        part102 = mortgagePayment.partsBreakdown[1].totalDue,
+        bdInterestDeduction = constructionAccount?.deductedInterest ?: Amount.ZERO,
+        totalDebit = totalCollected,
+    )
 
     private fun ConstructionAccountStatement.toExpectedConstructionAccountSummary() = ConstructionAccountSummary(
         balanceBefore = balanceBefore,
