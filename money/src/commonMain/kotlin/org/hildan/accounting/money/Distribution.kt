@@ -3,6 +3,7 @@ package org.hildan.accounting.money
 /**
  * A distribution of amounts of money.
  */
+@ConsistentCopyVisibility
 data class Distribution internal constructor(
     /**
      * The maximum value in this distribution.
