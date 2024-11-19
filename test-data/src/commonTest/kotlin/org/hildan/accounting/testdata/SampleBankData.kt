@@ -351,6 +351,32 @@ object SampleBankData {
                 paidBills = emptyList(),
             ),
         ),
+        MonthlyStatement(
+            period = period(2024, 11),
+            collectionNotice = CollectionNotice(
+                accountDebits = listOf(
+                    AccountDebitDetails(
+                        part101 = "740.13".eur,
+                        part102 = "904.47".eur,
+                        bdInterestDeduction = "603.60".eur,
+                        totalDebit = "1041.00".eur,
+                    ),
+                    AccountDebitDetails(
+                        part101 = "904.60".eur,
+                        part102 = "1105.46".eur,
+                        bdInterestDeduction = "737.73".eur,
+                        totalDebit = "1272.33".eur,
+                    ),
+                ),
+            ),
+            constructionAccountStatement = ConstructionAccountStatement(
+                balanceBefore = "438580.63".eur,
+                totalDebit = "59987.51".eur, // TODO check the real statement
+                generatedInterest = "1221.75".eur, // TODO check the real statement
+                deductedInterest = "1341.33".eur, // TODO check the real statement
+                paidBills = listOf(Payment(LocalDate.parse("2024-11-11"), "58646.18".eur)), // TODO check the real statement
+            ),
+        ),
     )
 }
 
