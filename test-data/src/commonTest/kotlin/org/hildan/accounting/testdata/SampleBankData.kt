@@ -99,7 +99,7 @@ object SampleBankData {
                         bdInterestDeduction = Amount.ZERO,
                         totalDebit = "4137.78".eur,
                     ),
-                )
+                ),
             ),
             // This is not a real BD statement because we got a single one for both November and December.
             // That said, this is the equivalent if we break down by month.
@@ -127,7 +127,7 @@ object SampleBankData {
                         bdInterestDeduction = "1518.27".eur,
                         totalDebit = "547.57".eur,
                     ),
-                )
+                ),
             ),
             constructionAccountStatement = ConstructionAccountStatement(
                 balanceBefore = "663131.32".eur,
@@ -153,7 +153,7 @@ object SampleBankData {
                         bdInterestDeduction = "1025.13".eur,
                         totalDebit = "1037.67".eur,
                     ),
-                )
+                ),
             ),
             constructionAccountStatement = ConstructionAccountStatement(
                 balanceBefore = "644551.18".eur,
@@ -179,7 +179,7 @@ object SampleBankData {
                         bdInterestDeduction = "1009.80".eur,
                         totalDebit = "1049.96".eur,
                     ),
-                )
+                ),
             ),
             constructionAccountStatement = ConstructionAccountStatement(
                 balanceBefore = "644520.52".eur,
@@ -205,7 +205,7 @@ object SampleBankData {
                         bdInterestDeduction = "1009.75".eur,
                         totalDebit = "1046.95".eur,
                     ),
-                )
+                ),
             ),
             constructionAccountStatement = ConstructionAccountStatement(
                 balanceBefore = "644520.43".eur,
@@ -231,7 +231,7 @@ object SampleBankData {
                         bdInterestDeduction = "969.94".eur,
                         totalDebit = "1083.72".eur,
                     ),
-                )
+                ),
             ),
             constructionAccountStatement = ConstructionAccountStatement(
                 balanceBefore = "585794.62".eur,
@@ -257,7 +257,7 @@ object SampleBankData {
                         bdInterestDeduction = "917.75".eur,
                         totalDebit = "1132.86".eur,
                     ),
-                )
+                ),
             ),
             constructionAccountStatement = ConstructionAccountStatement(
                 balanceBefore = "585690.24".eur,
@@ -284,7 +284,7 @@ object SampleBankData {
                         bdInterestDeduction = "899.85".eur,
                         totalDebit = "1122.11".eur,
                     ),
-                )
+                ),
             ),
             constructionAccountStatement = ConstructionAccountStatement(
                 balanceBefore = "438875.39".eur,
@@ -310,7 +310,7 @@ object SampleBankData {
                         bdInterestDeduction = "738.23".eur,
                         totalDebit = "1280.76".eur,
                     ),
-                )
+                ),
             ),
             constructionAccountStatement = ConstructionAccountStatement(
                 balanceBefore = "438581.53".eur,
@@ -336,7 +336,7 @@ object SampleBankData {
                         bdInterestDeduction = "737.73".eur,
                         totalDebit = "1278.28".eur,
                     ),
-                )
+                ),
             ),
             constructionAccountStatement = ConstructionAccountStatement(
                 balanceBefore = "438580.63".eur,
@@ -362,7 +362,7 @@ object SampleBankData {
                         bdInterestDeduction = "737.73".eur,
                         totalDebit = "1275.31".eur,
                     ),
-                )
+                ),
             ),
             constructionAccountStatement = ConstructionAccountStatement(
                 balanceBefore = "438580.63".eur,
