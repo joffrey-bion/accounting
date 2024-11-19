@@ -5,33 +5,11 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.plus
 import org.hildan.accounting.money.Amount
 import org.hildan.accounting.money.eur
-import org.hildan.accounting.money.pct
 import org.hildan.accounting.money.sumOf
-import org.hildan.accounting.mortgage.DayCountConvention
 import org.hildan.accounting.mortgage.Payment
 import org.hildan.accounting.mortgage.PaymentPeriod
 
 object SampleBankData {
-
-    // the mortgage started on Nov 17th, which means November is a partial month with this ratio
-    private val novemberPeriod = PaymentPeriod(LocalDate(2023, 11, 17), LocalDate(2023, 12, 1))
-    private val decemberPeriod = period(2023, 12)
-
-    private val novemberDayCountFactor = DayCountConvention.ThirtyE360.dayCountFactor(novemberPeriod)
-    private val decemberDayCountFactor = DayCountConvention.ThirtyE360.dayCountFactor(decemberPeriod)
-
-    private val bdBalanceNov = 700_000.eur - "39905.21".eur // on the first construction account statement
-    private val bdInterestNov = (bdBalanceNov * "3.76".pct * novemberDayCountFactor).roundedToTheCent()
-
-    private val bdBalanceDec = bdBalanceNov + bdInterestNov
-    private val bdInterestDec = (bdBalanceDec * "3.76".pct * decemberDayCountFactor).roundedToTheCent()
-
-    init {
-        // we don't know the interest for the individual November and December periods but the first statement gives the sum
-        check(bdInterestNov + bdInterestDec == "3036.53".eur) {
-            "incorrect calculations of the expected BD interest breakdown: $bdInterestNov + $bdInterestDec != 3036.53"
-        }
-    }
 
     /**
      * The real collection notice that happened in December for both the November and December periods.
@@ -64,7 +42,8 @@ object SampleBankData {
      */
     val statements = listOf(
         MonthlyStatement(
-            period = novemberPeriod,
+            // the mortgage started on Nov 17th, which means November is a partial month
+            period = PaymentPeriod(LocalDate(2023, 11, 17), LocalDate(2023, 12, 1)),
             collectionNotice = CollectionNotice(
                 // November was never collected on its own, so we don't have a breakdown by account.
                 // The initial letter does give us the amounts due per part and total for the November period, though.
@@ -80,9 +59,9 @@ object SampleBankData {
             // This is not a real BD statement because we got a single one for both November and December.
             // That said, this is the equivalent if we break down by month.
             constructionAccountStatement = ConstructionAccountStatement(
-                balanceBefore = bdBalanceNov,
+                balanceBefore = 700_000.eur - "39905.21".eur,
                 totalDebit = Amount.ZERO,
-                generatedInterest = bdInterestNov,
+                generatedInterest = "965.21".eur, // calculated by hand (700000-39905.21) * 3.76% * 14 days / 360
                 deductedInterest = Amount.ZERO,
                 paidBills = emptyList(),
             ),
@@ -104,9 +83,9 @@ object SampleBankData {
             // This is not a real BD statement because we got a single one for both November and December.
             // That said, this is the equivalent if we break down by month.
             constructionAccountStatement = ConstructionAccountStatement(
-                balanceBefore = bdBalanceDec,
+                balanceBefore = 661060.eur, // calculated Novemeber BD balanceBefore + interest
                 totalDebit = Amount.ZERO,
-                generatedInterest = bdInterestDec,
+                generatedInterest = "2071.32".eur, // 3036.53 - 965.21 (Known Nov+Dec - calculated Nov interest)
                 deductedInterest = Amount.ZERO,
                 paidBills = emptyList(),
             ),
