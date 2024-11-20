@@ -29,7 +29,8 @@ private val defaultConfig = SimulationSettings(
     mortgage = Mortgage(
         startDate = defaultStartDate,
         termInYears = 30,
-        listOf(
+        dayCountConvention = DayCountConvention.ThirtyE360,
+        parts = listOf(
             MortgagePart(
                 id = MortgagePartId("Part1"),
                 amount = 400_000.eur,

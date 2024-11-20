@@ -30,7 +30,7 @@ data class Mortgage(
     /**
      * The day-count convention for this mortgage, which defines how interest is applied to partial months.
      */
-    val dayCountConvention: DayCountConvention = DayCountConvention.ActualActual,
+    val dayCountConvention: DayCountConvention = DayCountConvention.ThirtyE360,
 ) {
     /**
      * The total amount borrowed.
@@ -55,6 +55,10 @@ data class MortgagePart(
      * repaid yet) will have to be paid every year. It is usually paid monthly (1/12th of the rate).
      */
     val annualInterestRate: InterestRate,
+    /**
+     * The repayment scheme for this part of the mortgage.
+     */
+    val repaymentScheme: RepaymentScheme = RepaymentScheme.Annuity,
     /**
      * The payments made voluntarily to pay back the loan, usually to reduce the interest and thus the monthly payments.
      */
@@ -125,10 +129,13 @@ private class PartSimulator(
     private fun simulateMonth(period: PaymentPeriod, currentLtvRatio: Fraction, remainingMonths: Int): MortgagePartPayment {
         val annualRate = part.annualInterestRate.at(period.start, currentLtvRatio = currentLtvRatio)
 
-        val linearMonthlyPrincipalReduction = balance / remainingMonths
         // We only start paying back the principal on the first full month.
         // If the first month is partial, we just pay interest.
-        val principalReduction = if (period.start.dayOfMonth > 1) Amount.ZERO else linearMonthlyPrincipalReduction
+        val principalReduction = if (period.start.dayOfMonth > 1) {
+            Amount.ZERO
+        } else {
+            part.repaymentScheme.principalRepayment(balance, annualRate, remainingMonths)
+        }
 
         val extraRepayments = sortedExtraPayments.paidIn(period)
         val interest = interestByParts(

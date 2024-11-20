@@ -83,6 +83,7 @@ object SampleSimulation {
                 id = MortgagePartId("101"),
                 amount = 350_000.eur,
                 annualInterestRate = ObvionRateSept2023,
+                repaymentScheme = RepaymentScheme.Linear,
                 extraPayments = listOf(
                     Payment(LocalDate.parse("2024-06-06"), 50_000.eur),
                     Payment(LocalDate.parse("2024-06-12"), "12202.92".eur),
@@ -92,6 +93,7 @@ object SampleSimulation {
                 id = MortgagePartId("102"),
                 amount = 350_000.eur,
                 annualInterestRate = ObvionRateSept2023,
+                repaymentScheme = RepaymentScheme.Linear,
                 extraPayments = emptyList(),
             ),
         ),

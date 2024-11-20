@@ -126,6 +126,21 @@ class MoneyTest {
     }
 
     @Test
+    fun divide_by_fraction() {
+        assertEquals(250.eur, 50.eur / 20.pct)
+        assertEquals(400.eur, 100.eur / 25.pct)
+        assertEquals(150.eur, 75.eur / 50.pct)
+        assertEquals(5.eur, 10.eur / 200.pct)
+    }
+
+    @Test
+    fun divideByZeroFraction_shouldThrow() {
+        assertFailsWith<ArithmeticException> {
+            42.eur / 0.pct
+        }
+    }
+
+    @Test
     fun divide_by_bigger_amount() {
         assertEquals(0.pct, 0.eur / 3.eur)
         assertEquals(100.pct, 1.eur / 1.eur)

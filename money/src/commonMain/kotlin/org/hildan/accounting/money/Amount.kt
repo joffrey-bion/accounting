@@ -20,6 +20,7 @@ value class Amount private constructor(private val value: BigDecimal) : Comparab
     operator fun times(quantity: Int) = Amount(value * quantity.toBigDecimalForCurrencyOps())
     operator fun times(fraction: Fraction) = Amount(value * fraction.value)
     operator fun div(quantity: Int) = Amount(value / quantity.toBigDecimalForCurrencyOps())
+    operator fun div(fraction: Fraction) = Amount(value / fraction.value)
     operator fun div(other: Amount) = Fraction(value / other.value)
 
     /**

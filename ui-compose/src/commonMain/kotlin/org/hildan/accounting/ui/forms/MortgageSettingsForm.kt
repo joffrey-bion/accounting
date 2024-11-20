@@ -6,6 +6,7 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import org.hildan.accounting.mortgage.*
+import org.hildan.accounting.ui.components.RepaymentSchemeDropdown
 import org.hildan.accounting.ui.components.textinput.*
 
 @Composable
@@ -15,6 +16,13 @@ fun MortgageSettingsForm(value: Mortgage, onValueChange: (Mortgage) -> Unit) {
             value = value.amount,
             onValueChange = { onValueChange(value.copy(parts = listOf(value.parts.first().copy(amount = it)))) },
             label = { Text("Loan amount") },
+        )
+        RepaymentSchemeDropdown(
+            value = value.parts.first().repaymentScheme,
+            onValueChange = {
+                onValueChange(value.copy(parts = listOf(value.parts.first().copy(repaymentScheme = it))))
+            },
+            label = { Text("Repayment scheme") },
         )
         LocalDateTextField(
             value = value.startDate,
