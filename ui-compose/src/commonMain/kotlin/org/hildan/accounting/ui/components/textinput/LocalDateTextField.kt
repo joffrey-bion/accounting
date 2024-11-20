@@ -8,6 +8,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.graphics.*
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.text.*
 import androidx.compose.ui.text.input.*
 import kotlinx.datetime.*
@@ -59,7 +61,10 @@ fun LocalDateTextField(
         placeholder = placeholder,
         leadingIcon = leadingIcon,
         trailingIcon = trailingIcon ?: {
-            IconButton(onClick = { showDatePicker = true }) {
+            IconButton(
+                modifier = Modifier.pointerHoverIcon(PointerIcon.Default),
+                onClick = { showDatePicker = true },
+            ) {
                 Icon(Icons.Default.EditCalendar, contentDescription = "Select date")
             }
         },

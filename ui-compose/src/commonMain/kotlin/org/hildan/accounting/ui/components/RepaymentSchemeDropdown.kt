@@ -3,6 +3,8 @@ package org.hildan.accounting.ui.components
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerHoverIcon
 import org.hildan.accounting.mortgage.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -19,7 +21,9 @@ fun RepaymentSchemeDropdown(
         onExpandedChange = { expanded = it },
     ) {
         OutlinedTextField(
-            modifier = Modifier.menuAnchor(type = MenuAnchorType.SecondaryEditable, enabled = true),
+            modifier = Modifier
+                .menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true)
+                .pointerHoverIcon(PointerIcon.Default, overrideDescendants = true),
             value = value.name,
             onValueChange = {},
             readOnly = true,
