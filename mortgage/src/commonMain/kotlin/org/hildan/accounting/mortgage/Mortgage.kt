@@ -8,7 +8,7 @@ import kotlin.jvm.JvmInline
  * Identifies one part of a mortgage.
  */
 @JvmInline
-value class MortgagePartId(val id: String)
+value class MortgagePartId(val value: String)
 
 /**
  * Defines the conditions of a mortgage.

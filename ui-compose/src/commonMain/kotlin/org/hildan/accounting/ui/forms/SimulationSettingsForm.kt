@@ -13,13 +13,13 @@ private val defaultStartDate = Clock.System.todayIn(TimeZone.currentSystemDefaul
 private val defaultMortgage = Mortgage(
     startDate = defaultStartDate,
     termInYears = 30,
-    parts = listOf(
-        MortgagePart(
-            id = MortgagePartId("Part1"),
-            amount = 400_000.eur,
-            annualInterestRate = InterestRate.Fixed(4.pct),
-        ),
-    ),
+    parts = listOf(defaultPart(index = 0)),
+)
+
+internal fun defaultPart(index: Int): MortgagePart = MortgagePart(
+    id = MortgagePartId((index + 1).toString()),
+    amount = 400_000.eur,
+    annualInterestRate = InterestRate.Fixed(4.pct),
 )
 
 private val defaultProperty = Property.Existing(
