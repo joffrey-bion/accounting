@@ -73,6 +73,48 @@ internal object NLTaxValues {
             arkg3 = 37_691.eur
             arkg4 = 115_295.eur
         }
+        2024 -> taxParams {
+            a2_1 = 38_098.eur
+            a3_1 = 75_518.eur
+            b1_1 = "36.97".pct
+            b2_1 = "36.97".pct
+            b3_1 = "49.50".pct
+            specialRewardsTaxRate = "56.01".pct
+
+            ahkm1_1 = 3362.eur
+            ahkg1 = 24_812.eur
+            ahka1_1 = "6.630".pct
+
+            arko1_1 = "8.425".pct
+            arko2_1 = "31.433".pct
+            arko3_1 = "2.471".pct
+            arka4_1 = "6.510".pct
+            arkg1 = 11_490.eur
+            arkg2 = 24_820.eur
+            arkg3 = 39_957.eur
+            arkg4 = 124_934.eur
+        }
+        2025 -> taxParams {
+            a2_1 = 38_441.eur
+            a3_1 = 76_817.eur
+            b1_1 = "35.82".pct
+            b2_1 = "37.48".pct
+            b3_1 = "49.50".pct
+            specialRewardsTaxRate = "56.01".pct
+
+            ahkm1_1 = 3068.eur
+            ahkg1 = 28_406.eur
+            ahka1_1 = "6.337".pct
+
+            arko1_1 = "8.053".pct
+            arko2_1 = "30.030".pct
+            arko3_1 = "2.258".pct
+            arka4_1 = "6.510".pct
+            arkg1 = 12_169.eur
+            arkg2 = 26_288.eur
+            arkg3 = 43_071.eur
+            arkg4 = 129_078.eur
+        }
         else -> error("No information on tax parameters for year $year")
     }
 }
