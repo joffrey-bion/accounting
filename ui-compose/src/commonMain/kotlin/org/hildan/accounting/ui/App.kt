@@ -1,7 +1,10 @@
 package org.hildan.accounting.ui
 
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.*
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -19,13 +22,16 @@ fun App() {
 
     val colorScheme = if (isSystemInDarkTheme()) darkColorScheme() else lightColorScheme()
     MaterialTheme(colorScheme = colorScheme) {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background,
-            contentColor = MaterialTheme.colorScheme.onBackground,
-        ) {
-            Column {
-                Header(currentScreen = currentScreen, onNavigate = { currentScreen = it })
+        Column {
+            Header(currentScreen = currentScreen, onNavigate = { currentScreen = it })
+            Surface(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .horizontalScroll(rememberScrollState())
+                    .verticalScroll(rememberScrollState()),
+                color = MaterialTheme.colorScheme.background,
+                contentColor = MaterialTheme.colorScheme.onBackground,
+            ) {
                 when (currentScreen) {
                     Screen.MortgageSimulation -> MortgageSimulationScreen()
                     Screen.IncomeTax -> IncomeTaxScreen()

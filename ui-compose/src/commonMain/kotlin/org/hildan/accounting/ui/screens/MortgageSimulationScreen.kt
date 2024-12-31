@@ -54,7 +54,7 @@ fun MortgageSimulationScreen() {
             )
         } else {
             Column(
-                modifier = Modifier.align(Alignment.TopCenter).verticalScroll(rememberScrollState()),
+                modifier = Modifier.align(Alignment.TopCenter),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 SimulationList(simulations = simulations, onEdit = { sim -> openSimulationForm(sim.settings) })
