@@ -34,9 +34,9 @@ fun SimulationSettingsForm(
     onSave: (SimulationSettings) -> Unit,
     onCancel: () -> Unit,
 ) {
-    var name by remember { mutableStateOf(initialValue?.simulationName) }
-    var mortgage by remember { mutableStateOf(initialValue?.mortgage ?: defaultMortgage) }
-    var property by remember { mutableStateOf(initialValue?.property ?: defaultProperty) }
+    var name by remember(initialValue) { mutableStateOf(initialValue?.simulationName) }
+    var mortgage by remember(initialValue) { mutableStateOf(initialValue?.mortgage ?: defaultMortgage) }
+    var property by remember(initialValue) { mutableStateOf(initialValue?.property ?: defaultProperty) }
 
     var nameError by remember { mutableStateOf(false) }
 
