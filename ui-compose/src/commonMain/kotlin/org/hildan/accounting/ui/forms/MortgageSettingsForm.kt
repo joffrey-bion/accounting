@@ -5,11 +5,14 @@ import androidx.compose.material.icons.*
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import org.hildan.accounting.money.pct
 import org.hildan.accounting.mortgage.*
 import org.hildan.accounting.ui.components.RepaymentSchemeDropdown
 import org.hildan.accounting.ui.components.textinput.*
+import kotlin.collections.plus
 
 @Composable
 fun MortgageSettingsForm(value: Mortgage, onValueChange: (Mortgage) -> Unit) {
@@ -38,7 +41,7 @@ fun MortgageSettingsForm(value: Mortgage, onValueChange: (Mortgage) -> Unit) {
             MortgagePartSettingsForm(
                 value = part,
                 onValueChange = {
-                    onValueChange(value.copy(parts = value.parts.toMutableList().apply { set(i, it) }))
+                    onValueChange(value.copy(parts = value.parts.withReplacedItem(index = i, newItem = it)))
                 },
             )
         }
@@ -71,4 +74,98 @@ private fun MortgagePartSettingsForm(
         },
         label = { Text("Repayment scheme") },
     )
+    InterestRateForm(
+        value = value.annualInterestRate,
+        onValueChange = { onValueChange(value.copy(annualInterestRate = it)) },
+    )
 }
+
+@Composable
+private fun InterestRateForm(
+    value: InterestRate,
+    onValueChange: (InterestRate) -> Unit,
+) {
+    // TODO add a button to switch from Fixed to DynamicLtv
+    // TODO use the UI of Fixed rate when DynamicLTV has only one group? How to deal with the upper bound?
+    // TODO maybe implement Fixed as just a specical case of DynamicLtv? How to deal with the upper bound?
+    when (value) {
+        is InterestRate.Fixed -> FractionTextField(
+            value = value.rate,
+            onValueChange = { onValueChange(value.copy(rate = it)) },
+            label = { Text("Annual interest rate") },
+        )
+        is InterestRate.DynamicLtv -> {
+            DynamicLtvRateForm(value, onValueChange)
+        }
+        is InterestRate.Predicted -> TODO()
+    }
+}
+
+@Composable
+private fun DynamicLtvRateForm(
+    value: InterestRate.DynamicLtv,
+    onValueChange: (InterestRate) -> Unit,
+) {
+    value.sortedRates.forEachIndexed { i, rateGroup ->
+        DynamicLtvRateGroupForm(
+            rateGroup = rateGroup,
+            onValueChange = {
+                onValueChange(value.copy(sortedRates = value.sortedRates.withReplacedItem(index = i, newItem = it)))
+            },
+            onDelete = {
+                onValueChange(value.copy(sortedRates = value.sortedRates - rateGroup))
+            },
+            index = i,
+            nGroups = value.sortedRates.size,
+        )
+    }
+    TextButton(
+        onClick = {
+            val currentLast = value.sortedRates.last()
+            onValueChange(value.copy(sortedRates = value.sortedRates + currentLast.copy(maxLtvRatio = currentLast.maxLtvRatio + 10.pct)))
+        },
+    ) {
+        Icon(Icons.Default.Add, "Add LTV group")
+        Spacer(Modifier.width(8.dp))
+        Text("Add LTV group")
+    }
+}
+
+@Composable
+private fun DynamicLtvRateGroupForm(
+    rateGroup: InterestRate.DynamicLtv.RateGroup,
+    onValueChange: (InterestRate.DynamicLtv.RateGroup) -> Unit,
+    onDelete: () -> Unit,
+    index: Int,
+    nGroups: Int,
+) {
+    Row(
+        modifier = Modifier.width(OutlinedTextFieldDefaults.MinWidth),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        FractionTextField(
+            modifier = Modifier.weight(1.2f),
+            value = rateGroup.rate,
+            onValueChange = { onValueChange(rateGroup.copy(rate = it)) },
+            label = { Text("Annual rate $index") },
+        )
+        Spacer(Modifier.width(8.dp))
+        FractionTextField(
+            modifier = Modifier.weight(1f),
+            value = rateGroup.maxLtvRatio,
+            onValueChange = {
+                onValueChange(rateGroup.copy(maxLtvRatio = it))
+            },
+            label = { Text("≤ LTV ratio") },
+        )
+        IconButton(
+            onClick = onDelete,
+            enabled = nGroups > 1,
+        ) {
+            Icon(Icons.Default.Delete, "Remove LTV group")
+        }
+    }
+}
+
+private fun <T> List<T>.withReplacedItem(index: Int, newItem: T): List<T> =
+    toMutableList().apply { set(index, newItem) }

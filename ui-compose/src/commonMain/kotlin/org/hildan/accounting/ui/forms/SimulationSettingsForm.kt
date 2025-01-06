@@ -19,7 +19,15 @@ private val defaultMortgage = Mortgage(
 internal fun defaultPart(index: Int): MortgagePart = MortgagePart(
     id = MortgagePartId((index + 1).toString()),
     amount = 400_000.eur,
-    annualInterestRate = InterestRate.Fixed(4.pct),
+    annualInterestRate = InterestRate.DynamicLtv(
+        ratesPerLtvRatio = mapOf(
+            60.pct to "3.58".pct,
+            70.pct to "3.62".pct,
+            80.pct to "3.67".pct,
+            90.pct to "3.76".pct,
+            106.pct to "3.87".pct,
+        )
+    ),
 )
 
 private val defaultProperty = Property.Existing(
