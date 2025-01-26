@@ -55,7 +55,8 @@ enum class DayCountConvention(val code: String) {
     },
     /**
      * Each month is considered 30 days long, and each year 360 days.
-     * If the bound of a date range falls on the 31st of a month, it is replaced with 30 before the calculation.
+     * If the bound of a date range falls on the last day of a month (including February), it is replaced with 30
+     * before the calculation.
      */
     ThirtyE360ISDA("30E/360 ISDA") {
         override fun dayCountFactor(period: PaymentPeriod): Fraction {
