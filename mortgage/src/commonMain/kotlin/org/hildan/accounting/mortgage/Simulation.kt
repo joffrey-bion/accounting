@@ -1,5 +1,7 @@
 package org.hildan.accounting.mortgage
 
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.plus
 import org.hildan.accounting.money.*
 
 /**
@@ -38,6 +40,7 @@ fun SimulationSettings.simulateLinear(): SimulationResult {
         is Property.NewConstruction -> {
             val sortedBills = SortedPayments(property.constructionInstallments)
             var constructionAccountBalance = property.constructionInstallments.sumOf { it.amount }
+            val constructionAccountInterestDeadline = mortgage.startDate + property.constructionAccountInterestDuration
 
             val effectivePayments = mutableListOf<MortgageMonthSummary>()
             var deductPastInterest = false
@@ -46,11 +49,13 @@ fun SimulationSettings.simulateLinear(): SimulationResult {
                 val constructionAccountBalanceBefore = constructionAccountBalance
                 val paidBills = sortedBills.paidIn(payment.period)
 
+                val constructionAccountInterestPeriod = payment.period.withTruncatedEnd(constructionAccountInterestDeadline)
+
                 // rounded to the cent because that's how the bank does it (it shows with whole cents in statements)
                 val constructionAccountInterest = interestByParts(
                     initialBalance = constructionAccountBalance,
                     balanceReductions = paidBills,
-                    period = payment.period,
+                    period = constructionAccountInterestPeriod,
                     annualInterestRate = payment.averageInterestRateApplied,
                     dayCountConvention = mortgage.dayCountConvention,
                 ).roundedToTheCent()
@@ -85,3 +90,6 @@ fun SimulationSettings.simulateLinear(): SimulationResult {
         }
     }
 }
+
+private fun PaymentPeriod.withTruncatedEnd(maxEnd: LocalDate): PaymentPeriod =
+    copy(endExclusive = endExclusive.coerceIn(start, maxEnd.coerceAtLeast(start)))

@@ -22,12 +22,15 @@ internal fun interestByParts(
     var from = period.start
     var balance = initialBalance
     var interest = Amount.ZERO
-    balanceReductions.forEach { reduction ->
-        val dayCountFactor = dayCountConvention.dayCountFactor(start = from, endExclusive = reduction.date)
-        interest += balance * annualInterestRate * dayCountFactor
-        balance -= reduction.amount
-        from = reduction.date
-    }
+    balanceReductions
+        .filter { it.date in period }
+        .sortedBy { it.date }
+        .forEach { reduction ->
+            val dayCountFactor = dayCountConvention.dayCountFactor(start = from, endExclusive = reduction.date)
+            interest += balance * annualInterestRate * dayCountFactor
+            balance -= reduction.amount
+            from = reduction.date
+        }
     val dayCountFactor = dayCountConvention.dayCountFactor(start = from, endExclusive = period.endExclusive)
     interest += balance * annualInterestRate * dayCountFactor
     return interest

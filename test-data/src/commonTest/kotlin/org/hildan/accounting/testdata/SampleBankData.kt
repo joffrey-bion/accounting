@@ -113,7 +113,7 @@ object SampleBankData {
                 totalDebit = "20630.39".eur,
                 generatedInterest = "2050.25".eur,
                 deductedInterest = "3036.53".eur,
-                paidBills = listOf(Payment(LocalDate.parse("2024-01-16"), "17593.86".eur)),
+                paidBills = listOf(Payment(LocalDate.parse("2024-01-16"), "17593.86".eur, "T1: 3% construction start")),
             ),
         ),
         MonthlyStatement(
@@ -191,7 +191,7 @@ object SampleBankData {
                 totalDebit = "60665.68".eur,
                 generatedInterest = "1939.87".eur,
                 deductedInterest = "2019.50".eur,
-                paidBills = listOf(Payment(LocalDate.parse("2024-04-18"), "58646.18".eur)),
+                paidBills = listOf(Payment(LocalDate.parse("2024-04-18"), "58646.18".eur, "T2: 10% rough lowest floor complete")),
             ),
         ),
         MonthlyStatement(
@@ -244,7 +244,7 @@ object SampleBankData {
                 generatedInterest = "1636.09".eur,
                 deductedInterest = "1835.49".eur,
                 // both T3 & T4 were paid in the same month, and the bank released the funds in one go
-                paidBills = listOf(Payment(LocalDate.parse("2024-06-18"), "146615.45".eur)),
+                paidBills = listOf(Payment(LocalDate.parse("2024-06-18"), "146615.45".eur, "T3 (15% rough floor in private area) + T4 (10% inner cavity leaves in private area)")),
             ),
         ),
         MonthlyStatement(
@@ -371,10 +371,62 @@ object SampleBankData {
             ),
             constructionAccountStatement = ConstructionAccountStatement(
                 balanceBefore = "438580.63".eur,
-                totalDebit = "59987.51".eur, // TODO check the real statement
-                generatedInterest = "1221.75".eur, // TODO check the real statement
-                deductedInterest = "1341.33".eur, // TODO check the real statement
-                paidBills = listOf(Payment(LocalDate.parse("2024-11-11"), "58646.18".eur)), // TODO check the real statement
+                totalDebit = "58225.50".eur,
+                generatedInterest = "715.37".eur, // we stop earning interest after 12 months
+                deductedInterest = "1341.33".eur,
+                paidBills = listOf(Payment(LocalDate.parse("2024-11-26"), "56884.17".eur, "T7: 10% screed floors in private areas (excluding discarded work KMW36 with 21%VAT)")),
+            ),
+        ),
+        MonthlyStatement(
+            period = period(2024, 12),
+            collectionNotice = CollectionNotice(
+                accountDebits = listOf(
+                    AccountDebitDetails(
+                        part101 = "739.03".eur,
+                        part102 = "903.13".eur,
+                        bdInterestDeduction = "321.92".eur,
+                        totalDebit = "1320.24".eur,
+                    ),
+                    AccountDebitDetails(
+                        part101 = "903.27".eur,
+                        part102 = "1103.83".eur,
+                        bdInterestDeduction = "393.45".eur,
+                        totalDebit = "1613.65".eur,
+                    ),
+                ),
+            ),
+            constructionAccountStatement = ConstructionAccountStatement(
+                balanceBefore = "381070.50".eur,
+                totalDebit = "138533.89".eur,
+                generatedInterest = "0".eur,
+                deductedInterest = "715.37".eur,
+                paidBills = listOf(Payment(LocalDate.parse("2024-12-13"), "137818.52".eur, "T6: 23.5% watertight roof")),
+            ),
+        ),
+        MonthlyStatement(
+            period = period(2025, 1),
+            collectionNotice = CollectionNotice(
+                accountDebits = listOf(
+                    AccountDebitDetails(
+                        part101 = "737.94".eur,
+                        part102 = "901.79".eur,
+                        bdInterestDeduction = "0".eur,
+                        totalDebit = "1639.73".eur,
+                    ),
+                    AccountDebitDetails(
+                        part101 = "901.93".eur,
+                        part102 = "1102.19".eur,
+                        bdInterestDeduction = "0".eur,
+                        totalDebit = "2004.12".eur,
+                    ),
+                ),
+            ),
+            constructionAccountStatement = ConstructionAccountStatement(
+                balanceBefore = "242536.61".eur, // TODO check statement on ~Feb 7th
+                totalDebit = "29323.09".eur, // TODO check statement on ~Feb 7th
+                generatedInterest = "0".eur, // TODO check statement on ~Feb 7th
+                deductedInterest = "0".eur, // TODO check statement on ~Feb 7th
+                paidBills = listOf(Payment(LocalDate.parse("2025-01-15"), "29323.09".eur, "T5: 5% exterior walls of the private part")), // TODO check statement
             ),
         ),
     )

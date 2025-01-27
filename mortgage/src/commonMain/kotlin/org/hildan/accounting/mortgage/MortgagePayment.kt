@@ -15,7 +15,9 @@ data class PaymentPeriod(
      * The end date of the period (exclusive).
      */
     val endExclusive: LocalDate,
-)
+) {
+    operator fun contains(date: LocalDate): Boolean = date >= start && date < endExclusive
+}
 
 /**
  * A payment towards the mortgage.

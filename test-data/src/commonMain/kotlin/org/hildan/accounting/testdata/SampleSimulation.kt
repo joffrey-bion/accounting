@@ -60,20 +60,28 @@ object SampleSimulation {
     )
 
     // These dates are not the dates of the bills, but the dates at which the bank released the funds and paid.
-    // Note: both T3 and T4 were paid in the same month, and the bank released the funds in one go on June 18th.
     private val constructionBillsPayments = listOf(
-        "2024-01-16" to constructionPrice * 3.pct,             // T1
-        "2024-04-18" to constructionPrice * 10.pct,            // T2
-        "2024-06-18" to constructionPrice * (15.pct + 10.pct), // T3 + T4
-        "2024-11-11" to constructionPrice * 10.pct,            // T7
-        "2024-12-01" to constructionPrice * 5.pct,             // T5 TODO add real date
-        "2025-01-15" to constructionPrice * "23.5".pct,        // T6 TODO add real date
-        "2025-05-01" to constructionPrice * "13.5".pct,        // T8 TODO add real date
-        "2025-09-01" to constructionPrice * 10.pct, // on delivery date TODO add real date
-    ).map { (date, amount) ->
+        bill("2024-01-16", constructionPrice * 3.pct, description = "T1: 3% construction start"),
+        bill("2024-04-18", constructionPrice * 10.pct, description = "T2: 10% rough lowest floor complete"),
+        // Note: both T3 and T4 were paid in the same month, and the bank released the funds in one go on June 18th.
+        bill("2024-06-18", constructionPrice * (15.pct + 10.pct), description = "T3 (15% rough floor in private area) + T4 (10% inner cavity leaves in private area)"),
+        bill("2024-11-26", constructionPrice * 10.pct + -("1456.21".eur) * (21.pct + 1), description = "T7: 10% screed floors in private areas (excluding discarded work KMW36 with 21%VAT)"),
+        bill("2024-12-13", "137818.52".eur, description = "T6: 23.5% watertight roof"), // we don't apply the percentage because it's incorrectly rounded
+        bill("2025-01-15", constructionPrice * 5.pct, description = "T5: 5% exterior walls of the private part"), // TODO add real date
+        bill("2025-05-01", constructionPrice * "13.5".pct, description = "T8"), // TODO add real date
+        bill("2025-09-01", constructionPrice * 10.pct, description = "on delivery date"), // TODO add real date
+    )
+
+    private fun bill(
+        date: String,
+        amount: Amount,
+        description: String,
+    ): Payment = Payment(
+        date = LocalDate.parse(date),
         // BotBouw rounds the numbers up even when less than 0.5
-        Payment(date = LocalDate.parse(date), amount = amount.roundedToTheCent(RoundingMode.CEILING))
-    }
+        amount = amount.roundedToTheCent(RoundingMode.CEILING),
+        description = description,
+    )
 
     private val mortgage = Mortgage(
         startDate = closingDate,
@@ -85,8 +93,8 @@ object SampleSimulation {
                 annualInterestRate = ObvionRateSept2023,
                 repaymentScheme = RepaymentScheme.Linear,
                 extraPayments = listOf(
-                    Payment(LocalDate.parse("2024-06-06"), 50_000.eur),
-                    Payment(LocalDate.parse("2024-06-12"), "12202.92".eur),
+                    Payment(LocalDate.parse("2024-06-06"), 50_000.eur, "Extra payment"),
+                    Payment(LocalDate.parse("2024-06-12"), "12202.92".eur, "Complete to make a whole percentage"),
                 ),
             ),
             MortgagePart(

@@ -1,5 +1,6 @@
 package org.hildan.accounting.mortgage
 
+import kotlinx.datetime.DatePeriod
 import org.hildan.accounting.money.*
 
 /**
@@ -70,6 +71,10 @@ sealed class Property {
          * and other delayed purchases like a potential parking space purchase.
          */
         val constructionInstallments: List<Payment>,
+        /**
+         * The period during which the construction account generates interest.
+         */
+        val constructionAccountInterestDuration: DatePeriod = DatePeriod(months = 12),
         /**
          * The property value (known as the [Waardering Onroerende Zaken value](https://www.amsterdam.nl/en/municipal-taxes/property-valuation-woz),
          * or WOZ value in short) is used to calculate how much tax you owe, and also determines the maximum that
