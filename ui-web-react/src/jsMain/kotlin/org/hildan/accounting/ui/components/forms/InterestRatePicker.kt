@@ -101,7 +101,8 @@ private val RateGroupFields = FC<RateGroupFieldsProps>("RateGroupFields") { prop
             display = Display.flex
             alignItems = AlignItems.center
         }
-        rateGroups.sortedBy { it.maxLtvRatio }.forEachIndexed { index, rateGroup ->
+        rateGroups.forEachIndexed { index, rateGroup ->
+            val maxLtvRatio = rateGroup.maxLtvRatio
             PercentageTextField {
                 key = rateGroup.rate.formatPercentValue()
                 textFieldProps = jso {
@@ -114,35 +115,35 @@ private val RateGroupFields = FC<RateGroupFieldsProps>("RateGroupFields") { prop
                 value = TextFieldState.Valid(rateGroup.rate.formatPercentValue(), rateGroup.rate)
                 onChange = {
                     if (it is TextFieldState.Valid) {
-                        val newGroup = InterestRate.DynamicLtv.RateGroup(rateGroup.maxLtvRatio, it.value)
+                        val newGroup = InterestRate.DynamicLtv.RateGroup(maxLtvRatio, it.value)
                         props.onChange?.invoke(rateGroups - rateGroup + newGroup)
                     }
                 }
             }
-            ReactHTML.span { +"<=" }
-            PercentageTextField {
-                key = rateGroup.maxLtvRatio.formatPercentValue()
-                textFieldProps = jso {
-                    label = ReactNode("LTV")
-                    size = Size.small
-                    css {
-                        width = 4.5.rem
-                    }
-                    InputProps = jso {
+            if (maxLtvRatio != null) {
+                ReactHTML.span { +"<=" }
+                PercentageTextField {
+                    key = maxLtvRatio.formatPercentValue()
+                    textFieldProps = jso {
+                        label = ReactNode("LTV")
+                        size = Size.small
                         css {
-                            height = 2.rem
+                            width = 4.5.rem
+                        }
+                        InputProps = jso {
+                            css {
+                                height = 2.rem
+                            }
+                        }
+                    }
+                    value = TextFieldState.Valid(maxLtvRatio.formatPercentValue(), maxLtvRatio)
+                    onChange = {
+                        if (it is TextFieldState.Valid) {
+                            val newGroup = InterestRate.DynamicLtv.RateGroup(it.value, rateGroup.rate)
+                            props.onChange?.invoke(rateGroups - rateGroup + newGroup)
                         }
                     }
                 }
-                value = TextFieldState.Valid(rateGroup.maxLtvRatio.formatPercentValue(), rateGroup.maxLtvRatio)
-                onChange = {
-                    if (it is TextFieldState.Valid) {
-                        val newGroup = InterestRate.DynamicLtv.RateGroup(it.value, rateGroup.rate)
-                        props.onChange?.invoke(rateGroups - rateGroup + newGroup)
-                    }
-                }
-            }
-            if (index < rateGroups.lastIndex) {
                 ReactHTML.span { +"<" }
             }
         }

@@ -10,7 +10,7 @@ fun simulateMortgages() {
 
     println(SummaryTable.format(listOf(sim700kIncremental, sim700kBulk)))
     println()
-    printTables(sim700kBulk)
+    printTables(sim700kIncremental)
 }
 
 private fun printTables(simulation: SimulationResult) {

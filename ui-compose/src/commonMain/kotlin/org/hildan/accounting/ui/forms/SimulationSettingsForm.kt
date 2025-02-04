@@ -26,7 +26,8 @@ internal fun defaultPart(index: Int): MortgagePart = MortgagePart(
             80.pct to "3.67".pct,
             90.pct to "3.76".pct,
             106.pct to "3.87".pct,
-        )
+        ),
+        maxLtvRate = "4.25".pct,
     ),
 )
 

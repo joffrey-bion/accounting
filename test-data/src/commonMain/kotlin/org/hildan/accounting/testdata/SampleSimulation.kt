@@ -56,7 +56,8 @@ object SampleSimulation {
             80.pct to "3.67".pct,
             90.pct to "3.76".pct,
             106.pct to "3.87".pct,
-        )
+        ),
+        maxLtvRate = "4.25".pct,
     )
 
     // These dates are not the dates of the bills, but the dates at which the bank released the funds and paid.

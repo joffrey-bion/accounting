@@ -8,7 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import org.hildan.accounting.money.pct
+import org.hildan.accounting.money.*
 import org.hildan.accounting.mortgage.*
 import org.hildan.accounting.ui.components.RepaymentSchemeDropdown
 import org.hildan.accounting.ui.components.textinput.*
@@ -106,6 +106,7 @@ private fun DynamicLtvRateForm(
     value: InterestRate.DynamicLtv,
     onValueChange: (InterestRate) -> Unit,
 ) {
+    val maxRatio = value.sortedRates.maxOf { it.maxLtvRatio ?: Fraction.ZERO }
     value.sortedRates.forEachIndexed { i, rateGroup ->
         DynamicLtvRateGroupForm(
             rateGroup = rateGroup,
@@ -116,13 +117,18 @@ private fun DynamicLtvRateForm(
                 onValueChange(value.copy(sortedRates = value.sortedRates - rateGroup))
             },
             index = i,
-            nGroups = value.sortedRates.size,
+            maxRatio = maxRatio,
         )
     }
     TextButton(
         onClick = {
-            val currentLast = value.sortedRates.last()
-            onValueChange(value.copy(sortedRates = value.sortedRates + currentLast.copy(maxLtvRatio = currentLast.maxLtvRatio + 10.pct)))
+            val currentLastGroup = value.sortedRates.last()
+            val newGroup = InterestRate.DynamicLtv.RateGroup(
+                maxLtvRatio = maxRatio + 10.pct,
+                rate = currentLastGroup.rate,
+            )
+            val newGroups = value.sortedRates.dropLast(1) + newGroup + currentLastGroup
+            onValueChange(value.copy(sortedRates = newGroups))
         },
     ) {
         Icon(Icons.Default.Add, "Add LTV group")
@@ -137,7 +143,7 @@ private fun DynamicLtvRateGroupForm(
     onValueChange: (InterestRate.DynamicLtv.RateGroup) -> Unit,
     onDelete: () -> Unit,
     index: Int,
-    nGroups: Int,
+    maxRatio: Fraction,
 ) {
     Row(
         modifier = Modifier.width(OutlinedTextFieldDefaults.MinWidth),
@@ -150,19 +156,25 @@ private fun DynamicLtvRateGroupForm(
             label = { Text("Annual rate $index") },
         )
         Spacer(Modifier.width(8.dp))
-        FractionTextField(
-            modifier = Modifier.weight(1f),
-            value = rateGroup.maxLtvRatio,
-            onValueChange = {
-                onValueChange(rateGroup.copy(maxLtvRatio = it))
-            },
-            label = { Text("≤ LTV ratio") },
-        )
-        IconButton(
-            onClick = onDelete,
-            enabled = nGroups > 1,
-        ) {
-            Icon(Icons.Default.Delete, "Remove LTV group")
+        val maxLtvRatio = rateGroup.maxLtvRatio
+        if (maxLtvRatio != null) {
+            FractionTextField(
+                modifier = Modifier.weight(1f),
+                value = maxLtvRatio,
+                onValueChange = { onValueChange(rateGroup.copy(maxLtvRatio = it)) },
+                label = { Text("≤ LTV ratio") },
+            )
+            IconButton(
+                modifier = Modifier.weight(0.4f),
+                onClick = onDelete,
+            ) {
+                Icon(Icons.Default.Delete, "Remove LTV group")
+            }
+        } else {
+            Text(
+                modifier = Modifier.weight(1.4f),
+                text = "> ${maxRatio.formatPercent()} LTV",
+            )
         }
     }
 }
