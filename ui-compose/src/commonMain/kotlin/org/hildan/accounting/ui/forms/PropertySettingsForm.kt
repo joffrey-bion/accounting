@@ -53,8 +53,12 @@ fun PropertySettingsForm(value: Property, onValueChange: (Property) -> Unit) {
                         )
                     }
                 )
+                if (value.constructionInstallments.isNotEmpty()) {
+                    Text("Construction bills")
+                }
                 EditablePaymentList(
                     payments = value.constructionInstallments,
+                    addButtonText = "Add construction bill",
                     onValueChange = { onValueChange(value.copy(constructionInstallments = it)) },
                     modifier = Modifier.wrapContentWidth().heightIn(max = 500.dp),
                 )

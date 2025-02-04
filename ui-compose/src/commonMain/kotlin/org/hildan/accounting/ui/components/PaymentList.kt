@@ -17,6 +17,7 @@ import org.hildan.accounting.ui.components.textinput.*
 @Composable
 fun EditablePaymentList(
     payments: List<Payment>,
+    addButtonText: String,
     onValueChange: (List<Payment>) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -32,7 +33,7 @@ fun EditablePaymentList(
     }
     IconAndTextButton(
         icon = Icons.Default.Add,
-        text = "Add bill",
+        text = addButtonText,
         onClick = { onValueChange(payments + createPaymentTodayZero()) },
     )
 }
