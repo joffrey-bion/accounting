@@ -60,6 +60,8 @@ private fun EditablePaymentListItem(value: Payment, onValueChange: (Payment) -> 
                     LocalDateText(value.date)
                     Spacer(Modifier.width(5.dp))
                     AmountText(value.amount)
+                    Spacer(Modifier.width(5.dp))
+                    Text(value.description)
                     Spacer(Modifier.width(3.dp))
                     IconButton(onClick = { isEditing = true }) {
                         Icon(Icons.Default.Edit, contentDescription = "Edit")
@@ -78,6 +80,7 @@ private fun PaymentListItemFields(
 ) {
     var date by remember(initialValue) { mutableStateOf(initialValue.date) }
     var amount by remember(initialValue) { mutableStateOf(initialValue.amount) }
+    var description by remember(initialValue) { mutableStateOf(initialValue.description) }
     DatePickerButton(
         value = date,
         onValueChange = { date = it ?: error("selected date should not be null") },
@@ -88,7 +91,12 @@ private fun PaymentListItemFields(
         onValueChange = { amount = it },
         modifier = Modifier.width(150.dp),
     )
-    IconButton(onClick = { onEditCommit(Payment(date = date, amount = amount)) }) {
+    OutlinedTextField(
+        value = description,
+        onValueChange = { description = it },
+        modifier = Modifier.width(400.dp),
+    )
+    IconButton(onClick = { onEditCommit(Payment(date = date, amount = amount, description = description)) }) {
         Icon(Icons.Default.Check, contentDescription = "Confirm")
     }
     IconButton(onClick = onEditCancel) {
