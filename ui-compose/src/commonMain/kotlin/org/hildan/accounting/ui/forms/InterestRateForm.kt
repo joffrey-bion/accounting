@@ -9,6 +9,7 @@ import androidx.compose.ui.*
 import androidx.compose.ui.unit.*
 import org.hildan.accounting.money.*
 import org.hildan.accounting.mortgage.*
+import org.hildan.accounting.ui.components.*
 import org.hildan.accounting.ui.components.textinput.*
 import org.hildan.accounting.ui.utils.*
 
@@ -52,7 +53,9 @@ private fun DynamicLtvRateForm(
             maxRatio = maxRatio,
         )
     }
-    TextButton(
+    IconAndTextButton(
+        icon = Icons.Default.Add,
+        text = "Add LTV group",
         onClick = {
             val currentLastGroup = value.sortedRates.last()
             val newGroup = InterestRate.DynamicLtv.RateGroup(
@@ -62,11 +65,7 @@ private fun DynamicLtvRateForm(
             val newGroups = value.sortedRates.dropLast(1) + newGroup + currentLastGroup
             onValueChange(value.copy(sortedRates = newGroups))
         },
-    ) {
-        Icon(Icons.Default.Add, "Add LTV group")
-        Spacer(Modifier.width(8.dp))
-        Text("Add LTV group")
-    }
+    )
 }
 
 @Composable

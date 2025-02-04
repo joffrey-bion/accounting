@@ -43,15 +43,13 @@ fun MortgageSettingsForm(value: Mortgage, onValueChange: (Mortgage) -> Unit) {
                 },
             )
         }
-        TextButton(
+        IconAndTextButton(
+            icon = Icons.Default.Add,
+            text = "Add a mortgage part",
             onClick = {
                 onValueChange(value.copy(parts = value.parts + defaultPart(value.parts.size)))
             },
-        ) {
-            Icon(Icons.Default.Add, "Add a mortgage part")
-            Spacer(Modifier.width(8.dp))
-            Text("Add mortgage part")
-        }
+        )
     }
 }
 
