@@ -30,9 +30,11 @@ fun EditablePaymentList(
             )
         }
     }
-    IconButton(onClick = { onValueChange(payments + createPaymentTodayZero()) }) {
-        Icon(Icons.Default.Add, contentDescription = "Add payment")
-    }
+    IconAndTextButton(
+        icon = Icons.Default.Add,
+        text = "Add bill",
+        onClick = { onValueChange(payments + createPaymentTodayZero()) },
+    )
 }
 
 private fun createPaymentTodayZero() = Payment(
