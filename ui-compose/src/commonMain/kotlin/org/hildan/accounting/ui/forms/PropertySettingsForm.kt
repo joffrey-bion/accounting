@@ -56,7 +56,7 @@ fun PropertySettingsForm(value: Property, onValueChange: (Property) -> Unit) {
                 EditablePaymentList(
                     payments = value.constructionInstallments,
                     onValueChange = { onValueChange(value.copy(constructionInstallments = it)) },
-                    modifier = Modifier.wrapContentWidth(),
+                    modifier = Modifier.wrapContentWidth().heightIn(max = 500.dp),
                 )
             }
             is Property.Existing -> {
