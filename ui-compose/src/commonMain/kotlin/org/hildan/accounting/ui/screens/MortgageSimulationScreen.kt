@@ -1,6 +1,5 @@
 package org.hildan.accounting.ui.screens
 
-import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.*
 import androidx.compose.material.icons.filled.*
@@ -40,12 +39,12 @@ fun MortgageSimulationScreen() {
                     val oldSim = editedSimulation
                     if (oldSim == null) {
                         scope.launch {
-                            simulations += sim.simulateLinear()
+                            simulations += sim.simulate()
                         }
                     } else {
                         val index = simulations.indexOfFirst { it.settings == oldSim }
                         scope.launch {
-                            simulations = simulations.toMutableList().apply { set(index, sim.simulateLinear()) }
+                            simulations = simulations.toMutableList().apply { set(index, sim.simulate()) }
                         }
                     }
                     closeSimulationForm()

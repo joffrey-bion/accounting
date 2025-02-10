@@ -17,7 +17,7 @@ val Application = FC("Application") {
     var newSimToSimulate by useState<SimulationSettings?>(null)
 
     useEffect(newSimToSimulate) {
-        newSimToSimulate?.simulateLinear()?.also { allSims += it }
+        newSimToSimulate?.simulate()?.also { allSims += it }
         newSimToSimulate = null
     }
 

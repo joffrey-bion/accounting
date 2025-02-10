@@ -5,8 +5,8 @@ import org.hildan.accounting.mortgage.*
 import org.hildan.accounting.testdata.SampleSimulation
 
 fun simulateMortgages() {
-    val sim700kIncremental = SampleSimulation.settingsIncremental.simulateLinear()
-    val sim700kBulk = SampleSimulation.settingsBulk.simulateLinear()
+    val sim700kIncremental = SampleSimulation.settingsIncremental.simulate()
+    val sim700kBulk = SampleSimulation.settingsBulk.simulate()
 
     println(SummaryTable.format(listOf(sim700kIncremental, sim700kBulk)))
     println()

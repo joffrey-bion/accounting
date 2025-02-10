@@ -66,7 +66,10 @@ data class MortgagePart(
 )
 
 /**
- * Calculates the monthly payments for this [Mortgage] assuming a linear reimbursement scheme.
+ * Calculates the monthly payments for this [Mortgage].
+ *
+ * The given [propertyWozValue] function provides the WOZ value of the property at a given point in time,
+ * which is necessary for interest rate calculations that are based on the loan-to-value ratio.
  */
 internal fun Mortgage.simulatePayments(propertyWozValue: (LocalDate) -> Amount): List<MortgagePayment> {
     val monthlyPaymentPeriods = monthlyPaymentPeriods(startDate, termInYears)

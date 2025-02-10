@@ -23,9 +23,9 @@ data class SimulationSettings(
 )
 
 /**
- * Runs this simulation assuming a linear mortgage type.
+ * Runs a simulation based on these settings.
  */
-fun SimulationSettings.simulateLinear(): SimulationResult {
+fun SimulationSettings.simulate(): SimulationResult {
     val mortgagePayments = mortgage.simulatePayments(propertyWozValue = { property.wozValue })
     return when (property) {
         is Property.Existing -> SimulationResult(
