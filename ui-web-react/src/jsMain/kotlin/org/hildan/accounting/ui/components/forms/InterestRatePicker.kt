@@ -6,7 +6,7 @@ import mui.material.*
 import mui.material.Box
 import mui.material.Size
 import org.hildan.accounting.money.*
-import org.hildan.accounting.mortgage.*
+import org.hildan.accounting.mortgage.interest.*
 import org.hildan.accounting.ui.global.*
 import react.*
 import react.dom.html.*
@@ -19,6 +19,7 @@ external interface InterestRatePickerProps : Props {
 }
 
 val InterestRatePicker = FC<InterestRatePickerProps> { props ->
+    var dayCountConvention by useState(props.value?.dayCountConvention ?: DayCountConvention.ThirtyE360ISDA)
     var fixedFraction by useState(percentageStateOf((props.value as? InterestRate.Fixed)?.rate ?: 3.pct))
     var dynamicLtv by useState((props.value as? InterestRate.DynamicLtv)?.sortedRates ?: listOf(InterestRate.DynamicLtv.RateGroup(80.pct, 3.pct)))
 
@@ -32,8 +33,8 @@ val InterestRatePicker = FC<InterestRatePickerProps> { props ->
             }
             onChange = { _, selectedRadio ->
                 val newRate = when(selectedRadio) {
-                    "fixed" -> InterestRate.Fixed((fixedFraction as TextFieldState.Valid).value)
-                    "dynamic-ltv" -> InterestRate.DynamicLtv(dynamicLtv)
+                    "fixed" -> InterestRate.Fixed((fixedFraction as TextFieldState.Valid).value, dayCountConvention)
+                    "dynamic-ltv" -> InterestRate.DynamicLtv(dynamicLtv, dayCountConvention)
                     else -> error("Unknown interest rate type radio button state '$selectedRadio'")
                 }
                 props.onChange?.invoke(newRate)

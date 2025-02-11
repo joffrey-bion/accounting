@@ -3,6 +3,7 @@ package org.hildan.accounting.mortgage
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.plus
 import org.hildan.accounting.money.*
+import org.hildan.accounting.mortgage.interest.*
 
 /**
  * Settings for a simulation.
@@ -52,12 +53,10 @@ fun SimulationSettings.simulate(): SimulationResult {
                 val constructionAccountInterestPeriod = payment.period.withTruncatedEnd(constructionAccountInterestDeadline)
 
                 // rounded to the cent because that's how the bank does it (it shows with whole cents in statements)
-                val constructionAccountInterest = interestByParts(
+                val constructionAccountInterest = payment.averageInterestRateApplied.interestByPartsOn(
                     initialBalance = constructionAccountBalance,
                     balanceReductions = paidBills,
                     period = constructionAccountInterestPeriod,
-                    annualInterestRate = payment.averageInterestRateApplied,
-                    dayCountConvention = mortgage.dayCountConvention,
                 ).roundedToTheCent()
 
                 constructionAccountBalance -= paidBills.sumOf { it.amount }

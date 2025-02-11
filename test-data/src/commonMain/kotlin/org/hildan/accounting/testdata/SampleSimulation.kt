@@ -5,6 +5,7 @@ import kotlinx.datetime.*
 import org.hildan.accounting.money.*
 import org.hildan.accounting.mortgage.*
 import org.hildan.accounting.mortgage.Property
+import org.hildan.accounting.mortgage.interest.*
 
 object SampleSimulation {
     /**
@@ -58,6 +59,7 @@ object SampleSimulation {
             106.pct to "3.87".pct,
         ),
         maxLtvRate = "4.25".pct,
+        dayCountConvention = DayCountConvention.ThirtyE360ISDA,
     )
 
     // These dates are not the dates of the bills, but the dates at which the bank released the funds and paid.
@@ -106,7 +108,6 @@ object SampleSimulation {
                 extraPayments = emptyList(),
             ),
         ),
-        dayCountConvention = DayCountConvention.ThirtyE360ISDA,
     )
 
     val settingsIncremental = SimulationSettings(

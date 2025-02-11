@@ -7,6 +7,7 @@ import androidx.compose.ui.*
 import kotlinx.datetime.*
 import org.hildan.accounting.money.*
 import org.hildan.accounting.mortgage.*
+import org.hildan.accounting.mortgage.interest.*
 
 private val defaultStartDate = Clock.System.todayIn(TimeZone.currentSystemDefault())
 
@@ -28,6 +29,7 @@ internal fun defaultPart(index: Int): MortgagePart = MortgagePart(
             106.pct to "3.87".pct,
         ),
         maxLtvRate = "4.25".pct,
+        dayCountConvention = DayCountConvention.ThirtyE360ISDA,
     ),
 )
 

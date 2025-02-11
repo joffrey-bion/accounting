@@ -2,6 +2,7 @@ package org.hildan.accounting.mortgage
 
 import kotlinx.datetime.*
 import org.hildan.accounting.money.*
+import org.hildan.accounting.mortgage.interest.*
 import kotlin.jvm.JvmInline
 
 /**
@@ -27,10 +28,6 @@ data class Mortgage(
      * Defines the conditions of each mortgage part.
      */
     val parts: List<MortgagePart>,
-    /**
-     * The day-count convention for this mortgage, which defines how interest is applied to partial months.
-     */
-    val dayCountConvention: DayCountConvention = DayCountConvention.ThirtyE360,
 ) {
     /**
      * The total amount borrowed.
@@ -73,7 +70,7 @@ data class MortgagePart(
  */
 internal fun Mortgage.simulatePayments(propertyWozValue: (LocalDate) -> Amount): List<MortgagePayment> {
     val monthlyPaymentPeriods = monthlyPaymentPeriods(startDate, termInYears)
-    val partSimulators = parts.map { PartSimulator(part = it, dayCountConvention, monthlyPaymentPeriods) }
+    val partSimulators = parts.map { PartSimulator(part = it, monthlyPaymentPeriods) }
     return buildList {
         while (true) {
             val mortgageBalance = partSimulators.sumOf { part -> part.balance }
@@ -106,7 +103,6 @@ private fun monthlyPaymentPeriods(startDate: LocalDate, termInYears: Int): List<
 
 private class PartSimulator(
     val part: MortgagePart,
-    val dayCountConvention: DayCountConvention,
     val monthlyPaymentPeriods: List<PaymentPeriod>,
 ) {
     private val sortedExtraPayments = SortedPayments(part.extraPayments)
@@ -130,28 +126,30 @@ private class PartSimulator(
     }
 
     private fun simulateMonth(period: PaymentPeriod, currentLtvRatio: Fraction, remainingMonths: Int): MortgagePartPayment {
-        val annualRate = part.annualInterestRate.at(period.start, currentLtvRatio = currentLtvRatio)
+        val applicableRate = part.annualInterestRate.at(period.start, currentLtvRatio = currentLtvRatio)
 
         // We only start paying back the principal on the first full month.
         // If the first month is partial, we just pay interest.
         val principalReduction = if (period.start.dayOfMonth > 1) {
             Amount.ZERO
         } else {
-            part.repaymentScheme.principalRepayment(balance, annualRate, remainingMonths)
+            part.repaymentScheme.principalRepayment(balance, applicableRate, remainingMonths)
         }
 
         val extraRepayments = sortedExtraPayments.paidIn(period)
-        val interest = interestByParts(
+        val interest = applicableRate.interestByPartsOn(
             initialBalance = balance,
             balanceReductions = extraRepayments,
             period = period,
-            annualInterestRate = annualRate,
-            dayCountConvention = dayCountConvention,
         )
 
         // When extra payments are made, the bank keeps the total payment due the same, and compensates for the extra
         // interest perceived by counting it as more principal reduction
-        val interestIgnoringExtraPayments = balance * annualRate * dayCountConvention.dayCountFactor(period)
+        val interestIgnoringExtraPayments = applicableRate.interestByPartsOn(
+            initialBalance = balance,
+            balanceReductions = emptyList(),
+            period = period,
+        )
         val totalIgnoringExtraPayments = (principalReduction + interestIgnoringExtraPayments).roundedToTheCent()
         val effectivePrincipalReduction = totalIgnoringExtraPayments - interest
 
@@ -162,7 +160,7 @@ private class PartSimulator(
             balanceBefore = balance,
             principalReduction = effectivePrincipalReduction,
             extraPrincipalReduction = extraRepayments.sumOf { it.amount },
-            appliedInterestRate = annualRate,
+            appliedInterestRate = applicableRate,
             interest = interest,
         )
 

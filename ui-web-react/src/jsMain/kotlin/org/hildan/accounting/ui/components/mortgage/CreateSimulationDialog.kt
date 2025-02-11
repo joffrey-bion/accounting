@@ -8,6 +8,7 @@ import mui.system.*
 import org.hildan.accounting.money.*
 import org.hildan.accounting.mortgage.*
 import org.hildan.accounting.mortgage.Property
+import org.hildan.accounting.mortgage.interest.*
 import org.hildan.accounting.ui.components.forms.*
 import org.hildan.accounting.ui.global.*
 import react.*
@@ -29,12 +30,14 @@ private val defaultConfig = SimulationSettings(
     mortgage = Mortgage(
         startDate = defaultStartDate,
         termInYears = 30,
-        dayCountConvention = DayCountConvention.ThirtyE360,
         parts = listOf(
             MortgagePart(
                 id = MortgagePartId("Part1"),
                 amount = 400_000.eur,
-                annualInterestRate = InterestRate.Fixed(Fraction("0.04")),
+                annualInterestRate = InterestRate.Fixed(
+                    rate = Fraction(value = "0.04"),
+                    dayCountConvention = DayCountConvention.ThirtyE360ISDA,
+                ),
             )
         )
     ),

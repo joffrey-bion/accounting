@@ -25,7 +25,10 @@ fun MortgageYearlySummaryTable(yearSummaries: List<MortgageYearSummary>, modifie
             AmountText(it.principalReduction, modifier = Modifier.align(Alignment.CenterEnd))
         }
         column(header = "Interest rate") {
-            Text(it.interestRates.joinToString(" → "), modifier = Modifier.align(Alignment.Center))
+            Text(
+                text = it.interestRates.joinToString(" → ") { it.annualRate.formatPercent() },
+                modifier = Modifier.align(Alignment.Center),
+            )
         }
         column(header = "Interest") {
             AmountText(it.interestDue, modifier = Modifier.align(Alignment.CenterEnd))
@@ -71,7 +74,10 @@ fun MortgageMonthlySummaryTable(monthSummaries: List<MortgageMonthSummary>, modi
             AmountText(it.mortgagePayment.principalReduction, modifier = Modifier.align(Alignment.CenterEnd))
         }
         column(header = "Interest rate") {
-            Text(it.mortgagePayment.averageInterestRateApplied.formatPercent(), modifier = Modifier.align(Alignment.Center))
+            Text(
+                text = it.mortgagePayment.averageInterestRateApplied.annualRate.formatPercent(),
+                modifier = Modifier.align(Alignment.Center),
+            )
         }
         column(header = "Interest") {
             AmountText(it.mortgagePayment.interest, modifier = Modifier.align(Alignment.CenterEnd))

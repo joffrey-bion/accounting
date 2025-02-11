@@ -2,6 +2,7 @@ package org.hildan.accounting.mortgage
 
 import kotlinx.datetime.*
 import org.hildan.accounting.money.*
+import org.hildan.accounting.mortgage.interest.*
 
 data class SimulationResult(
     /**
@@ -87,7 +88,7 @@ data class MortgageYearSummary(
     /**
      * The interest rates that were applied throughout the year.
      */
-    val interestRates: List<Fraction>,
+    val interestRates: List<ApplicableInterestRate>,
     /**
      * The interest due to the bank for borrowing the money.
      */

@@ -2,6 +2,7 @@ package org.hildan.accounting.mortgage
 
 import kotlinx.datetime.*
 import org.hildan.accounting.money.*
+import org.hildan.accounting.mortgage.interest.*
 
 /**
  * A period for which a payment applies.
@@ -53,7 +54,13 @@ data class MortgagePayment(
     /**
      * The weighted average of the annual interest rate used for each loan part at the time of this payment.
      */
-    val averageInterestRateApplied: Fraction = partsBreakdown.sumOf { it.balanceBefore * it.appliedInterestRate } / balanceBefore
+    val averageInterestRateApplied: ApplicableInterestRate = ApplicableInterestRate(
+        annualRate = partsBreakdown.sumOf { it.balanceBefore * it.appliedInterestRate.annualRate } / balanceBefore,
+        dayCountConvention = partsBreakdown
+            .mapTo(mutableSetOf()) { it.appliedInterestRate.dayCountConvention }
+            .singleOrNull()
+            ?: error("Different day-count conventions for different parts is not supported"),
+    )
     /**
      * The interest paid to the bank as a fee for borrowing the money.
      */
@@ -101,7 +108,7 @@ data class MortgagePartPayment(
     /**
      * The applicable annual interest rate at the time of this payment.
      */
-    val appliedInterestRate: Fraction,
+    val appliedInterestRate: ApplicableInterestRate,
     /**
      * The interest paid to the bank as a fee for borrowing the money.
      */

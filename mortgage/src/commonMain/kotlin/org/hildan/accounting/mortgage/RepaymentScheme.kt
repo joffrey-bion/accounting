@@ -1,7 +1,7 @@
 package org.hildan.accounting.mortgage
 
 import org.hildan.accounting.money.Amount
-import org.hildan.accounting.money.Fraction
+import org.hildan.accounting.mortgage.interest.*
 
 /**
  * The principal repayment scheme defines how much of the principal is repaid throughout the months.
@@ -15,7 +15,11 @@ enum class RepaymentScheme {
      * the interest, the total payments are linearly decreasing over time.
      */
     Linear {
-        override fun principalRepayment(balance: Amount, interestRate: Fraction, remainingMonths: Int): Amount {
+        override fun principalRepayment(
+            balance: Amount,
+            interestRate: ApplicableInterestRate,
+            remainingMonths: Int,
+        ): Amount {
             return balance / remainingMonths
         }
     },
@@ -25,12 +29,24 @@ enum class RepaymentScheme {
      * The principal repayment is therefore adjusted in just the right way to compensate for the interest decrease.
      */
     Annuity {
-        override fun principalRepayment(balance: Amount, interestRate: Fraction, remainingMonths: Int): Amount {
+        override fun principalRepayment(
+            balance: Amount,
+            interestRate: ApplicableInterestRate,
+            remainingMonths: Int,
+        ): Amount {
+            require(interestRate.dayCountConvention != DayCountConvention.ActualActual) {
+                "Annuity repayment scheme is incompatible with Actual/Actual day count convention, " +
+                    "please use a 30/360 convention"
+            }
             // See https://github.com/joffrey-bion/accounting/issues/60 for how to get this formula
-            val mRate = interestRate / 12
+            val mRate = interestRate.annualRate / 12
             return balance * mRate / ((mRate + 1).pow(remainingMonths) - 1)
         }
     };
 
-    abstract fun principalRepayment(balance: Amount, interestRate: Fraction, remainingMonths: Int): Amount
+    abstract fun principalRepayment(
+        balance: Amount,
+        interestRate: ApplicableInterestRate,
+        remainingMonths: Int,
+    ): Amount
 }

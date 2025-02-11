@@ -8,7 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.unit.*
 import org.hildan.accounting.money.*
-import org.hildan.accounting.mortgage.*
+import org.hildan.accounting.mortgage.interest.*
 import org.hildan.accounting.ui.components.*
 import org.hildan.accounting.ui.components.textinput.*
 import org.hildan.accounting.ui.utils.*

@@ -1,8 +1,9 @@
-package org.hildan.accounting.mortgage
+package org.hildan.accounting.mortgage.interest
 
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.daysUntil
 import org.hildan.accounting.money.Fraction
+import org.hildan.accounting.mortgage.*
 
 /**
  * Determines how we calculate interest on partial periods.

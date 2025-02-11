@@ -2,9 +2,9 @@ package org.hildan.accounting.mortgage
 
 import kotlinx.datetime.LocalDate
 import org.hildan.accounting.money.Fraction
-import org.hildan.accounting.mortgage.DayCountConvention.ActualActual
-import org.hildan.accounting.mortgage.DayCountConvention.ThirtyE360
-import org.hildan.accounting.mortgage.DayCountConvention.ThirtyE360ISDA
+import org.hildan.accounting.mortgage.interest.DayCountConvention.ActualActual
+import org.hildan.accounting.mortgage.interest.DayCountConvention.ThirtyE360
+import org.hildan.accounting.mortgage.interest.DayCountConvention.ThirtyE360ISDA
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
