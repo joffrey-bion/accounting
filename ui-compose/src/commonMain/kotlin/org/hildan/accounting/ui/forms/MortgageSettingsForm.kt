@@ -74,4 +74,13 @@ private fun MortgagePartSettingsForm(
         value = value.annualInterestRate,
         onValueChange = { onValueChange(value.copy(annualInterestRate = it)) },
     )
+    if (value.extraPayments.isNotEmpty()) {
+        Text("Voluntary extra repayments")
+    }
+    EditablePaymentList(
+        payments = value.extraPayments,
+        addButtonText = "Add voluntary repayment",
+        onValueChange = { onValueChange(value.copy(extraPayments = it)) },
+        modifier = Modifier.wrapContentWidth().heightIn(max = 500.dp),
+    )
 }
