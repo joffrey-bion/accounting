@@ -54,18 +54,21 @@ private fun EditablePaymentListItem(value: Payment, onValueChange: (Payment) -> 
                 val onValueChange1 = { it: Payment -> onValueChange(it) }
                 LocalDateTextField(
                     value = value.date,
+                    label = { Text("Date") },
                     onValueChange = { onValueChange1(value.copy(date = it)) },
                     modifier = Modifier.widthIn(max = 160.dp),
                 )
                 Spacer(Modifier.width(5.dp))
                 AmountTextField(
                     value = value.amount,
+                    label = { Text("Amount") },
                     onValueChange = { onValueChange1(value.copy(amount = it)) },
                     modifier = Modifier.width(150.dp),
                 )
                 Spacer(Modifier.width(5.dp))
                 OutlinedTextField(
                     value = value.description,
+                    label = { Text("Description") },
                     onValueChange = { onValueChange1(value.copy(description = it)) },
                     modifier = Modifier.width(400.dp),
                 )
