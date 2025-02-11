@@ -85,7 +85,7 @@ data class MortgagePartPayment(
      */
     val period: PaymentPeriod,
     /**
-     * The balance of the mortgage before making this payment.
+     * The balance of the mortgage part before making this payment.
      */
     val balanceBefore: Amount,
     /**
@@ -95,7 +95,7 @@ data class MortgagePartPayment(
     val principalReduction: Amount,
     /**
      * The amount invested voluntarily to repay a part of the mortgage this month on top of the mandatory payment.
-     * Like [principalReduction], it is subtracted from the current mortgage balance (principal) as a result.
+     * Like [principalReduction], it is subtracted from the balance (principal) of this mortgage part as a result.
      */
     val extraPrincipalReduction: Amount,
     /**
