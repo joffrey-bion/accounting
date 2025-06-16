@@ -12,8 +12,6 @@ internal fun <T> linearAxisModel(
     minimumMajorTickIncrement: Double = (converter.convertFrom(max) - converter.convertFrom(min)) * 0.1,
     minimumMajorTickSpacing: Dp = 50.dp,
     minorTickCount: Int = 4,
-    allowZooming: Boolean = true,
-    allowPanning: Boolean = true,
 ): AxisModel<T> = AxisModelAdapter(
     delegate = DoubleLinearAxisModel(
         range = converter.convertFrom(min)..converter.convertFrom(max),
@@ -22,8 +20,6 @@ internal fun <T> linearAxisModel(
         minimumMajorTickIncrement = minimumMajorTickIncrement,
         minimumMajorTickSpacing = minimumMajorTickSpacing,
         minorTickCount = minorTickCount,
-        allowZooming = allowZooming,
-        allowPanning = allowPanning,
     ),
     converter = converter,
 )
