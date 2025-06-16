@@ -11,8 +11,6 @@ fun amountAxisModel(
     minimumMajorTickIncrement: Double = (AmountDoubleConverter.convertFrom(max) - AmountDoubleConverter.convertFrom(min)) * 0.1,
     minimumMajorTickSpacing: Dp = 50.dp,
     minorTickCount: Int = 4,
-    allowZooming: Boolean = true,
-    allowPanning: Boolean = true,
 ) = linearAxisModel(
     min = min,
     max = max,
@@ -22,8 +20,6 @@ fun amountAxisModel(
     minimumMajorTickIncrement = minimumMajorTickIncrement,
     minimumMajorTickSpacing = minimumMajorTickSpacing,
     minorTickCount = minorTickCount,
-    allowZooming = allowZooming,
-    allowPanning = allowPanning,
 )
 
 private object AmountDoubleConverter : DoubleConverter<Amount> {

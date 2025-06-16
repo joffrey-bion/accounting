@@ -12,8 +12,6 @@ fun localDateAxisModel(
     minimumMajorTickIncrement: Double = (LocalDateDoubleConverter.convertFrom(max) - LocalDateDoubleConverter.convertFrom(min)) * 0.1,
     minimumMajorTickSpacing: Dp = 50.dp,
     minorTickCount: Int = 4,
-    allowZooming: Boolean = true,
-    allowPanning: Boolean = true,
 ) = linearAxisModel(
     min = min,
     max = max,
@@ -23,8 +21,6 @@ fun localDateAxisModel(
     minimumMajorTickIncrement = minimumMajorTickIncrement,
     minimumMajorTickSpacing = minimumMajorTickSpacing,
     minorTickCount = minorTickCount,
-    allowZooming = allowZooming,
-    allowPanning = allowPanning,
 )
 
 private object LocalDateDoubleConverter : DoubleConverter<LocalDate> {
