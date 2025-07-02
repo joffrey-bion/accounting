@@ -3,7 +3,6 @@ package org.hildan.accounting.ui.components.mortgage
 import js.core.*
 import kotlinx.datetime.*
 import mui.material.*
-import mui.material.Box
 import mui.system.*
 import org.hildan.accounting.money.*
 import org.hildan.accounting.mortgage.*
@@ -16,6 +15,7 @@ import react.dom.*
 import react.dom.events.*
 import web.cssom.*
 import web.html.*
+import kotlin.time.*
 
 external interface SimulationSettingsDialogProps : Props {
     var prefilledData: SimulationSettings?

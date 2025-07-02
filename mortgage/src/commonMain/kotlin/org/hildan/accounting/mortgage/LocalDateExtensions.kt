@@ -8,7 +8,7 @@ import kotlinx.datetime.plus
 /**
  * Returns the total number of days in the month of this [LocalDate].
  */
-internal fun LocalDate.nDaysInMonth(): Int = nextMonthFirstDay().minus(1, DateTimeUnit.DAY).dayOfMonth
+internal fun LocalDate.nDaysInMonth(): Int = nextMonthFirstDay().minus(1, DateTimeUnit.DAY).day
 
 /**
  * Returns a [LocalDate] that corresponds to the first day of the next month.

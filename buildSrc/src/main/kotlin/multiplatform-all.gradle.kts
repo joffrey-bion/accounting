@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.*
 
 plugins {
-    kotlin("multiplatform")
+    id("multiplatform-common")
 }
 
 kotlin {

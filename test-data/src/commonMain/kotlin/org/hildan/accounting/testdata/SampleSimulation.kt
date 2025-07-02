@@ -2,6 +2,7 @@ package org.hildan.accounting.testdata
 
 import com.ionspin.kotlin.bignum.decimal.RoundingMode
 import kotlinx.datetime.*
+import kotlinx.datetime.LocalDate
 import org.hildan.accounting.money.*
 import org.hildan.accounting.mortgage.*
 import org.hildan.accounting.mortgage.Property
@@ -46,7 +47,7 @@ object SampleSimulation {
     /**
      * The date of the signature of the initial purchase, which marks the start of the mortgage.
      */
-    private val closingDate = LocalDate(year = 2023, monthNumber = 11, dayOfMonth = 17)
+    private val closingDate = LocalDate(year = 2023, month = 11, day = 17)
 
     // From: https://www.obvion.nl/Hypotheek-rente/Actuele-hypotheekrente-Obvion?duurzaamheidskorting=Ja
     // The following rates were locked in on 2023-09-11

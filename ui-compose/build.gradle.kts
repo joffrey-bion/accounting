@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.*
 import org.jetbrains.kotlin.gradle.targets.js.webpack.*
 
 plugins {
-    kotlin("multiplatform")
+    id("multiplatform-common")
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.kotlin.compose)
 }

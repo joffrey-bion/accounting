@@ -1,6 +1,7 @@
 package org.hildan.accounting.mortgage
 
 import kotlinx.datetime.*
+import kotlinx.datetime.LocalDate
 import org.hildan.accounting.money.*
 import org.hildan.accounting.mortgage.interest.*
 import kotlin.jvm.JvmInline
@@ -89,7 +90,7 @@ internal fun Mortgage.simulatePayments(propertyWozValue: (LocalDate) -> Amount):
  * Returns the monthly payment periods based on the [startDate] of the loan and the [termInYears].
  */
 private fun monthlyPaymentPeriods(startDate: LocalDate, termInYears: Int): List<PaymentPeriod> {
-    val firstMonthIsPartial = startDate.dayOfMonth > 1
+    val firstMonthIsPartial = startDate.day > 1
     val redemptionDay = startDate.plus(termInYears, DateTimeUnit.YEAR).let {
         // We only start paying back the principal on the first full month.
         // If the first month is partial, we just pay interest.
@@ -130,7 +131,7 @@ private class PartSimulator(
 
         // We only start paying back the principal on the first full month.
         // If the first month is partial, we just pay interest.
-        val principalReduction = if (period.start.dayOfMonth > 1) {
+        val principalReduction = if (period.start.day > 1) {
             Amount.ZERO
         } else {
             part.repaymentScheme.principalRepayment(balance, applicableRate, remainingMonths)

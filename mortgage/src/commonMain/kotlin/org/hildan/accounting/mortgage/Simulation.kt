@@ -79,7 +79,7 @@ fun SimulationSettings.simulate(): SimulationResult {
                 interestToDeduct += constructionAccountInterest
 
                 // we start deducting the construction fund interest after the first real payment occurs (first full month)
-                val isPartialMonth = payment.period.start.dayOfMonth > 1
+                val isPartialMonth = payment.period.start.day > 1
                 if (!isPartialMonth) {
                     deductPastInterest = true
                 }

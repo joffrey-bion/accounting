@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.targets.js.webpack.*
 
 plugins {
-    kotlin("multiplatform")
+    id("multiplatform-common")
 }
 
 kotlin {

@@ -2,6 +2,7 @@ package org.hildan.accounting.mortgage.interest
 
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.daysUntil
+import kotlinx.datetime.number
 import org.hildan.accounting.money.Fraction
 import org.hildan.accounting.mortgage.*
 
@@ -42,14 +43,14 @@ enum class DayCountConvention(val code: String) {
      */
     ThirtyE360("30E/360") {
         override fun dayCountFactor(period: PaymentPeriod): Fraction {
-            val d1 = if (period.start.dayOfMonth == 31) 30 else period.start.dayOfMonth
-            val d2 = if (period.endExclusive.dayOfMonth == 31) 30 else period.endExclusive.dayOfMonth
+            val d1 = if (period.start.day == 31) 30 else period.start.day
+            val d2 = if (period.endExclusive.day == 31) 30 else period.endExclusive.day
             return dayCount30360(
                 y1 = period.start.year,
-                m1 = period.start.monthNumber,
+                m1 = period.start.month.number,
                 d1 = d1,
                 y2 = period.endExclusive.year,
-                m2 = period.endExclusive.monthNumber,
+                m2 = period.endExclusive.month.number,
                 d2 = d2
             )
         }
@@ -61,14 +62,14 @@ enum class DayCountConvention(val code: String) {
      */
     ThirtyE360ISDA("30E/360 ISDA") {
         override fun dayCountFactor(period: PaymentPeriod): Fraction {
-            val d1 = if (period.start.dayOfMonth == period.start.nDaysInMonth()) 30 else period.start.dayOfMonth
-            val d2 = if (period.endExclusive.dayOfMonth == period.endExclusive.nDaysInMonth()) 30 else period.endExclusive.dayOfMonth
+            val d1 = if (period.start.day == period.start.nDaysInMonth()) 30 else period.start.day
+            val d2 = if (period.endExclusive.day == period.endExclusive.nDaysInMonth()) 30 else period.endExclusive.day
             return dayCount30360(
                 y1 = period.start.year,
-                m1 = period.start.monthNumber,
+                m1 = period.start.month.number,
                 d1 = d1,
                 y2 = period.endExclusive.year,
-                m2 = period.endExclusive.monthNumber,
+                m2 = period.endExclusive.month.number,
                 d2 = d2
             )
         }
