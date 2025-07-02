@@ -12,7 +12,7 @@ kotlin {
     jvm()
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
-        moduleName = "ui-compose"
+        outputModuleName = "ui-compose"
         browser {
             commonWebpackConfig {
                 outputFileName = "ui-compose.js"
