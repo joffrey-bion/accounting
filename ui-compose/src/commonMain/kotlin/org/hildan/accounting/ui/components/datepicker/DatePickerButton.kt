@@ -8,7 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.unit.*
 import kotlinx.datetime.*
-import kotlin.time.*
+import kotlin.time.Instant
 
 private fun LocalDate.toDatePickerMillis(): Long = atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
 
