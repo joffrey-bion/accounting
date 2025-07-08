@@ -8,7 +8,7 @@ import kotlinx.datetime.*
 import org.hildan.accounting.money.*
 import org.hildan.accounting.mortgage.*
 import org.hildan.accounting.mortgage.interest.*
-import kotlin.time.*
+import kotlin.time.Clock
 
 private val defaultStartDate = Clock.System.todayIn(TimeZone.currentSystemDefault())
 

@@ -15,7 +15,7 @@ import react.dom.events.*
 import react.dom.html.*
 import web.cssom.*
 import web.html.*
-import kotlin.time.*
+import kotlin.time.Clock
 
 external interface PaymentsTableProps : TableProps {
     var payments: List<Payment>?

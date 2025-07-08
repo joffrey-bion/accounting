@@ -15,7 +15,7 @@ import react.dom.*
 import react.dom.events.*
 import web.cssom.*
 import web.html.*
-import kotlin.time.*
+import kotlin.time.Clock
 
 external interface SimulationSettingsDialogProps : Props {
     var prefilledData: SimulationSettings?
