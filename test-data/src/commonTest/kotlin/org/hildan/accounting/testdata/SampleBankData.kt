@@ -422,11 +422,170 @@ object SampleBankData {
                 ),
             ),
             constructionAccountStatement = ConstructionAccountStatement(
-                balanceBefore = "242536.61".eur, // TODO check statement on ~Feb 7th
-                totalDebit = "29323.09".eur, // TODO check statement on ~Feb 7th
-                generatedInterest = "0".eur, // TODO check statement on ~Feb 7th
-                deductedInterest = "0".eur, // TODO check statement on ~Feb 7th
-                paidBills = listOf(Payment(LocalDate.parse("2025-01-15"), "29323.09".eur, "T5: 5% exterior walls of the private part")), // TODO check statement
+                balanceBefore = "242536.61".eur,
+                totalDebit = "29323.09".eur,
+                generatedInterest = "0".eur,
+                deductedInterest = "0".eur,
+                paidBills = listOf(Payment(LocalDate.parse("2025-01-21"), "29323.09".eur, "T5: 5% exterior walls of the private part")),
+            ),
+        ),
+        MonthlyStatement(
+            period = period(2025, 2),
+            collectionNotice = CollectionNotice(
+                accountDebits = listOf(
+                    AccountDebitDetails(
+                        part101 = "736.84".eur,
+                        part102 = "900.45".eur,
+                        bdInterestDeduction = "0".eur,
+                        totalDebit = "1637.29".eur,
+                    ),
+                    AccountDebitDetails(
+                        part101 = "900.59".eur,
+                        part102 = "1100.56".eur,
+                        bdInterestDeduction = "0".eur,
+                        totalDebit = "2001.15".eur,
+                    ),
+                ),
+            ),
+            constructionAccountStatement = ConstructionAccountStatement(
+                balanceBefore = "213213.52".eur,
+                totalDebit = "1487.00".eur,
+                generatedInterest = "0".eur,
+                deductedInterest = "0".eur,
+                paidBills = listOf(Payment(LocalDate.parse("2025-02-06"), "1487.00".eur, "25% down payment to Aanhuis for the walk-in closet")),
+            ),
+        ),
+        MonthlyStatement(
+            period = period(2025, 3),
+            collectionNotice = CollectionNotice(
+                accountDebits = listOf(
+                    AccountDebitDetails(
+                        part101 = "529.39".eur,
+                        part102 = "793.62".eur,
+                        bdInterestDeduction = "0".eur,
+                        totalDebit = "1323.01".eur,
+                    ),
+                    AccountDebitDetails(
+                        part101 = "794.09".eur,
+                        part102 = "1190.44".eur,
+                        bdInterestDeduction = "0".eur,
+                        totalDebit = "1984.53".eur,
+                    ),
+                ),
+            ),
+            constructionAccountStatement = ConstructionAccountStatement(
+                balanceBefore = "211726.52".eur,
+                totalDebit = "87387.44".eur,
+                generatedInterest = "0".eur,
+                deductedInterest = "0".eur,
+                paidBills = listOf(
+                    Payment(LocalDate.parse("2025-03-11"), "8215.10".eur, "25% down payment V&K for the paint, plaster, and floor"),
+                    Payment(LocalDate.parse("2025-03-21"), "79172.34".eur, "T8: 13.5% stucco, plaster, and tiles"),
+                ),
+            ),
+        ),
+        MonthlyStatement(
+            period = period(2025, 4),
+            collectionNotice = CollectionNotice(
+                accountDebits = listOf(
+                    AccountDebitDetails(
+                        part101 = "528.61".eur,
+                        part102 = "792.45".eur,
+                        bdInterestDeduction = "0".eur,
+                        totalDebit = "1321.06".eur,
+                    ),
+                    AccountDebitDetails(
+                        part101 = "792.91".eur,
+                        part102 = "1188.68".eur,
+                        bdInterestDeduction = "0".eur,
+                        totalDebit = "1981.59".eur,
+                    ),
+                ),
+            ),
+            constructionAccountStatement = ConstructionAccountStatement(
+                balanceBefore = "124339.08".eur,
+                totalDebit = "0".eur,
+                generatedInterest = "0".eur,
+                deductedInterest = "0".eur,
+                paidBills = emptyList(),
+            ),
+        ),
+        MonthlyStatement(
+            period = period(2025, 5),
+            collectionNotice = CollectionNotice(
+                accountDebits = listOf(
+                    AccountDebitDetails(
+                        part101 = "527.83".eur,
+                        part102 = "791.28".eur,
+                        bdInterestDeduction = "0".eur,
+                        totalDebit = "1319.11".eur,
+                    ),
+                    AccountDebitDetails(
+                        part101 = "791.74".eur,
+                        part102 = "1186.92".eur,
+                        bdInterestDeduction = "0".eur,
+                        totalDebit = "1978.66".eur,
+                    ),
+                ),
+            ),
+            constructionAccountStatement = ConstructionAccountStatement(
+                balanceBefore = "124339.08".eur,
+                totalDebit = "1318.75".eur,
+                generatedInterest = "0".eur,
+                deductedInterest = "0".eur,
+                paidBills = listOf(Payment(LocalDate.parse("2025-05-12"), "1318.75".eur, "25% down payment to Aanhuis for the washing machine cupboard")),
+            ),
+        ),
+        MonthlyStatement(
+            period = period(2025, 6),
+            collectionNotice = CollectionNotice(
+                accountDebits = listOf(
+                    AccountDebitDetails(
+                        part101 = "527.04".eur,
+                        part102 = "790.10".eur,
+                        bdInterestDeduction = "0".eur,
+                        totalDebit = "1317.14".eur,
+                    ),
+                    AccountDebitDetails(
+                        part101 = "790.57".eur,
+                        part102 = "1185.16".eur,
+                        bdInterestDeduction = "0".eur,
+                        totalDebit = "1975.73".eur,
+                    ),
+                ),
+            ),
+            constructionAccountStatement = ConstructionAccountStatement(
+                balanceBefore = "123020.33".eur,
+                totalDebit = "0".eur,
+                generatedInterest = "0".eur,
+                deductedInterest = "0".eur,
+                paidBills = emptyList(),
+            ),
+        ),
+        MonthlyStatement(
+            period = period(2025, 7),
+            collectionNotice = CollectionNotice(
+                accountDebits = listOf(
+                    AccountDebitDetails(
+                        part101 = "526.26".eur,
+                        part102 = "788.93".eur,
+                        bdInterestDeduction = "0".eur,
+                        totalDebit = "1315.19".eur,
+                    ),
+                    AccountDebitDetails(
+                        part101 = "789.39".eur,
+                        part102 = "1183.40".eur,
+                        bdInterestDeduction = "0".eur,
+                        totalDebit = "1972.79".eur,
+                    ),
+                ),
+            ),
+            constructionAccountStatement = ConstructionAccountStatement(
+                balanceBefore = "123020.33".eur,
+                totalDebit = "0".eur,
+                generatedInterest = "0".eur,
+                deductedInterest = "0".eur,
+                paidBills = emptyList(),
             ),
         ),
     )
