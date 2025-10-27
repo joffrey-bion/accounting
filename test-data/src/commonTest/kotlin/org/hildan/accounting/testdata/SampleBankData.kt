@@ -695,6 +695,43 @@ object SampleBankData {
                 ),
             ),
         ),
+        MonthlyStatement(
+            period = period(2025, 11),
+            collectionNotice = CollectionNotice(
+                accountDebits = listOf(
+                    AccountDebitDetails(
+                        part101 = "397.17".eur,
+                        part102 = "705.82".eur,
+                        bdInterestDeduction = "0".eur,
+                        totalDebit = "1102.99".eur,
+                    ),
+                    AccountDebitDetails(
+                        part101 = "706.08".eur,
+                        part102 = "1254.78".eur,
+                        bdInterestDeduction = "0".eur,
+                        totalDebit = "1960.86".eur,
+                    ),
+                ),
+            ),
+            constructionAccountStatement = ConstructionAccountStatement(
+                balanceBefore = "7356.72".eur,
+                totalDebit = "7356.72".eur,
+                generatedInterest = "0".eur,
+                deductedInterest = "0".eur,
+                paidBills = listOf(
+                    Payment(
+                        date = LocalDate.parse("2025-11-18"),
+                        amount = "0.01".eur,
+                        description = "(Fictional) compensation for BotBouw's incorrect rounding",
+                    ),
+                    Payment(
+                        date = LocalDate.parse("2025-11-18"),
+                        amount = "7356.71".eur,
+                        description = "(Prediction) Last partial bill to empty the construction account",
+                    ),
+                ),
+            ),
+        ),
     )
 }
 

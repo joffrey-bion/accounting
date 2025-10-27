@@ -207,7 +207,7 @@ object SampleSimulation {
                 Payment(
                     date = LocalDate.parse("2025-11-18"),
                     amount = initialConstructionAccountBalance - constructionBillsPayments.sum() - otherBillsPayments.sum(),
-                    description = "(Fictional) compensation for future bills",
+                    description = "(Prediction) Last partial bill to empty the construction account",
                 ),
             ).also { installments ->
                 check(installments.sum() == initialConstructionAccountBalance) {
