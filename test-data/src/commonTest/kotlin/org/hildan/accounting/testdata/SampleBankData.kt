@@ -1,13 +1,8 @@
 package org.hildan.accounting.testdata
 
-import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.plus
-import org.hildan.accounting.money.Amount
-import org.hildan.accounting.money.eur
-import org.hildan.accounting.money.sumOf
-import org.hildan.accounting.mortgage.Payment
-import org.hildan.accounting.mortgage.PaymentPeriod
+import kotlinx.datetime.*
+import org.hildan.accounting.money.*
+import org.hildan.accounting.mortgage.*
 
 object SampleBankData {
 
@@ -374,7 +369,13 @@ object SampleBankData {
                 totalDebit = "58225.50".eur,
                 generatedInterest = "715.37".eur, // we stop earning interest after 12 months
                 deductedInterest = "1341.33".eur,
-                paidBills = listOf(Payment(LocalDate.parse("2024-11-26"), "56884.17".eur, "T7: 10% screed floors in private areas (excluding discarded work KMW36 with 21%VAT)")),
+                paidBills = listOf(
+                    Payment(
+                        date = LocalDate.parse("2024-11-26"),
+                        amount = "56884.17".eur,
+                        description = "T7: 10% screed floors in private areas (including all additional and discarded work)"
+                    ),
+                ),
             ),
         ),
         MonthlyStatement(
@@ -452,7 +453,13 @@ object SampleBankData {
                 totalDebit = "1487.00".eur,
                 generatedInterest = "0".eur,
                 deductedInterest = "0".eur,
-                paidBills = listOf(Payment(LocalDate.parse("2025-02-06"), "1487.00".eur, "25% down payment to Aanhuis for the walk-in closet")),
+                paidBills = listOf(
+                    Payment(
+                        date = LocalDate.parse("2025-02-06"),
+                        amount = "1487.00".eur,
+                        description = "25% down payment to Aanhuis for the walk-in closet",
+                    ),
+                ),
             ),
         ),
         MonthlyStatement(
@@ -479,8 +486,16 @@ object SampleBankData {
                 generatedInterest = "0".eur,
                 deductedInterest = "0".eur,
                 paidBills = listOf(
-                    Payment(LocalDate.parse("2025-03-11"), "8215.10".eur, "25% down payment V&K for the paint, plaster, and floor"),
-                    Payment(LocalDate.parse("2025-03-21"), "79172.34".eur, "T8: 13.5% stucco, plaster, and tiles"),
+                    Payment(
+                        date = LocalDate.parse("2025-03-11"),
+                        amount = "8215.10".eur,
+                        description = "25% down payment V&K for the paint, plaster, and floor",
+                    ),
+                    Payment(
+                        date = LocalDate.parse("2025-03-21"),
+                        amount = "79172.34".eur,
+                        description = "T8: 13.5% stucco, plaster, and tiles",
+                    ),
                 ),
             ),
         ),
@@ -533,7 +548,13 @@ object SampleBankData {
                 totalDebit = "1318.75".eur,
                 generatedInterest = "0".eur,
                 deductedInterest = "0".eur,
-                paidBills = listOf(Payment(LocalDate.parse("2025-05-12"), "1318.75".eur, "25% down payment to Aanhuis for the washing machine cupboard")),
+                paidBills = listOf(
+                    Payment(
+                        date = LocalDate.parse("2025-05-12"),
+                        amount = "1318.75".eur,
+                        description = "25% down payment to Aanhuis for the washing machine cupboard",
+                    ),
+                ),
             ),
         ),
         MonthlyStatement(
@@ -586,6 +607,92 @@ object SampleBankData {
                 generatedInterest = "0".eur,
                 deductedInterest = "0".eur,
                 paidBills = emptyList(),
+            ),
+        ),
+        MonthlyStatement(
+            period = period(2025, 8),
+            collectionNotice = CollectionNotice(
+                accountDebits = listOf(
+                    AccountDebitDetails(
+                        part101 = "398.95".eur,
+                        part102 = "708.98".eur,
+                        bdInterestDeduction = "0".eur,
+                        totalDebit = "1107.93".eur,
+                    ),
+                    AccountDebitDetails(
+                        part101 = "709.25".eur,
+                        part102 = "1260.42".eur,
+                        bdInterestDeduction = "0".eur,
+                        totalDebit = "1969.67".eur,
+                    ),
+                ),
+            ),
+            constructionAccountStatement = ConstructionAccountStatement(
+                balanceBefore = "123020.33".eur,
+                totalDebit = "0".eur,
+                generatedInterest = "0".eur,
+                deductedInterest = "0".eur,
+                paidBills = emptyList(),
+            ),
+        ),
+        MonthlyStatement(
+            period = period(2025, 9),
+            collectionNotice = CollectionNotice(
+                accountDebits = listOf(
+                    AccountDebitDetails(
+                        part101 = "398.36".eur,
+                        part102 = "707.93".eur,
+                        bdInterestDeduction = "0".eur,
+                        totalDebit = "1106.29".eur,
+                    ),
+                    AccountDebitDetails(
+                        part101 = "708.19".eur,
+                        part102 = "1258.54".eur,
+                        bdInterestDeduction = "0".eur,
+                        totalDebit = "1966.73".eur,
+                    ),
+                ),
+            ),
+            constructionAccountStatement = ConstructionAccountStatement(
+                balanceBefore = "123020.33".eur,
+                totalDebit = "57017.45".eur,
+                generatedInterest = "0".eur,
+                deductedInterest = "0".eur,
+                paidBills = listOf(
+                    Payment(LocalDate.parse("2025-09-15"), "57017.45".eur, "Notary payment for parking & storage"),
+                ),
+            ),
+        ),
+        MonthlyStatement(
+            period = period(2025, 10),
+            collectionNotice = CollectionNotice(
+                accountDebits = listOf(
+                    AccountDebitDetails(
+                        part101 = "397.76".eur,
+                        part102 = "706.87".eur,
+                        bdInterestDeduction = "0".eur,
+                        totalDebit = "1104.63".eur,
+                    ),
+                    AccountDebitDetails(
+                        part101 = "707.14".eur,
+                        part102 = "1256.66".eur,
+                        bdInterestDeduction = "0".eur,
+                        totalDebit = "1963.80".eur,
+                    ),
+                ),
+            ),
+            constructionAccountStatement = ConstructionAccountStatement(
+                balanceBefore = "66002.88".eur,
+                totalDebit = "58646.16".eur,
+                generatedInterest = "0".eur,
+                deductedInterest = "0".eur,
+                paidBills = listOf(
+                    Payment(
+                        date = LocalDate.parse("2025-10-27"), // TODO change to the payment date by the bank
+                        amount = "58646.16".eur,
+                        description = "T9: 10% upon delivery (-0.02€ rounding compensation as done by BotBouw)",
+                    )
+                ),
             ),
         ),
     )

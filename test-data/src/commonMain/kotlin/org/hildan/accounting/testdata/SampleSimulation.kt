@@ -26,6 +26,11 @@ object SampleSimulation {
     private val parkingPrice = 35_000.eur
 
     /**
+     * The price of the storage space in the parking lot, paid later.
+     */
+    private val storagePrice = 21_600.eur
+
+    /**
      * Options price based on our initial estimate, as written in the initial notary invoice.
      */
     private val optionsPrice = 38_633.eur
@@ -41,6 +46,7 @@ object SampleSimulation {
      * This number is not visible per se, but can be calculated from the initial completion statement at the notary,
      * where these 3 values were extracted from the mortgage balance to put them on the construction account.
      */
+    // /!\ Do not adjust this, it matches the reality of the construction account
     val initialConstructionAccountBalance = constructionPrice + parkingPrice + optionsPrice
 
     /**
@@ -61,6 +67,15 @@ object SampleSimulation {
         maxLtvRate = "4.25".pct,
         dayCountConvention = DayCountConvention.ThirtyE360ISDA,
     )
+
+    /**
+     * Total options and deductions paid to BotBouw, including VAT.
+     *
+     * This includes all little changes like additional sockets, switches, moved walls, minus the returned amounts
+     * for the removed kitchen and default wall/ceiling finishing.
+     */
+    // was 1762 on the contract, but actually calculated this way in the bill
+    private val effectiveOptionsBotBouw = (-"1456.21".eur * 121.pct).roundedToTheCent()
 
     // These dates are not the dates of the bills, but the dates at which the bank released the funds and paid.
     private val constructionBillsPayments = listOf(
@@ -84,8 +99,8 @@ object SampleSimulation {
         ),
         billPayment(
             date = "2024-11-26",
-            amount = ((constructionPrice * 10.pct).roundedToTheCent() + -("1456.21".eur) * (21.pct + 1)), // 56884.1649 -> 56884.17
-            description = "T7: 10% screed floors in private areas (excluding discarded work KMW36 with 21%VAT)",
+            amount = (constructionPrice * 10.pct).roundedToTheCent() + effectiveOptionsBotBouw, // 56884.1649 -> 56884.17
+            description = "T7: 10% screed floors in private areas (including all additional and discarded work)",
         ),
         billPayment(
             date = "2024-12-13",
@@ -103,11 +118,22 @@ object SampleSimulation {
             description = "T8: 13.5% stucco, plaster, and tiles",
         ),
         billPayment(
-            date = "2025-10-01", // TODO change to real date
-            amount = constructionPrice * 10.pct,
-            description = "on delivery date",
+            date = "2025-10-27", // TODO change to the payment date by the bank
+            amount = (constructionPrice * 10.pct).roundedToTheCent() - "0.02".eur, // 58646.179 -> 58646.16
+            description = "T9: 10% upon delivery (-0.02€ rounding compensation as done by BotBouw)",
         ),
-    )
+        billPayment(
+            date = "2025-11-18",
+            amount = "0.01".eur,
+            description = "(Fictional) compensation for BotBouw's incorrect rounding",
+        ),
+    ).also { bills ->
+        check(bills.sumOf { p -> p.amount } == constructionPrice + effectiveOptionsBotBouw) {
+            "The sum of all construction bills (${bills.sum().format()}) should match the total " +
+                "construction price + the options (${constructionPrice.format()} + " +
+                "${effectiveOptionsBotBouw.format()} = ${(constructionPrice + effectiveOptionsBotBouw).format()})."
+        }
+    }
 
     // These dates are not the dates of the bills, but the dates at which the bank released the funds and paid.
     private val otherBillsPayments = listOf(
@@ -125,6 +151,11 @@ object SampleSimulation {
             date = LocalDate.parse("2025-05-12"),
             amount = "1318.75".eur,
             description = "25% down payment to Aanhuis for the washing machine cupboard",
+        ),
+        Payment(
+            date = LocalDate.parse("2025-09-15"),
+            amount = "57017.45".eur, // parkingPrice + storagePrice + translator 326.70€ + 'research' 75€ + BTW 21%
+            description = "Notary payment for parking & storage",
         ),
     )
 
@@ -173,14 +204,16 @@ object SampleSimulation {
             constructionInstallments = listOf(
                 *constructionBillsPayments.toTypedArray<Payment>(),
                 *otherBillsPayments.toTypedArray<Payment>(),
-                // This completes the original options price estimate
-                Payment(date = LocalDate.parse("2025-11-01"), optionsPrice - otherBillsPayments.sumOf { it.amount }),
-                Payment(date = LocalDate.parse("2025-11-01"), parkingPrice), // TODO add real date
-                // Compensates for bills rounding so it still amounts to the real construction price.
-                // In reality, BotBouw will probably adjust the last bill, or the bank will give/take the difference.
-                Payment(date = LocalDate.parse("2025-12-31"), constructionPrice - constructionBillsPayments.sumOf { it.amount }),
+                Payment(
+                    date = LocalDate.parse("2025-11-18"),
+                    amount = initialConstructionAccountBalance - constructionBillsPayments.sum() - otherBillsPayments.sum(),
+                    description = "(Fictional) compensation for future bills",
+                ),
             ).also { installments ->
-                check(installments.sumOf { p -> p.amount } == initialConstructionAccountBalance)
+                check(installments.sum() == initialConstructionAccountBalance) {
+                    "The initial construction account balance (${initialConstructionAccountBalance.format()}) should " +
+                        "match the sum of the installments (${installments.sum().format()})."
+                }
             },
             wozValue = estimatedWozValue,
         ),
@@ -190,9 +223,11 @@ object SampleSimulation {
         simulationName = "700k Bulk",
         mortgage = mortgage,
         property = Property.NewConstruction(
-            initialNotaryPayment = Payment(closingDate, landPrice + parkingPrice + optionsPrice + constructionPrice),
+            initialNotaryPayment = Payment(closingDate, landPrice + parkingPrice + storagePrice + optionsPrice + constructionPrice),
             constructionInstallments = emptyList(),
             wozValue = estimatedWozValue,
         ),
     )
 }
+
+private fun Iterable<Payment>.sum() = sumOf { it.amount }
