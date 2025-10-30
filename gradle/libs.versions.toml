@@ -1,7 +1,7 @@
 [versions]
 
 bignum = "0.3.10"
-compose = "1.8.2"
+compose = "1.9.2"
 koalaplot = "0.9.1"
 kotlin-plugin = "2.2.0"
 kotlin-wrappers = "1.0.0-pre.668"
