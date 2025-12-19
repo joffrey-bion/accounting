@@ -43,6 +43,8 @@ private class AxisModelAdapter<T, B>(
 
     override fun computeOffset(point: T): Float = delegate.computeOffset(converter.convertFrom(point))
 
+    override fun offsetToValue(offset: Float): T = converter.convertTo(delegate.offsetToValue(offset))
+
     override fun pan(amount: Float) = delegate.pan(amount)
 
     override fun zoom(zoomFactor: Float, pivot: Float) = delegate.zoom(zoomFactor, pivot)
