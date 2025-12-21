@@ -4,7 +4,8 @@ import org.jetbrains.kotlin.gradle.targets.js.webpack.*
 
 plugins {
     id("multiplatform-common")
-    alias(libs.plugins.jetbrainsCompose)
+    alias(libs.plugins.jetbrains.compose)
+    alias(libs.plugins.jetbrains.composeHotReload)
     alias(libs.plugins.kotlin.compose)
 }
 

@@ -1,7 +1,8 @@
 [versions]
 
 bignum = "0.3.10"
-compose = "1.8.2"
+compose = "1.9.3"
+composeHotReload = "1.0.0"
 koalaplot = "0.9.1"
 kotlin-plugin = "2.2.0"
 kotlin-wrappers = "1.0.0-pre.668"
@@ -23,5 +24,6 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.
 
 [plugins]
 
+jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "compose" }
+jetbrains-composeHotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "composeHotReload" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin-plugin" }
-jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose" }

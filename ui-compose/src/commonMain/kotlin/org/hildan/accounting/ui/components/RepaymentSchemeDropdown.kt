@@ -22,7 +22,7 @@ fun RepaymentSchemeDropdown(
     ) {
         OutlinedTextField(
             modifier = Modifier
-                .menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true)
+                .menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryNotEditable, enabled = true)
                 .pointerHoverIcon(PointerIcon.Default, overrideDescendants = true),
             value = value.name,
             onValueChange = {},

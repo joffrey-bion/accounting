@@ -5,6 +5,7 @@ import androidx.compose.foundation.interaction.*
 import androidx.compose.material.icons.*
 import androidx.compose.material.icons.automirrored.filled.*
 import androidx.compose.material3.*
+import androidx.compose.material3.TooltipAnchorPosition
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.graphics.vector.*
@@ -20,7 +21,7 @@ fun InfotipBubble(
 ) {
     val scope = rememberCoroutineScope()
     val tooltipState = rememberTooltipState()
-    val tooltipPositionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider()
+    val tooltipPositionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above)
 
     fun showTooltip() = scope.launch { tooltipState.show() }
     fun hideTooltip() = tooltipState.dismiss()
