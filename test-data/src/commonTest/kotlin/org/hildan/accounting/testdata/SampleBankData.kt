@@ -6,6 +6,14 @@ import org.hildan.accounting.mortgage.*
 
 object SampleBankData {
 
+    private val EmptyConstructionAccountStatement = ConstructionAccountStatement(
+        balanceBefore = "0".eur,
+        totalDebit = "0".eur,
+        generatedInterest = "0".eur,
+        deductedInterest = "0".eur,
+        paidBills = emptyList(),
+    )
+
     /**
      * The real collection notice that happened in December for both the November and December periods.
      */
@@ -688,7 +696,7 @@ object SampleBankData {
                 deductedInterest = "0".eur,
                 paidBills = listOf(
                     Payment(
-                        date = LocalDate.parse("2025-10-27"), // TODO change to the payment date by the bank
+                        date = LocalDate.parse("2025-10-29"),
                         amount = "58646.16".eur,
                         description = "T9: 10% upon delivery (-0.02€ rounding compensation as done by BotBouw)",
                     )
@@ -720,17 +728,32 @@ object SampleBankData {
                 deductedInterest = "0".eur,
                 paidBills = listOf(
                     Payment(
-                        date = LocalDate.parse("2025-11-18"),
-                        amount = "0.01".eur,
-                        description = "(Fictional) compensation for BotBouw's incorrect rounding",
-                    ),
-                    Payment(
-                        date = LocalDate.parse("2025-11-18"),
-                        amount = "7356.71".eur,
-                        description = "(Prediction) Last partial bill to empty the construction account",
+                        date = LocalDate.parse("2025-11-27"),
+                        amount = "7356.72".eur,
+                        description = "Partial Kitchen bill (rest of the construction account)",
                     ),
                 ),
             ),
+        ),
+        MonthlyStatement(
+            period = period(2025, 12),
+            collectionNotice = CollectionNotice(
+                accountDebits = listOf(
+                    AccountDebitDetails(
+                        part101 = "396.58".eur,
+                        part102 = "704.76".eur,
+                        bdInterestDeduction = "0".eur,
+                        totalDebit = "1101.34".eur,
+                    ),
+                    AccountDebitDetails(
+                        part101 = "705.02".eur,
+                        part102 = "1252.91".eur,
+                        bdInterestDeduction = "0".eur,
+                        totalDebit = "1957.93".eur,
+                    ),
+                ),
+            ),
+            constructionAccountStatement = EmptyConstructionAccountStatement,
         ),
     )
 }

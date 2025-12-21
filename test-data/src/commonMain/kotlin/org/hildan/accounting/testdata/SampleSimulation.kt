@@ -118,22 +118,11 @@ object SampleSimulation {
             description = "T8: 13.5% stucco, plaster, and tiles",
         ),
         billPayment(
-            date = "2025-10-27", // TODO change to the payment date by the bank
+            date = "2025-10-29",
             amount = (constructionPrice * 10.pct).roundedToTheCent() - "0.02".eur, // 58646.179 -> 58646.16
             description = "T9: 10% upon delivery (-0.02€ rounding compensation as done by BotBouw)",
         ),
-        billPayment(
-            date = "2025-11-18",
-            amount = "0.01".eur,
-            description = "(Fictional) compensation for BotBouw's incorrect rounding",
-        ),
-    ).also { bills ->
-        check(bills.sumOf { p -> p.amount } == constructionPrice + effectiveOptionsBotBouw) {
-            "The sum of all construction bills (${bills.sum().format()}) should match the total " +
-                "construction price + the options (${constructionPrice.format()} + " +
-                "${effectiveOptionsBotBouw.format()} = ${(constructionPrice + effectiveOptionsBotBouw).format()})."
-        }
-    }
+    )
 
     // These dates are not the dates of the bills, but the dates at which the bank released the funds and paid.
     private val otherBillsPayments = listOf(
@@ -156,6 +145,11 @@ object SampleSimulation {
             date = LocalDate.parse("2025-09-15"),
             amount = "57017.45".eur, // parkingPrice + storagePrice + translator 326.70€ + 'research' 75€ + BTW 21%
             description = "Notary payment for parking & storage",
+        ),
+        Payment(
+            date = LocalDate.parse("2025-11-27"),
+            amount = "7356.72".eur,
+            description = "Partial Kitchen bill (rest of the construction account)",
         ),
     )
 
@@ -204,11 +198,6 @@ object SampleSimulation {
             constructionInstallments = listOf(
                 *constructionBillsPayments.toTypedArray<Payment>(),
                 *otherBillsPayments.toTypedArray<Payment>(),
-                Payment(
-                    date = LocalDate.parse("2025-11-18"),
-                    amount = initialConstructionAccountBalance - constructionBillsPayments.sum() - otherBillsPayments.sum(),
-                    description = "(Prediction) Last partial bill to empty the construction account",
-                ),
             ).also { installments ->
                 check(installments.sum() == initialConstructionAccountBalance) {
                     "The initial construction account balance (${initialConstructionAccountBalance.format()}) should " +
