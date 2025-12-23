@@ -1,7 +1,8 @@
-package org.hildan.accounting.mortgage
+package org.hildan.accounting.mortgage.interest
 
 import kotlinx.datetime.LocalDate
 import org.hildan.accounting.money.Fraction
+import org.hildan.accounting.mortgage.PaymentPeriod
 import org.hildan.accounting.mortgage.interest.DayCountConvention.ActualActual
 import org.hildan.accounting.mortgage.interest.DayCountConvention.ThirtyE360
 import org.hildan.accounting.mortgage.interest.DayCountConvention.ThirtyE360ISDA

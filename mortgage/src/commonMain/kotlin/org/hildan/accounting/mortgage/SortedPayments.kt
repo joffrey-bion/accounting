@@ -8,7 +8,7 @@ internal class SortedPayments(payments: List<Payment>) {
     private var sortedPayments = payments.sortedBy { it.date }
 
     /**
-     * Returns the payments that happened during the given [period].
+     * Returns the payments that happened during the given [period], ordered by date.
      */
     fun paidIn(period: PaymentPeriod): List<Payment> = sortedPayments
         .dropWhile { it.date < period.start }

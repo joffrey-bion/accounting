@@ -1,10 +1,11 @@
-package org.hildan.accounting.mortgage
+package org.hildan.accounting.mortgage.interest
 
 import kotlinx.datetime.LocalDate
 import org.hildan.accounting.money.Amount
 import org.hildan.accounting.money.eur
 import org.hildan.accounting.money.pct
-import org.hildan.accounting.mortgage.interest.*
+import org.hildan.accounting.mortgage.Payment
+import org.hildan.accounting.mortgage.PaymentPeriod
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
