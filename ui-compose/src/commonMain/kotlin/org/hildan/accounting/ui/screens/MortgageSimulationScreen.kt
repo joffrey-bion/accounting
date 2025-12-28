@@ -84,13 +84,20 @@ private fun SimulationDetails(simulation: SimulationResult, modifier: Modifier =
                 modifier = Modifier.weight(2f).fillMaxHeight(),
             )
         }
-        MortgageYearlySummaryTable(
-            yearSummaries = simulation.yearSummaries,
-            modifier = Modifier.fillMaxWidth(),
-        )
-        MortgageMonthlySummaryTable(
-            monthSummaries = simulation.monthSummaries,
-            modifier = Modifier.fillMaxWidth().heightIn(max = 700.dp),
-        )
+        var tableMode by remember { mutableStateOf(SimulationTableMode.Yearly) }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text("Table mode:", modifier = Modifier.padding(end = 10.dp))
+            TableModeButton(currentMode = tableMode, onModeChange = { tableMode = it })
+        }
+        when (tableMode) {
+            SimulationTableMode.Monthly -> MortgageMonthlySummaryTable(
+                monthSummaries = simulation.monthSummaries,
+                modifier = Modifier.fillMaxWidth().heightIn(max = 700.dp),
+            )
+            SimulationTableMode.Yearly -> MortgageYearlySummaryTable(
+                yearSummaries = simulation.yearSummaries,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
     }
 }
