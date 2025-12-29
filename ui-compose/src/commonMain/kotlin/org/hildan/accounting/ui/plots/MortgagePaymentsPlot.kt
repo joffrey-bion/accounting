@@ -18,8 +18,10 @@ import org.hildan.accounting.mortgage.*
 fun MortgagePaymentsPlot(simulationResult: SimulationResult, modifier: Modifier) {
     val payments = simulationResult.monthSummaries
     val xAxisModel = remember(payments) {
-        val dates = payments.map { it.date }
-        localDateAxisModel(min = dates.min(), max = dates.max())
+        localDateAxisModel(
+            min = payments.minOf { it.date },
+            max = payments.maxOf { it.date },
+        )
     }
     val yAxisModel = remember(payments) {
         amountAxisModel(max = payments.maxOf { it.totalCollected + 100.eur })
