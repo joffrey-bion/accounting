@@ -24,7 +24,6 @@ include("mortgage")
 include("nl-taxes")
 include("test-data")
 include("ui-compose")
-include("ui-web-react")
 
 develocity {
     buildScan {
