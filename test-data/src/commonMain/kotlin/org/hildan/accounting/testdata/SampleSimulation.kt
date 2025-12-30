@@ -166,10 +166,10 @@ object SampleSimulation {
 
     private val mortgage = Mortgage(
         startDate = closingDate,
-        termInYears = 30,
         parts = listOf(
             MortgagePart(
                 id = MortgagePartId("101"),
+                term = 30.years,
                 amount = 350_000.eur,
                 annualInterestRate = ObvionRateSept2023,
                 repaymentScheme = RepaymentScheme.Linear,
@@ -182,6 +182,7 @@ object SampleSimulation {
             ),
             MortgagePart(
                 id = MortgagePartId("102"),
+                term = 30.years,
                 amount = 350_000.eur,
                 annualInterestRate = ObvionRateSept2023,
                 repaymentScheme = RepaymentScheme.Linear,

@@ -21,17 +21,6 @@ fun MortgageSettingsForm(value: Mortgage, onValueChange: (Mortgage) -> Unit) {
             onValueChange = { onValueChange(value.copy(startDate = it)) },
             label = { Text("Start date") },
         )
-        IntTextField(
-            value = value.termInYears,
-            onValueChange = {
-                if (it != null && it > 0) {
-                    onValueChange(value.copy(termInYears = it))
-                }
-            },
-            label = { Text("Duration") },
-            suffix = { Text("years") },
-            trailingIcon = { Icon(Icons.Default.Schedule, contentDescription = "Clock icon") }
-        )
         value.parts.forEachIndexed { i, part ->
             if (value.parts.size > 1) {
                 Text("Part ${part.id.value}")
@@ -62,6 +51,17 @@ private fun MortgagePartSettingsForm(
         value = value.amount,
         onValueChange = { onValueChange(value.copy(amount = it)) },
         label = { Text("Loan amount") },
+    )
+    IntTextField(
+        value = value.term.years,
+        onValueChange = {
+            if (it != null && it > 0) {
+                onValueChange(value.copy(term = it.years))
+            }
+        },
+        label = { Text("Duration") },
+        suffix = { Text("years") },
+        trailingIcon = { Icon(Icons.Default.Schedule, contentDescription = "Clock icon") }
     )
     RepaymentSchemeDropdown(
         value = value.repaymentScheme,

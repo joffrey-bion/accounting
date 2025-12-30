@@ -22,10 +22,6 @@ data class Mortgage(
      */
     val startDate: LocalDate,
     /**
-     * The total duration (in years) over which the mortgage will be repaid.
-     */
-    val termInYears: Int = 30,
-    /**
      * Defines the conditions of each mortgage part.
      */
     val parts: List<MortgagePart>,
@@ -45,6 +41,10 @@ data class MortgagePart(
      */
     val id: MortgagePartId,
     /**
+     * The total duration over which the mortgage will be repaid (usually 25 or 30 years).
+     */
+    val term: DatePeriod,
+    /**
      * The total amount borrowed for this part.
      */
     val amount: Amount,
@@ -56,7 +56,7 @@ data class MortgagePart(
     /**
      * The repayment scheme for this part of the mortgage.
      */
-    val repaymentScheme: RepaymentScheme = RepaymentScheme.Annuity,
+    val repaymentScheme: RepaymentScheme,
     /**
      * The payments made voluntarily to pay back the loan, usually to reduce the interest and thus the monthly payments.
      */
@@ -70,8 +70,7 @@ data class MortgagePart(
  * which is necessary for interest rate calculations that are based on the loan-to-value ratio.
  */
 internal fun Mortgage.simulatePayments(propertyWozValue: (LocalDate) -> Amount): List<MortgagePayment> {
-    val monthlyPaymentPeriods = monthlyPaymentPeriods(startDate, termInYears)
-    val partSimulators = parts.map { PartSimulator(part = it, monthlyPaymentPeriods) }
+    val partSimulators = parts.map { PartSimulator(part = it, startDate) }
     return buildList {
         while (true) {
             val mortgageBalance = partSimulators.sumOf { partSim -> partSim.balance }
@@ -87,11 +86,11 @@ internal fun Mortgage.simulatePayments(propertyWozValue: (LocalDate) -> Amount):
 }
 
 /**
- * Returns the monthly payment periods based on the [startDate] of the loan and the [termInYears].
+ * Returns the monthly payment periods based on the [startDate] of the loan and the [term].
  */
-private fun monthlyPaymentPeriods(startDate: LocalDate, termInYears: Int): List<PaymentPeriod> {
+private fun monthlyPaymentPeriods(startDate: LocalDate, term: DatePeriod): List<PaymentPeriod> {
     val firstMonthIsPartial = startDate.day > 1
-    val redemptionDay = startDate.plus(termInYears, DateTimeUnit.YEAR).let {
+    val redemptionDay = startDate.plus(term).let {
         // We only start paying back the principal on the first full month.
         // If the first month is partial, we just pay interest.
         if (firstMonthIsPartial) it.plus(1, DateTimeUnit.MONTH) else it
@@ -104,8 +103,9 @@ private fun monthlyPaymentPeriods(startDate: LocalDate, termInYears: Int): List<
 
 private class PartSimulator(
     val part: MortgagePart,
-    val monthlyPaymentPeriods: List<PaymentPeriod>,
+    startDate: LocalDate,
 ) {
+    private val monthlyPaymentPeriods = monthlyPaymentPeriods(startDate, part.term)
     private val sortedExtraPayments = SortedPayments(part.extraPayments)
 
     var balance = part.amount
@@ -173,3 +173,8 @@ private class PartSimulator(
         return payment
     }
 }
+
+/**
+ * A [DatePeriod] equal to this number of years.
+ */
+val Int.years: DatePeriod get() = DatePeriod(years = this)

@@ -14,13 +14,14 @@ private val defaultStartDate = Clock.System.todayIn(TimeZone.currentSystemDefaul
 
 private val defaultMortgage = Mortgage(
     startDate = defaultStartDate,
-    termInYears = 30,
     parts = listOf(defaultPart(index = 0)),
 )
 
 internal fun defaultPart(index: Int): MortgagePart = MortgagePart(
     id = MortgagePartId((index + 1).toString()),
+    term = 30.years,
     amount = 400_000.eur,
+    repaymentScheme = RepaymentScheme.Annuity,
     annualInterestRate = InterestRate.DynamicLtv(
         ratesPerLtvRatio = mapOf(
             60.pct to "3.58".pct,
