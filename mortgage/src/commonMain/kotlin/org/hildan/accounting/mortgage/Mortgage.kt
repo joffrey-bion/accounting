@@ -74,7 +74,7 @@ internal fun Mortgage.simulatePayments(propertyWozValue: (LocalDate) -> Amount):
     val partSimulators = parts.map { PartSimulator(part = it, monthlyPaymentPeriods) }
     return buildList {
         while (true) {
-            val mortgageBalance = partSimulators.sumOf { part -> part.balance }
+            val mortgageBalance = partSimulators.sumOf { partSim -> partSim.balance }
             val payments = partSimulators.mapNotNull { partSim ->
                 partSim.simulateNextMonth(currentLtvRatio = { period -> mortgageBalance / propertyWozValue(period.start) })
             }
