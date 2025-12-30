@@ -134,6 +134,8 @@ data class MortgageMonthSummary(
 
     /**
      * The interest deducted from the construction account for this month.
+     *
+     * This is a positive value to subtract from the mortgage interest for the month to get the [effectiveInterest].
      */
     val deductedConstructionInterest: Amount get() = constructionAccount?.deductedInterest ?: Amount.ZERO
 
