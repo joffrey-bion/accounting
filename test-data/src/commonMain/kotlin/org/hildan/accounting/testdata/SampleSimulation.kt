@@ -26,11 +26,6 @@ object SampleSimulation {
     private val parkingPrice = 35_000.eur
 
     /**
-     * The price of the storage space in the parking lot, paid later.
-     */
-    private val storagePrice = 21_600.eur
-
-    /**
      * Options price based on our initial estimate, as written in the initial notary invoice.
      */
     private val optionsPrice = 38_633.eur
@@ -39,6 +34,7 @@ object SampleSimulation {
      * The estimated value of the property, based on our initial options price estimate, and now recorded as such
      * by Obvion.
      */
+    // the storage existence and price (21600€) was not known at that time
     private val estimatedWozValue = landPrice + constructionPrice + parkingPrice + optionsPrice
 
     /**
@@ -191,8 +187,8 @@ object SampleSimulation {
         ),
     )
 
-    val settingsIncremental = SimulationSettings(
-        simulationName = "700k Incremental",
+    val settings = SimulationSettings(
+        simulationName = "Elzenhagen",
         mortgage = mortgage,
         property = Property.NewConstruction(
             initialNotaryPayment = Payment(closingDate, landPrice),
@@ -205,16 +201,6 @@ object SampleSimulation {
                         "match the sum of the installments (${installments.sum().format()})."
                 }
             },
-            wozValue = estimatedWozValue,
-        ),
-    )
-
-    val settingsBulk = SimulationSettings(
-        simulationName = "700k Bulk",
-        mortgage = mortgage,
-        property = Property.NewConstruction(
-            initialNotaryPayment = Payment(closingDate, landPrice + parkingPrice + storagePrice + optionsPrice + constructionPrice),
-            constructionInstallments = emptyList(),
             wozValue = estimatedWozValue,
         ),
     )

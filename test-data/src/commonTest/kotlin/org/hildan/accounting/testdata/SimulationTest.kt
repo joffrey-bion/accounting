@@ -12,7 +12,7 @@ class SimulationTest {
 
     @Test
     fun simulationMatchesBankStatements() {
-        val simulationResult = SampleSimulation.settingsIncremental.simulate()
+        val simulationResult = SampleSimulation.settings.simulate()
 
         SampleBankData.statements.zip(simulationResult.monthSummaries).forEach { (real, simulated) ->
             assertMatches(real, simulated)
@@ -21,7 +21,7 @@ class SimulationTest {
 
     @Test
     fun simulationMatchesBankNumbers() {
-        val simulationResult = SampleSimulation.settingsIncremental.simulate()
+        val simulationResult = SampleSimulation.settings.simulate()
 
         val simulatedNovember = simulationResult.monthSummaries[0]
         val simulatedDecember = simulationResult.monthSummaries[1]
