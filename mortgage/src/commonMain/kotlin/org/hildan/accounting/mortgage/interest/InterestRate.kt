@@ -41,6 +41,8 @@ sealed interface InterestRate {
 
     /**
      * An interest rate that changes based on the loan-to-value (LTV) ratio.
+     *
+     * The LTV ratio is the ratio of the loan amount to the property value.
      */
     data class DynamicLtv(
         val sortedRates: List<RateGroup>,

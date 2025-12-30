@@ -29,7 +29,7 @@ sealed class Property {
     /**
      * An existing house or apartment, bought with the given [purchase] payment, and with a given estimated [wozValue].
      *
-     * The value may be different from the price, but the bank cannot lend more than the value.
+     * The [wozValue] may be different from the price, but the bank cannot lend more than the value.
      */
     data class Existing(
         val purchase: Payment,
