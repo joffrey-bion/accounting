@@ -1,7 +1,7 @@
 [versions]
 
 bignum = "0.3.10"
-compose = "1.10.3"
+compose = "1.11.1"
 composeHotReload = "1.1.1"
 koalaplot = "0.10.4"
 kotlin-plugin = "2.3.0"
