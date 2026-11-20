@@ -1,6 +1,6 @@
 [versions]
 
-bignum = "0.3.10"
+bignum = "0.4.0"
 compose = "1.10.3"
 composeHotReload = "1.2.0"
 koalaplot = "0.10.4"
